@@ -15,6 +15,7 @@
 
         <!-- Dependencies -->
         <hibernate.core.version>5.2.10.Final</hibernate.core.version>
+        <equalsverifier.version>2.3.2</equalsverifier.version>
     </properties>
 
     <dependencies>
@@ -22,6 +23,13 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>${hibernate.core.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>nl.jqno.equalsverifier</groupId>
+            <artifactId>equalsverifier</artifactId>
+            <version>${equalsverifier.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
