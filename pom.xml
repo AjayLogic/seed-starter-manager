@@ -16,6 +16,7 @@
         <!-- Dependencies -->
         <hibernate.core.version>5.2.10.Final</hibernate.core.version>
         <equalsverifier.version>2.3.2</equalsverifier.version>
+        <junit.jupiter.api.version>5.0.0-RC2</junit.jupiter.api.version>
     </properties>
 
     <dependencies>
@@ -29,6 +30,13 @@
             <groupId>nl.jqno.equalsverifier</groupId>
             <artifactId>equalsverifier</artifactId>
             <version>${equalsverifier.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.jupiter.api.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
