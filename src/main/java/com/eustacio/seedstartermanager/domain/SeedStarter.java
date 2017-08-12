@@ -116,6 +116,7 @@ public class SeedStarter extends Entity {
             rows = new LinkedHashSet<>();
         }
 
+        row.setSeedStarter(this);
         rows.add(row);
     }
 
