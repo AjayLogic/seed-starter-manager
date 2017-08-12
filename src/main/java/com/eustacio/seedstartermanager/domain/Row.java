@@ -25,6 +25,10 @@ public class Row extends Entity {
     @Column(name = "SEEDS_PER_CELL", nullable = false)
     private Integer seedsPerCell;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "SEED_STARTER_ID", nullable = false)
+    private SeedStarter seedStarter;
+
     protected Row() {
         // Constructor without arguments to agree with the JPA specification
     }
@@ -48,6 +52,14 @@ public class Row extends Entity {
 
     public void setSeedsPerCell(Integer seedsPerCell) {
         this.seedsPerCell = seedsPerCell;
+    }
+
+    public SeedStarter getSeedStarter() {
+        return seedStarter;
+    }
+
+    public void setSeedStarter(SeedStarter seedStarter) {
+        this.seedStarter = seedStarter;
     }
 
     @Override
