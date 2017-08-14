@@ -4,6 +4,8 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 /**
  * @author Wallison Freitas
@@ -11,6 +13,8 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public abstract class NamedEntity extends Entity {
 
+    @NotBlank
+    @Size(min = 1, max = 255)
     @Column(name = "NAME", unique = true, nullable = false)
     private String name;
 
