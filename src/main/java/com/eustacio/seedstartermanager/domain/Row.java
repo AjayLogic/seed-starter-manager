@@ -7,6 +7,8 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 /**
  * @author Wallison Freitas
@@ -22,6 +24,8 @@ public class Row extends Entity {
     @JoinColumn(name = "SEED_VARIETY_ID", nullable = false)
     private SeedVariety seedVariety;
 
+    @Min(MIN_SEEDS_PER_CELL)
+    @Max(MAX_SEEDS_PER_CELL)
     @Column(name = "SEEDS_PER_CELL", nullable = false)
     private Integer seedsPerCell;
 
