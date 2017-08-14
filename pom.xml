@@ -15,6 +15,7 @@
 
         <!-- Dependencies -->
         <hibernate.core.version>5.2.10.Final</hibernate.core.version>
+        <hibernate.validator.version>6.0.1.Final</hibernate.validator.version>
         <equalsverifier.version>2.3.2</equalsverifier.version>
         <junit.jupiter.api.version>5.0.0-RC2</junit.jupiter.api.version>
     </properties>
@@ -24,6 +25,19 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>${hibernate.core.version}</version>
+            <exclusions>
+                <exclusion>
+                    <!-- hibernate-validator already provides the latest version -->
+                    <groupId>com.fasterxml</groupId>
+                    <artifactId>classmate</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate.validator.version}</version>
         </dependency>
 
         <dependency>
