@@ -51,7 +51,7 @@ public class SeedStarter extends Entity {
     }
 
     public SeedStarter(MaterialType materialType, LocalDate datePlanted,
-                       boolean isCovered, Set<Feature> features, Set<Row> rows) {
+                       boolean isCovered, Iterable<Feature> features, Iterable<Row> rows) {
         this.materialType = materialType;
         this.datePlanted = datePlanted;
         this.isCovered = isCovered;
