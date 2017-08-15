@@ -15,6 +15,7 @@
 
         <!-- Dependencies -->
         <spring.data.jpa.version>1.11.6.RELEASE</spring.data.jpa.version>
+        <h2.version>1.4.196</h2.version>
         <hibernate.core.version>5.2.10.Final</hibernate.core.version>
         <hibernate.validator.version>6.0.1.Final</hibernate.validator.version>
         <equalsverifier.version>2.3.2</equalsverifier.version>
@@ -26,6 +27,12 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
             <version>${spring.data.jpa.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
         </dependency>
 
         <dependency>
