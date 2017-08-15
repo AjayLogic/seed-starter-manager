@@ -13,9 +13,12 @@ import javax.validation.constraints.Size;
 @MappedSuperclass
 public abstract class NamedEntity extends Entity {
 
+    public static final int MIN_NAME_LENGTH = 1;
+    public static final int MAX_NAME_LENGTH = 50;
+
     @NotBlank
-    @Size(min = 1, max = 255)
-    @Column(name = "NAME", unique = true, nullable = false)
+    @Size(min = MIN_NAME_LENGTH, max = MAX_NAME_LENGTH)
+    @Column(name = "NAME", unique = true, nullable = false, length = MAX_NAME_LENGTH)
     private String name;
 
     protected NamedEntity() {
