@@ -13,6 +13,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 
 /**
  * @author Wallison Freitas
@@ -33,8 +34,9 @@ public class PersistenceConfig {
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(JpaVendorAdapter jpaVendorAdapter, JpaDialect jpaDialect) {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, JpaVendorAdapter jpaVendorAdapter, JpaDialect jpaDialect) {
         LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
+        emf.setDataSource(dataSource);
         emf.setJpaVendorAdapter(jpaVendorAdapter);
         emf.setJpaDialect(jpaDialect);
         emf.setPackagesToScan("com.eustacio.seedstartermanager.domain");
