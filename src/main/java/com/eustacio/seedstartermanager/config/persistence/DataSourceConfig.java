@@ -21,6 +21,7 @@ public class DataSourceConfig {
                 .setName("embedded_database")
                 .setType(EmbeddedDatabaseType.H2)
                 .setScriptEncoding(StandardCharsets.UTF_8.name())
+                .addDefaultScripts()
                 .build();
     }
 
