@@ -12,6 +12,6 @@ import java.util.Optional;
 @NoRepositoryBean
 public interface NamedEntityRepository<T extends NamedEntity> extends EntityRepository<T> {
 
-    Optional<T> findByName();
+    Optional<T> findByName(String name);
 
 }
