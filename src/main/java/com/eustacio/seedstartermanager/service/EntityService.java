@@ -22,7 +22,7 @@ public abstract class EntityService<T extends Entity> {
     public abstract boolean delete(Long id);
 
     public Optional<T> findById(Long id) {
-        return Optional.ofNullable(repository.findOne(id));
+        return repository.findById(id);
     }
 
     public List<T> findAll() {
