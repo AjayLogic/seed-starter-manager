@@ -10,7 +10,7 @@ import java.util.Optional;
  */
 public abstract class NamedEntityService<T extends NamedEntity> extends EntityService<T> {
 
-    private NamedEntityRepository<T> repository;
+    protected NamedEntityRepository<T> repository;
 
     public NamedEntityService(NamedEntityRepository<T> repository) {
         super(repository);
