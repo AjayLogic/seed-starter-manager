@@ -44,7 +44,7 @@ class SeedVarietyServiceIT {
 
     @Test
     void delete() {
-        Long thymusCamphoratusId = 2L;
+        Long thymusCamphoratusId = 3L;
 
         boolean isDeleted = varietyService.delete(thymusCamphoratusId);
 
