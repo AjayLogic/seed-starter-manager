@@ -20,6 +20,13 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- Plugins / Plugins Dependencies -->
+        <maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
+        <junit.platform.surefire.provider.version>1.0.0-RC3
+        </junit.platform.surefire.provider.version>
+        <junit.jupiter.engine.version>5.0.0-RC3</junit.jupiter.engine.version>
 
         <!-- Dependencies -->
         <spring.data.jpa.version>2.0.0.RC2</spring.data.jpa.version>
@@ -34,6 +41,30 @@
         <junit.jupiter.api.version>5.0.0-RC3</junit.jupiter.api.version>
         <assertj.core.version>3.8.0</assertj.core.version>
     </properties>
+
+    <build>
+        <plugins>
+            <!-- Note: Using the version 2.19.1 due to a memory leak on the version 2.20, to more
+                 info check the page: http://junit.org/junit5/docs/current/user-guide/#running-tests-build-maven -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.junit.platform</groupId>
+                        <artifactId>junit-platform-surefire-provider</artifactId>
+                        <version>${junit.platform.surefire.provider.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.junit.jupiter</groupId>
+                        <artifactId>junit-jupiter-engine</artifactId>
+                        <version>${junit.jupiter.engine.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
         <dependency>
