@@ -1,6 +1,7 @@
 package com.eustacio.seedstartermanager.service;
 
 import com.eustacio.seedstartermanager.domain.Entity;
+import com.eustacio.seedstartermanager.repository.EntityRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,14 +9,24 @@ import java.util.Optional;
 /**
  * @author Wallison Freitas
  */
-public interface EntityService<T extends Entity> {
+public abstract class EntityService<T extends Entity> {
 
-    T save(T entity);
+    protected EntityRepository<T> repository;
 
-    Optional<T> findById(Long id);
+    public EntityService(EntityRepository<T> repository) {
+        this.repository = repository;
+    }
 
-    List<T> findAll();
+    public abstract T save(T entity);
 
-    boolean delete(Long id);
+    public abstract boolean delete(Long id);
+
+    public Optional<T> findById(Long id) {
+        return repository.findById(id);
+    }
+
+    public List<T> findAll() {
+        return repository.findAll();
+    }
 
 }

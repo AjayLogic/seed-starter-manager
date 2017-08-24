@@ -1,14 +1,24 @@
 package com.eustacio.seedstartermanager.service;
 
 import com.eustacio.seedstartermanager.domain.NamedEntity;
+import com.eustacio.seedstartermanager.repository.NamedEntityRepository;
 
 import java.util.Optional;
 
 /**
  * @author Wallison Freitas
  */
-public interface NamedEntityService<T extends NamedEntity> extends EntityService<T> {
+public abstract class NamedEntityService<T extends NamedEntity> extends EntityService<T> {
 
-    Optional<T> findByName(String name);
+    protected NamedEntityRepository<T> repository;
+
+    public NamedEntityService(NamedEntityRepository<T> repository) {
+        super(repository);
+        this.repository = repository;
+    }
+
+    public Optional<T> findByName(String name) {
+        return this.repository.findByName(name);
+    }
 
 }
