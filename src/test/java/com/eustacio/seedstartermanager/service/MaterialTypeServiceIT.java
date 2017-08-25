@@ -44,7 +44,7 @@ class MaterialTypeServiceIT {
 
     @Test
     void delete() {
-        Long plasticId = 1L;
+        Long plasticId = 3L;
 
         boolean isDeleted = materialTypeService.delete(plasticId);
 
