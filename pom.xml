@@ -29,6 +29,7 @@
         <junit.jupiter.engine.version>5.0.0-RC3</junit.jupiter.engine.version>
 
         <!-- Dependencies -->
+        <servlet.api.version>4.0.0</servlet.api.version>
         <spring.version>5.0.0.RC3</spring.version>
         <spring.data.jpa.version>2.0.0.RC2</spring.data.jpa.version>
         <h2.version>1.4.196</h2.version>
@@ -93,6 +94,13 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${servlet.api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
