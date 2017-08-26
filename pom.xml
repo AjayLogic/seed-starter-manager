@@ -29,6 +29,7 @@
         <junit.jupiter.engine.version>5.0.0-RC3</junit.jupiter.engine.version>
 
         <!-- Dependencies -->
+        <spring.version>5.0.0.RC3</spring.version>
         <spring.data.jpa.version>2.0.0.RC2</spring.data.jpa.version>
         <h2.version>1.4.196</h2.version>
         <hibernate.core.version>5.2.10.Final</hibernate.core.version>
@@ -36,7 +37,6 @@
         <logback.classic.version>1.2.3</logback.classic.version>
 
         <!-- Test Dependencies -->
-        <spring.test.version>5.0.0.RC3</spring.test.version>
         <equalsverifier.version>2.3.3</equalsverifier.version>
         <junit.jupiter.api.version>5.0.0-RC3</junit.jupiter.api.version>
         <assertj.core.version>3.8.0</assertj.core.version>
@@ -94,6 +94,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
             <version>${spring.data.jpa.version}</version>
@@ -133,7 +139,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>${spring.test.version}</version>
+            <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
 
