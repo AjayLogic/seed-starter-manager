@@ -37,7 +37,7 @@
 
         <!-- Test Dependencies -->
         <spring.test.version>5.0.0.RC3</spring.test.version>
-        <equalsverifier.version>2.3.2</equalsverifier.version>
+        <equalsverifier.version>2.3.3</equalsverifier.version>
         <junit.jupiter.api.version>5.0.0-RC3</junit.jupiter.api.version>
         <assertj.core.version>3.8.0</assertj.core.version>
     </properties>
