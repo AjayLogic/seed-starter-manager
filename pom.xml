@@ -28,7 +28,6 @@
         <maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
         <maven.failsafe.plugin.version>2.19.1</maven.failsafe.plugin.version>
         <junit.platform.surefire.provider.version>1.0.0-RC3</junit.platform.surefire.provider.version>
-        <junit.jupiter.engine.version>5.0.0-RC3</junit.jupiter.engine.version>
 
         <!-- Dependencies -->
         <servlet.api.version>4.0.0</servlet.api.version>
@@ -43,6 +42,7 @@
         <!-- Test Dependencies -->
         <equalsverifier.version>2.3.3</equalsverifier.version>
         <junit.jupiter.api.version>5.0.0-RC3</junit.jupiter.api.version>
+        <junit.jupiter.engine.version>5.0.0-RC3</junit.jupiter.engine.version>
         <assertj.core.version>3.8.0</assertj.core.version>
     </properties>
 
@@ -59,11 +59,6 @@
                         <groupId>org.junit.platform</groupId>
                         <artifactId>junit-platform-surefire-provider</artifactId>
                         <version>${junit.platform.surefire.provider.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.junit.jupiter</groupId>
-                        <artifactId>junit-jupiter-engine</artifactId>
-                        <version>${junit.jupiter.engine.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -85,11 +80,6 @@
                         <groupId>org.junit.platform</groupId>
                         <artifactId>junit-platform-surefire-provider</artifactId>
                         <version>${junit.platform.surefire.provider.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.junit.jupiter</groupId>
-                        <artifactId>junit-jupiter-engine</artifactId>
-                        <version>${junit.jupiter.engine.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -172,6 +162,13 @@
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit.jupiter.api.version}</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.jupiter.engine.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>
