@@ -2,10 +2,12 @@ package com.eustacio.seedstartermanager.service;
 
 import com.eustacio.seedstartermanager.domain.Feature;
 import com.eustacio.seedstartermanager.exception.DuplicateNameException;
+import com.eustacio.seedstartermanager.exception.EntityNotFoundException;
 import com.eustacio.seedstartermanager.repository.FeatureRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -35,7 +37,13 @@ public class FeatureService extends NamedEntityService<Feature> {
 
     @Override
     public boolean delete(Long id) {
-        super.repository.deleteById(id);
+        try {
+            super.repository.deleteById(id);
+        } catch (EmptyResultDataAccessException exception) {
+            throw new EntityNotFoundException(String.format(
+                    "Cannot delete the Feature with id %d because it does not exists", id), exception);
+        }
+
         return !super.repository.existsById(id);
     }
 

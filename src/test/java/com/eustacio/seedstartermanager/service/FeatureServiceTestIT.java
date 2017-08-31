@@ -3,6 +3,7 @@ package com.eustacio.seedstartermanager.service;
 import com.eustacio.seedstartermanager.IntegrationTest;
 import com.eustacio.seedstartermanager.domain.Feature;
 import com.eustacio.seedstartermanager.exception.DuplicateNameException;
+import com.eustacio.seedstartermanager.exception.EntityNotFoundException;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,6 +51,15 @@ class FeatureServiceTestIT {
 
         assertThat(isDeleted).isTrue();
         assertThat(featureService.findById(phCorrectorId)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("delete() should throw EmptyResultDataAccessException when Feature is not found")
+    void delete_ShouldThrowEmptyResultDataAccessException_WhenFeatureIsNotFound() {
+        Long nonexistentEntity = 69L;
+
+        assertThatExceptionOfType(EntityNotFoundException.class)
+                .isThrownBy(() -> featureService.delete(nonexistentEntity));
     }
 
     @Test
