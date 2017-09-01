@@ -17,6 +17,6 @@ import java.lang.annotation.Target;
 @SpringJUnitWebConfig(classes = WebApplicationContext.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface UnitTest {
+public @interface WebIntegrationTest {
 
 }
