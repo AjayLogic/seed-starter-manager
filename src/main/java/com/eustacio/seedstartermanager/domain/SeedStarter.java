@@ -33,13 +33,13 @@ public class SeedStarter extends Entity {
     @Column(name = "COVERED")
     private boolean isCovered;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "SEED_STARTER_FEATURE",
             joinColumns = @JoinColumn(name = "SEED_STARTER_ID", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "FEATURE_ID", nullable = false))
     private Set<Feature> features;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "seedStarter", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "seedStarter", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Row> rows;
 
     protected SeedStarter() {

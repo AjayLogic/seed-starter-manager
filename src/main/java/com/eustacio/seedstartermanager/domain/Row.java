@@ -1,5 +1,7 @@
 package com.eustacio.seedstartermanager.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -29,6 +31,7 @@ public class Row extends Entity {
     @Column(name = "SEEDS_PER_CELL", nullable = false)
     private Integer seedsPerCell;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "SEED_STARTER_ID", nullable = false)
     private SeedStarter seedStarter;
