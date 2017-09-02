@@ -1,5 +1,7 @@
 package com.eustacio.seedstartermanager.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -27,6 +29,7 @@ public class SeedStarter extends Entity {
     @JoinColumn(name = "MATERIAL_TYPE_ID", nullable = false)
     private MaterialType materialType;
 
+    @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     @Column(name = "DATE_PLANTED", nullable = false)
     private LocalDate datePlanted;
 
