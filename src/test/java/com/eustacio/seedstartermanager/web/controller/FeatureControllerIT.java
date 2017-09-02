@@ -25,6 +25,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.eustacio.seedstartermanager.TestUtil.convertToJson;
 import static com.eustacio.seedstartermanager.TestUtil.setId;
@@ -60,13 +61,14 @@ class FeatureControllerIT {
     @Test
     void getAllFeatures() throws Exception {
         when(mockService.findAll()).thenReturn(featureList);
+        List<String> allFeatureNames = featureList.stream()
+                .map(Feature::getName)
+                .collect(Collectors.toList());
 
         mockMvc.perform(get("/feature").accept(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.length()", is(equalTo(featureList.size()))))
-                .andExpect(jsonPath("$.[0].name", is(equalTo(featureList.get(0).getName()))))
-                .andExpect(jsonPath("$.[1].name", is(equalTo(featureList.get(1).getName()))));
+                .andExpect(jsonPath("$..name", is(equalTo(allFeatureNames))));
     }
 
     @Test
