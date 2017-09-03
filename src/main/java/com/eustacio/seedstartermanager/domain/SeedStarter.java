@@ -17,6 +17,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Wallison Freitas
@@ -25,10 +26,12 @@ import javax.persistence.Table;
 @Table(name = "SEED_STARTER")
 public class SeedStarter extends Entity {
 
+    @NotNull
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "MATERIAL_TYPE_ID", nullable = false)
     private MaterialType materialType;
 
+    @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     @Column(name = "DATE_PLANTED", nullable = false)
     private LocalDate datePlanted;
