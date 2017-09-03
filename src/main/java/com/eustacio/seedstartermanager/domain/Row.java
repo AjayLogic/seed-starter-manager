@@ -1,6 +1,6 @@
 package com.eustacio.seedstartermanager.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import java.util.Objects;
 
@@ -31,7 +31,7 @@ public class Row extends Entity {
     @Column(name = "SEEDS_PER_CELL", nullable = false)
     private Integer seedsPerCell;
 
-    @JsonIgnore
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "SEED_STARTER_ID", nullable = false)
     private SeedStarter seedStarter;

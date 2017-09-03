@@ -1,6 +1,7 @@
 package com.eustacio.seedstartermanager.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -45,6 +46,7 @@ public class SeedStarter extends Entity {
             inverseJoinColumns = @JoinColumn(name = "FEATURE_ID", nullable = false))
     private Set<Feature> features;
 
+    @JsonManagedReference
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "seedStarter", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Row> rows;
 
