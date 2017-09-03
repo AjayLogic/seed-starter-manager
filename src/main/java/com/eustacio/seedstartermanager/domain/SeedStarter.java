@@ -1,5 +1,8 @@
 package com.eustacio.seedstartermanager.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -15,6 +18,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Wallison Freitas
@@ -23,10 +27,13 @@ import javax.persistence.Table;
 @Table(name = "SEED_STARTER")
 public class SeedStarter extends Entity {
 
+    @NotNull
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "MATERIAL_TYPE_ID", nullable = false)
     private MaterialType materialType;
 
+    @NotNull
+    @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     @Column(name = "DATE_PLANTED", nullable = false)
     private LocalDate datePlanted;
 
@@ -39,6 +46,7 @@ public class SeedStarter extends Entity {
             inverseJoinColumns = @JoinColumn(name = "FEATURE_ID", nullable = false))
     private Set<Feature> features;
 
+    @JsonManagedReference
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "seedStarter", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Row> rows;
 

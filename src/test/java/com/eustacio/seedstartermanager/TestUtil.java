@@ -3,6 +3,7 @@ package com.eustacio.seedstartermanager;
 import com.eustacio.seedstartermanager.domain.Entity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -16,7 +17,9 @@ public abstract class TestUtil {
     }
 
     public static String convertToJson(Object obj) throws JsonProcessingException {
-        return new ObjectMapper().writeValueAsString(obj);
+        return new ObjectMapper()
+                .registerModule(new JavaTimeModule())
+                .writeValueAsString(obj);
     }
 
 }
