@@ -1,0 +1,11 @@
+/* Sets the navbar color */
+nav .nav-wrapper {
+  background-color: #00c853;
+}
+
+/* Adjusts the logo size and position inside the navbar */
+nav .nav-wrapper .brand-logo img {
+  width: 64px;
+  height: 64px;
+  margin-left: 16px;
+}
