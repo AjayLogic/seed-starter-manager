@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HomeModule } from './home/home.module';
+import { SeedVarietyModule } from './seed-variety/seed-variety.module';
 
 @NgModule({
   declarations: [
@@ -12,6 +13,7 @@ import { HomeModule } from './home/home.module';
   imports: [
     BrowserModule,
     HomeModule,
+    SeedVarietyModule,
     AppRoutingModule
   ],
   providers: [],
