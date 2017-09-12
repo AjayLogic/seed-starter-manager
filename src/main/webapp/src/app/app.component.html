@@ -1,8 +1,24 @@
+<ul id="dropdown-themes" class="dropdown-content">
+  <li *ngFor="let theme of themes">
+    <a (click)="onThemeSelected(theme)">{{theme}}</a>
+  </li>
+</ul>
+
 <nav class="z-depth-2">
   <div class="nav-wrapper">
     <a class="brand-logo" routerLink="home">
       <img src="../assets/images/logo.svg">
     </a>
+
+    <ul class="right">
+      <!-- dropdown-themes trigger -->
+      <li>
+        <a class="dropdown-button" data-activates="dropdown-themes">
+          <i class="material-icons tooltipped right" data-position="bottom" data-delay="50"
+             data-tooltip="Themes">color_lens</i>
+        </a>
+      </li>
+    </ul>
   </div>
 </nav>
 <div class="container">
