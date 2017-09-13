@@ -1,9 +1,12 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+import { SimpleListComponent } from './simple-list/simple-list.component';
+
 @NgModule({
-  declarations: [],
-  imports: [CommonModule]
+  declarations: [SimpleListComponent],
+  imports: [CommonModule],
+  exports: [SimpleListComponent]
 })
 export class SharedModule {
 }
