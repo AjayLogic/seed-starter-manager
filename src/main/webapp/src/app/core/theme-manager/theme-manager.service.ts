@@ -35,7 +35,9 @@ export class ThemeManagerService {
   private restoreTheme() {
     if (this.isLocalStorageAvailable()) {
       let themeName = localStorage.getItem(this.localStorageThemeKey);
-      this.setTheme(themeName);
+      if (themeName) {
+        this.setTheme(themeName);
+      }
     }
   }
 
