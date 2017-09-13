@@ -24,7 +24,9 @@ export class ThemeManagerService {
   setTheme(themeName: string): void {
     const theme: Theme = this.themes.find((theme: Theme) => theme.name == themeName);
     if (theme) {
-      $('#theme').attr('href', theme.location);
+      let themeTag = $('#theme');
+      themeTag.attr('href', theme.location);
+      themeTag.appendTo('head');
       this.saveThemeOnLocalStorage(themeName);
     } else {
       console.error(`Cannot find the theme '${themeName}'; setting the default theme...`);
