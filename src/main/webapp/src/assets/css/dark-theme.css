@@ -6,3 +6,34 @@ body {
 nav .nav-wrapper {
   background-color: #343A40;
 }
+
+/* Sets the color around the list */
+.collection {
+  border-color: #343A40;
+}
+
+/* Sets the color of the item and the divider */
+.collection .collection-item {
+  background-color: #343A40;
+  border-bottom-color: #484D53;
+}
+
+/* Sets the font color of the item name */
+.collection a.collection-item {
+  color: #C2C3C5;
+}
+
+/* Sets the color of the item when the mouse hover over it */
+.collection a.collection-item:not(.active):hover {
+  background-color: #22252C;
+}
+
+/* Sets the color of the badge */
+span.badge.new {
+  background-color: #22958A;
+}
+
+/* Sets the waves effect color when click on a list item */
+.waves-effect.waves-light .waves-ripple {
+  background-color: rgba(133, 136, 140, 0.65);
+}

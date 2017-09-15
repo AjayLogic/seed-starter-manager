@@ -1,0 +1,8 @@
+<div class="collection z-depth-2" *ngIf="listItems">
+  <a class="collection-item waves-effect waves-light" *ngFor="let item of listItems"
+     (click)="onItemClicked(item)">{{item.name}}
+    <span class="new badge" data-badge-caption="uses" *ngIf="item.uses > 0"
+          (click)="onItemBadgeClicked(item); $event.stopPropagation()">{{item.uses}}
+    </span>
+  </a>
+</div>

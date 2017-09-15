@@ -24,24 +24,32 @@ export class ThemeManagerService {
   setTheme(themeName: string): void {
     const theme: Theme = this.themes.find((theme: Theme) => theme.name == themeName);
     if (theme) {
-      $('#theme').attr('href', theme.location);
+      let themeTag = $('#theme');
+      themeTag.attr('href', theme.location);
+      themeTag.appendTo('head');
       this.saveThemeOnLocalStorage(themeName);
     } else {
       console.error(`Cannot find the theme '${themeName}'; setting the default theme...`);
-      this.setTheme(this.themes[0].name);
+      this.setDefaultTheme();
     }
   }
 
-  private restoreTheme() {
+  private setDefaultTheme(): void {
+    this.setTheme(this.themes[0].name);
+  }
+
+  private restoreTheme(): void {
     if (this.isLocalStorageAvailable()) {
       let themeName = localStorage.getItem(this.localStorageThemeKey);
       if (themeName) {
         this.setTheme(themeName);
+      } else {
+        this.setDefaultTheme();
       }
     }
   }
 
-  private saveThemeOnLocalStorage(themeName: string) {
+  private saveThemeOnLocalStorage(themeName: string): void {
     if (this.isLocalStorageAvailable()) {
       localStorage.setItem(this.localStorageThemeKey, themeName);
     } else {
