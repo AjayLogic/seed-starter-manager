@@ -15,7 +15,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
   private features: Feature[];
   private subject: Subject<void> = new Subject();
 
-  constructor(private service: FeatureService) {}
+  constructor(private featureService: FeatureService) {}
 
   ngOnInit(): void {
     this.fetchAllFeatures();
@@ -27,7 +27,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
   }
 
   private fetchAllFeatures(): void {
-    this.service.getAllFeatures()
+    this.featureService.getAllFeatures()
       .takeUntil(this.subject)
       .subscribe((features: Feature[]) => this.features = features);
   }
