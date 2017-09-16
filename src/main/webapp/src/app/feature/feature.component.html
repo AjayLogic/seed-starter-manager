@@ -1,9 +1,27 @@
 <ng-container *ngIf="features">
   <app-simple-list [listItems]="features"></app-simple-list>
 
+  <!-- add feature - modal trigger -->
   <div class="fixed-action-btn">
-    <a class="btn-floating btn-large teal waves-effect">
+    <a class="btn-floating btn-large teal waves-effect" (click)="openAddFeatureModal()">
       <i class="large material-icons">add</i>
     </a>
+  </div>
+
+  <!-- add feature - modal structure -->
+  <div class="modal" materialize="modal" [materializeActions]="modalActions">
+    <div class="modal-content">
+      <h4>Add a new Feature</h4>
+      <div class="row">
+        <div class="input-field col s12">
+          <input id="input-name" type="text" [attr.data-length]="maxFeatureName">
+          <label for="input-name">Feature</label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
+      <a class="modal-action waves-effect waves-green btn-flat">Add</a>
+    </div>
   </div>
 </ng-container>

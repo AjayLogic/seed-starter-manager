@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit } from '@angular/core';
+import { MaterializeAction } from 'angular2-materialize';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/takeUntil';
 
@@ -14,6 +15,8 @@ export class FeatureComponent implements OnInit, OnDestroy {
 
   private features: Feature[];
   private subject: Subject<void> = new Subject();
+  private modalActions: EventEmitter<MaterializeAction> = new EventEmitter();
+  private readonly maxFeatureName = 50; // TODO: fetch this information from database
 
   constructor(private featureService: FeatureService) {}
 
@@ -30,6 +33,10 @@ export class FeatureComponent implements OnInit, OnDestroy {
     this.featureService.getAllFeatures()
       .takeUntil(this.subject)
       .subscribe((features: Feature[]) => this.features = features);
+  }
+
+  private openAddFeatureModal() {
+    this.modalActions.emit({ action: 'modal', params: ['open'] });
   }
 
 }
