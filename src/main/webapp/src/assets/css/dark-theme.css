@@ -7,6 +7,10 @@ nav .nav-wrapper {
   background-color: #343A40;
 }
 
+/*****************************
+***** Collection of items *****
+ *****************************/
+
 /* Sets the color around the list */
 .collection {
   border-color: #343A40;
@@ -36,4 +40,14 @@ span.badge.new {
 /* Sets the waves effect color when click on a list item */
 .waves-effect.waves-light .waves-ripple {
   background-color: rgba(133, 136, 140, 0.65);
+}
+
+/***************
+***** Modal *****
+ ***************/
+
+/* Sets the modal color */
+.modal .modal-content, .modal .modal-footer, .modal .modal-footer .modal-action {
+  color: #C2C3C5;
+  background-color: #343A40;
 }
