@@ -85,8 +85,9 @@ class FeatureControllerIT {
         Feature newFeature = new Feature("Invincibility");
         String payload = convertToJson(newFeature);
 
+        Long savedFeatureId = 666L;
         Feature savedFeature = new Feature(newFeature.getName());
-        setId(666L, savedFeature);
+        setId(savedFeatureId, savedFeature);
 
         String expectedLocation = "/feature/" + savedFeature.getId();
 
@@ -96,7 +97,9 @@ class FeatureControllerIT {
         mockMvc.perform(post("/feature").contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(payload))
                 .andExpect(status().isCreated())
-                .andExpect(header().string(HttpHeaders.LOCATION, Matchers.endsWith(expectedLocation)));
+                .andExpect(header().string(HttpHeaders.LOCATION, Matchers.endsWith(expectedLocation)))
+                .andExpect(jsonPath("$.id", is(equalTo(savedFeatureId.intValue()))))
+                .andExpect(jsonPath("$.name", is(equalTo(savedFeature.getName()))));
     }
 
     @Test

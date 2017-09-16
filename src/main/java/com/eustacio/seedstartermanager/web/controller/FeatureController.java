@@ -60,7 +60,7 @@ public class FeatureController {
 
         Feature newFeature = featureService.save(feature);
         URI location = uriBuilder.path("/feature/{id}").build(newFeature.getId());
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(location).body(newFeature);
     }
 
     @GetMapping("/{id}")
