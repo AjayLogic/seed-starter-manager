@@ -30,7 +30,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
   }
 
   private fetchAllFeatures(): void {
-    this.featureService.getAllFeatures()
+    this.featureService.features
       .takeUntil(this.subject)
       .subscribe((features: Feature[]) => this.features = features);
   }
