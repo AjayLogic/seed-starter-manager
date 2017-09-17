@@ -35,8 +35,12 @@ export class FeatureComponent implements OnInit, OnDestroy {
       .subscribe((features: Feature[]) => this.features = features);
   }
 
-  private openAddFeatureModal() {
+  private openAddFeatureModal(): void {
     this.modalActions.emit({ action: 'modal', params: ['open'] });
+  }
+
+  private closeAddFeatureModal(): void {
+    this.modalActions.emit({ action: 'modal', params: ['close'] });
   }
 
 }
