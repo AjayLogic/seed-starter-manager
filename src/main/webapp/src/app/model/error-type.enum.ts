@@ -1,4 +1,5 @@
 export enum ErrorType {
 
-  EMPTY = 'EMPTY'
+  EMPTY = 'EMPTY',
+  GATEWAY_TIMEOUT = 'GATEWAY_TIMEOUT'
 }
