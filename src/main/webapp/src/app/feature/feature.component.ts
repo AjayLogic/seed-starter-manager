@@ -5,6 +5,8 @@ import 'rxjs/add/operator/takeUntil';
 
 import { FeatureService } from './feature.service';
 import { Feature } from '../model/feature';
+import { ServiceError } from '../model/service-error';
+import { ErrorType } from '../model/error-type.enum';
 
 @Component({
   selector: 'app-feature',
@@ -22,6 +24,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.fetchAllFeatures();
+    this.registerForErrors();
   }
 
   ngOnDestroy(): void {
@@ -33,6 +36,25 @@ export class FeatureComponent implements OnInit, OnDestroy {
     this.featureService.features
       .takeUntil(this.subject)
       .subscribe((features: Feature[]) => this.features = features);
+  }
+
+  private registerForErrors(): void {
+    this.featureService.errors
+      .takeUntil(this.subject)
+      .subscribe((error: ServiceError) => {
+        if (error) {
+          switch (error.type) {
+            case ErrorType.EMPTY:
+              // TODO: Show the proper image on the template and highlight the add feature button
+              break;
+            case ErrorType.GATEWAY_TIMEOUT:
+              // TODO: Show the proper error dialog
+              break;
+            default:
+              console.log('Cannot match any error type for the error: ', error);
+          }
+        }
+      });
   }
 
   private openAddFeatureModal(): void {
