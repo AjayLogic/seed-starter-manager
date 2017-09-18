@@ -65,4 +65,8 @@ export class FeatureComponent implements OnInit, OnDestroy {
     this.modalActions.emit({ action: 'modal', params: ['close'] });
   }
 
+  private get hasFeatures(): boolean {
+    return Array.isArray(this.features) && this.features.length > 0;
+  }
+
 }
