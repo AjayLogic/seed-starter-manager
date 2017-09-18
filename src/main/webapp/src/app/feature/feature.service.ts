@@ -4,12 +4,14 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 
 import { Feature } from '../model/feature';
+import { ServiceError } from '../model/service-error';
 
 @Injectable()
 export class FeatureService {
 
   private readonly endpointUrl: string = '/api/feature';
   private featuresSubject: BehaviorSubject<Feature[]> = new BehaviorSubject([]);
+  private errorSubject: BehaviorSubject<ServiceError> = new BehaviorSubject(null);
 
   constructor(private httpClient: HttpClient) {
     this.loadInitialData();
@@ -17,6 +19,10 @@ export class FeatureService {
 
   public get features(): Observable<Feature[]> {
     return this.featuresSubject.asObservable();
+  }
+
+  public get errors(): Observable<ServiceError> {
+    return this.errorSubject.asObservable();
   }
 
   public addFeature(name: string): void {
