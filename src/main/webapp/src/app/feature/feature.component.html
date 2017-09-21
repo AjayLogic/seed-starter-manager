@@ -15,8 +15,15 @@
     <h4>Add a new Feature</h4>
     <div class="row">
       <div class="input-field col s12">
-        <input id="input-name" type="text" [attr.data-length]="maxFeatureName">
-        <label for="input-name">Feature</label>
+        <input id="input-name" type="text" [formControl]="inputName"
+               [attr.data-length]="maxFeatureName">
+        <label for="input-name" appInputErrorLabel labelText="Feature"
+               [inputErrors]="inputName.errors"
+               [errorMessages]="{
+                  'required': 'Feature must have a name',
+                  'maxlength': 'The feature name must have less than ' + maxFeatureName + ' characters'
+               }">
+        </label>
       </div>
     </div>
   </div>
