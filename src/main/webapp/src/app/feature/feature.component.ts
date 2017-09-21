@@ -1,4 +1,5 @@
 import { Component, EventEmitter, OnDestroy, OnInit } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
 import { MaterializeAction } from 'angular2-materialize';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/takeUntil';
@@ -20,11 +21,14 @@ export class FeatureComponent implements OnInit, OnDestroy {
   private modalActions: EventEmitter<MaterializeAction> = new EventEmitter();
   private readonly maxFeatureName = 50; // TODO: fetch this information from database
 
+  private inputName: FormControl;
+
   constructor(private featureService: FeatureService) {}
 
   ngOnInit(): void {
     this.fetchAllFeatures();
     this.registerForErrors();
+    this.initializeAddFeatureForm();
   }
 
   ngOnDestroy(): void {
@@ -55,6 +59,12 @@ export class FeatureComponent implements OnInit, OnDestroy {
           }
         }
       });
+  }
+
+  private initializeAddFeatureForm(): void {
+    this.inputName = new FormControl('', [
+      Validators.required, Validators.maxLength(this.maxFeatureName)
+    ]);
   }
 
   private openAddFeatureModal(): void {
