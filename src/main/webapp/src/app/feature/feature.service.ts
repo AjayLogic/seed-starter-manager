@@ -27,7 +27,7 @@ export class FeatureService {
   }
 
   public addFeature(name: string): void {
-    let header = new HttpHeaders({ ['Content-Type']: 'application/json' });
+    let header = new HttpHeaders({ 'Content-Type': 'application/json' });
     let payload = { name: name };
 
     this.httpClient.post(`${this.endpointUrl}`, payload, { headers: header, observe: 'response' })
