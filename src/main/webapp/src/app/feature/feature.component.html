@@ -16,7 +16,8 @@
     <div class="row">
       <div class="input-field col s12">
         <input id="input-name" type="text" [formControl]="inputName" [class]="inputNameClass" #inputNameRef>
-        <label for="input-name" appInputErrorLabel labelText="Feature" [inputErrors]="inputName.errors"
+        <label for="input-name" appInputErrorLabel labelText="Feature" #inputNameLabelRef
+               [inputErrors]="inputName.errors"
                [errorMessages]="{
                   'required': 'Feature must have a name',
                   'maxlength': 'The feature name must have less than ' + maxFeatureName + ' characters'
@@ -27,6 +28,6 @@
   </div>
   <div class="modal-footer">
     <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
-    <a class="modal-action waves-effect waves-green btn-flat">Add</a>
+    <a class="modal-action waves-effect waves-green btn-flat" (click)="addFeature()">Add</a>
   </div>
 </div>

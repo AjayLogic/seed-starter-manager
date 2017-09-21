@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MaterializeAction } from 'angular2-materialize';
 import { Subject } from 'rxjs/Subject';
@@ -22,6 +22,8 @@ export class FeatureComponent implements OnInit, OnDestroy {
   private readonly maxFeatureName = 50; // TODO: fetch this information from database
 
   private inputName: FormControl;
+  @ViewChild('inputNameRef') inputNameRef: ElementRef;
+  @ViewChild('inputNameLabelRef') inputNameLabelRef: ElementRef;
 
   constructor(private featureService: FeatureService) {}
 
@@ -67,12 +69,30 @@ export class FeatureComponent implements OnInit, OnDestroy {
     ]);
   }
 
-  private openAddFeatureModal(): void {
-    this.modalActions.emit({ action: 'modal', params: ['open'] });
+  private addFeature(): void {
+    const featureName = this.inputName.value;
+    if (!featureName || featureName.trim().length == 0 || this.inputName.invalid) {
+      this.inputNameRef.nativeElement.classList.add('invalid');
+    } else {
+      this.featureService.addFeature(featureName);
+      this.closeAndResetModal();
+    }
+  }
+
+  private closeAndResetModal(): void {
+    this.closeAddFeatureModal();
+    this.inputName.reset();
+
+    // Avoids that the label appears on top of the input field
+    this.inputNameLabelRef.nativeElement.classList.remove('active');
   }
 
   private closeAddFeatureModal(): void {
     this.modalActions.emit({ action: 'modal', params: ['close'] });
+  }
+
+  private openAddFeatureModal(): void {
+    this.modalActions.emit({ action: 'modal', params: ['open'] });
   }
 
   private get hasFeatures(): boolean {
