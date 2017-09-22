@@ -6,7 +6,7 @@
 
     <groupId>com.eustacio.seedstartermanager</groupId>
     <artifactId>seedstartermanager</artifactId>
-    <version>0.11.2-SNAPSHOT</version>
+    <version>0.12.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <repositories>
@@ -31,12 +31,12 @@
 
         <!-- Dependencies -->
         <servlet.api.version>4.0.0</servlet.api.version>
-        <spring.version>5.0.0.RC3</spring.version>
-        <spring.data.jpa.version>2.0.0.RC2</spring.data.jpa.version>
+        <spring.version>5.0.0.RC4</spring.version>
+        <spring.data.jpa.version>2.0.0.RC3</spring.data.jpa.version>
         <h2.version>1.4.196</h2.version>
-        <hibernate.core.version>5.2.10.Final</hibernate.core.version>
+        <hibernate.core.version>5.2.11.Final</hibernate.core.version>
         <hibernate.validator.version>6.0.2.Final</hibernate.validator.version>
-        <jackson.databind.version>2.9.0</jackson.databind.version>
+        <jackson.databind.version>2.9.1</jackson.databind.version>
         <logback.classic.version>1.2.3</logback.classic.version>
 
         <!-- Test Dependencies -->
@@ -47,7 +47,7 @@
         <hamcrest.junit.version>2.0.0.0</hamcrest.junit.version>
         <json.path.version>2.4.0</json.path.version>
         <jsonassert.version>1.5.0</jsonassert.version>
-        <mockito.core.version>2.9.0</mockito.core.version>
+        <mockito.core.version>2.10.0</mockito.core.version>
         <javax.el.version>3.0.1-b08</javax.el.version>
     </properties>
 
