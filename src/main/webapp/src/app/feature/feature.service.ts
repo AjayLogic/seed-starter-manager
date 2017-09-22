@@ -37,9 +37,15 @@ export class FeatureService {
 
     this.httpClient.post(`${this.endpointUrl}`, payload, { headers: header, observe: 'response' })
       .subscribe((response: HttpResponse<Feature>) => {
-        let savedFeature = response.body;
-        this.featuresSubject.next(this.featuresSubject.getValue().concat(savedFeature));
-      });
+          if (response.status == 201) {  // Created
+            let savedFeature = response.body;
+            this.featuresSubject.next(this.featuresSubject.getValue().concat(savedFeature));
+          } else {
+            this.publishError(response);
+          }
+        },
+        (error: HttpErrorResponse) => this.publishError(error)
+      );
   }
 
   private loadInitialData(): void {
