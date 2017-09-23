@@ -92,10 +92,9 @@ export class FeatureComponent implements OnInit, OnDestroy {
     return Array.isArray(this.features) && this.features.length > 0;
   }
 
-  private get inputNameClass(): string {
-    return this.inputName.valid ? 'valid' :
-      this.inputName.invalid && this.inputName.touched ||
-      this.inputName.invalid && this.inputName.dirty ? 'invalid' : '';
+  private getInputFieldClass(input: FormControl): string {
+    return input.valid ? 'valid' :
+      input.invalid && input.touched || input.invalid && input.dirty ? 'invalid' : '';
   }
 
 }
