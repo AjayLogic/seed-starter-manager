@@ -1,6 +1,5 @@
-import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { MaterializeAction } from 'angular2-materialize';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/takeUntil';
 
@@ -8,6 +7,7 @@ import { FeatureService } from './feature.service';
 import { Feature } from '../model/feature';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
+import { SimpleDialogComponent } from '../shared/simple-dialog/simple-dialog.component';
 
 @Component({
   selector: 'app-feature',
@@ -18,12 +18,12 @@ export class FeatureComponent implements OnInit, OnDestroy {
 
   private features: Feature[];
   private subject: Subject<void> = new Subject();
-  private modalActions: EventEmitter<MaterializeAction> = new EventEmitter();
   private readonly maxFeatureName = 50; // TODO: fetch this information from database
 
   private inputName: FormControl;
   @ViewChild('inputNameRef') inputNameRef: ElementRef;
   @ViewChild('inputNameLabelRef') inputNameLabelRef: ElementRef;
+  @ViewChild('addFeatureDialog') addFeatureDialog: SimpleDialogComponent;
 
   constructor(private featureService: FeatureService) {}
 
@@ -80,19 +80,11 @@ export class FeatureComponent implements OnInit, OnDestroy {
   }
 
   private closeAndResetModal(): void {
-    this.closeAddFeatureModal();
+    this.addFeatureDialog.closeDialog();
     this.inputName.reset();
 
     // Avoids that the label appears on top of the input field
     this.inputNameLabelRef.nativeElement.classList.remove('active');
-  }
-
-  private closeAddFeatureModal(): void {
-    this.modalActions.emit({ action: 'modal', params: ['close'] });
-  }
-
-  private openAddFeatureModal(): void {
-    this.modalActions.emit({ action: 'modal', params: ['open'] });
   }
 
   private get hasFeatures(): boolean {

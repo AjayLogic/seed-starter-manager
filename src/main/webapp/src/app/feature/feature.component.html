@@ -4,18 +4,19 @@
 
 <!-- add feature - modal trigger -->
 <div class="fixed-action-btn">
-  <a class="btn-floating btn-large teal waves-effect" (click)="openAddFeatureModal()">
+  <a class="btn-floating btn-large teal waves-effect" (click)="addFeatureDialog.openDialog()">
     <i class="large material-icons">add</i>
   </a>
 </div>
 
 <!-- add feature - modal structure -->
-<div class="modal" materialize="modal" [materializeActions]="modalActions">
-  <div class="modal-content">
+<app-simple-dialog #addFeatureDialog>
+  <ng-container modal-content>
     <h4>Add a new Feature</h4>
     <div class="row">
       <div class="input-field col s12">
-        <input id="input-name" type="text" [formControl]="inputName" [class]="inputNameClass" #inputNameRef>
+        <input id="input-name" type="text" [formControl]="inputName" [class]="inputNameClass"
+               #inputNameRef>
         <label for="input-name" appInputErrorLabel labelText="Feature" #inputNameLabelRef
                [inputErrors]="inputName.errors"
                [errorMessages]="{
@@ -25,9 +26,9 @@
         </label>
       </div>
     </div>
-  </div>
-  <div class="modal-footer">
+  </ng-container>
+  <ng-container modal-footer>
     <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
     <a class="modal-action waves-effect waves-green btn-flat" (click)="addFeature()">Add</a>
-  </div>
-</div>
+  </ng-container>
+</app-simple-dialog>
