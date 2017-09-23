@@ -72,7 +72,8 @@ export class FeatureComponent implements OnInit, OnDestroy {
 
   private addFeature(): void {
     if (this.isFeatureNameValid(this.inputName)) {
-      this.featureService.addFeature(this.inputName.value);
+      const featureName: string = this.inputName.value;
+      this.featureService.createOrUpdateFeature({ id: null, name: featureName });
       this.closeAndResetModal();
     } else {
       this.renderer.addClass(this.inputNameRef.nativeElement, 'invalid');

@@ -31,11 +31,10 @@ export class FeatureService {
     return this.errorSubject.asObservable();
   }
 
-  public addFeature(name: string): void {
+  public createOrUpdateFeature(feature: Feature): void {
     let header = new HttpHeaders({ 'Content-Type': 'application/json' });
-    let payload = { name: name };
 
-    this.httpClient.post(`${this.endpointUrl}`, payload, { headers: header, observe: 'response' })
+    this.httpClient.post(`${this.endpointUrl}`, feature, { headers: header, observe: 'response' })
       .subscribe((response: HttpResponse<Feature>) => {
           if (response.status == 201) {  // Created
             let savedFeature = response.body;
