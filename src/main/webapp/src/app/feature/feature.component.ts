@@ -80,7 +80,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
   }
 
   private closeAndResetModal(): void {
-    this.addFeatureDialog.closeDialog();
+    this.addFeatureDialog.close();
     this.inputName.reset();
 
     // Avoids that the label appears on top of the input field

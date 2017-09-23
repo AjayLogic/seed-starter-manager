@@ -9,11 +9,11 @@ export class SimpleDialogComponent {
 
   private modalAction: EventEmitter<MaterializeAction> = new EventEmitter();
 
-  public openDialog(): void {
+  public open(): void {
     this.emitModalAction('open');
   }
 
-  public closeDialog(): void {
+  public close(): void {
     this.emitModalAction('close');
   }
 
