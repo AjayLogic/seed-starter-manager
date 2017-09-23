@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/takeUntil';
@@ -25,7 +25,8 @@ export class FeatureComponent implements OnInit, OnDestroy {
   @ViewChild('inputNameLabelRef') inputNameLabelRef: ElementRef;
   @ViewChild('addFeatureDialog') addFeatureDialog: SimpleDialogComponent;
 
-  constructor(private featureService: FeatureService) {}
+  constructor(private featureService: FeatureService,
+              private renderer: Renderer2) {}
 
   ngOnInit(): void {
     this.fetchAllFeatures();
@@ -72,7 +73,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
   private addFeature(): void {
     const featureName = this.inputName.value;
     if (!featureName || featureName.trim().length == 0 || this.inputName.invalid) {
-      this.inputNameRef.nativeElement.classList.add('invalid');
+      this.renderer.addClass(this.inputNameRef.nativeElement, 'invalid');
     } else {
       this.featureService.addFeature(featureName);
       this.closeAndResetModal();
@@ -84,7 +85,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
     this.inputName.reset();
 
     // Avoids that the label appears on top of the input field
-    this.inputNameLabelRef.nativeElement.classList.remove('active');
+    this.renderer.removeClass(this.inputNameLabelRef.nativeElement, 'active');
   }
 
   private get hasFeatures(): boolean {
