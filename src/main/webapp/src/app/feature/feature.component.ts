@@ -71,13 +71,17 @@ export class FeatureComponent implements OnInit, OnDestroy {
   }
 
   private addFeature(): void {
-    const featureName = this.inputName.value;
-    if (!featureName || featureName.trim().length == 0 || this.inputName.invalid) {
-      this.renderer.addClass(this.inputNameRef.nativeElement, 'invalid');
-    } else {
-      this.featureService.addFeature(featureName);
+    if (this.isFeatureNameValid(this.inputName)) {
+      this.featureService.addFeature(this.inputName.value);
       this.closeAndResetModal();
+    } else {
+      this.renderer.addClass(this.inputNameRef.nativeElement, 'invalid');
     }
+  }
+
+  private isFeatureNameValid(input: FormControl): boolean {
+    const feature = input.value;
+    return !(!feature || feature.trim().length == 0 || input.invalid);
   }
 
   private closeAndResetModal(): void {
