@@ -58,9 +58,16 @@ public class FeatureController {
             return ResponseEntity.badRequest().body(validationError);
         }
 
+        boolean isNewFeature = feature.getId() == null;
+
         Feature newFeature = featureService.save(feature);
         URI location = uriBuilder.path("/feature/{id}").build(newFeature.getId());
-        return ResponseEntity.created(location).body(newFeature);
+
+        if (isNewFeature) {
+            return ResponseEntity.created(location).body(newFeature);
+        }
+
+        return ResponseEntity.ok().location(location).body(newFeature);
     }
 
     @GetMapping("/{id}")

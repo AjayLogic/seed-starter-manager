@@ -81,24 +81,48 @@ class FeatureControllerIT {
     }
 
     @Test
-    void createOrUpdateFeature() throws Exception {
+    void createOrUpdateFeature_ShouldReturnStatusOk_WhenFeatureExistsAndIsUpdated() throws Exception {
+        Long featureId = 666L;
+
         Feature newFeature = new Feature("Invincibility");
+        setId(featureId, newFeature);
+
+        Feature updatedFeature = new Feature(newFeature.getName());
+        setId(featureId, updatedFeature);
+
+        String expectedLocation = "/feature/" + featureId;
+
+        when(mockService.save(newFeature)).thenReturn(updatedFeature);
+
         String payload = convertToJson(newFeature);
 
-        Long savedFeatureId = 666L;
-        Feature savedFeature = new Feature(newFeature.getName());
-        setId(savedFeatureId, savedFeature);
+        mockMvc.perform(post("/feature").contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(payload))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.LOCATION, Matchers.endsWith(expectedLocation)))
+                .andExpect(jsonPath("$.id", is(equalTo(featureId.intValue()))))
+                .andExpect(jsonPath("$.name", is(equalTo(updatedFeature.getName()))));
+    }
 
-        String expectedLocation = "/feature/" + savedFeature.getId();
+    @Test
+    void createOrUpdateFeature_ShouldReturnStatusCreated_WhenFeatureIsNew() throws Exception {
+        Feature newFeature = new Feature("Invisibility");
+
+        Long featureId = 123L;
+        Feature savedFeature = new Feature(newFeature.getName());
+        setId(featureId, savedFeature);
+
+        String expectedLocation = "/feature/" + featureId;
 
         when(mockService.save(newFeature)).thenReturn(savedFeature);
 
+        String payload = convertToJson(newFeature);
 
         mockMvc.perform(post("/feature").contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(payload))
                 .andExpect(status().isCreated())
                 .andExpect(header().string(HttpHeaders.LOCATION, Matchers.endsWith(expectedLocation)))
-                .andExpect(jsonPath("$.id", is(equalTo(savedFeatureId.intValue()))))
+                .andExpect(jsonPath("$.id", is(equalTo(featureId.intValue()))))
                 .andExpect(jsonPath("$.name", is(equalTo(savedFeature.getName()))));
     }
 
