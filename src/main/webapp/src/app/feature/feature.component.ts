@@ -16,14 +16,16 @@ import { SimpleDialogComponent } from '../shared/simple-dialog/simple-dialog.com
 })
 export class FeatureComponent implements OnInit, OnDestroy {
 
-  private features: Feature[];
-  private subject: Subject<void> = new Subject();
-  private readonly maxFeatureName = 50; // TODO: fetch this information from database
-
-  private inputName: FormControl;
   @ViewChild('inputNameRef') inputNameRef: ElementRef;
   @ViewChild('inputNameLabelRef') inputNameLabelRef: ElementRef;
+
   @ViewChild('addFeatureDialog') addFeatureDialog: SimpleDialogComponent;
+
+  features: Feature[];
+  readonly maxFeatureName = 50; // TODO: fetch this information from database
+
+  private inputName: FormControl;
+  private subject: Subject<void> = new Subject();
 
   constructor(private featureService: FeatureService,
               private renderer: Renderer2) {}
@@ -70,7 +72,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
     ]);
   }
 
-  private addFeature(): void {
+  addFeature(): void {
     if (this.isFeatureNameValid(this.inputName)) {
       const featureName: string = this.inputName.value;
       this.featureService.createOrUpdateFeature({ id: null, name: featureName });
@@ -93,11 +95,11 @@ export class FeatureComponent implements OnInit, OnDestroy {
     this.renderer.removeClass(this.inputNameLabelRef.nativeElement, 'active');
   }
 
-  private get hasFeatures(): boolean {
+  get hasFeatures(): boolean {
     return Array.isArray(this.features) && this.features.length > 0;
   }
 
-  private getInputFieldClass(input: FormControl): string {
+  getInputFieldClass(input: FormControl): string {
     return input.valid ? 'valid' :
       input.invalid && input.touched || input.invalid && input.dirty ? 'invalid' : '';
   }
