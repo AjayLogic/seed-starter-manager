@@ -86,7 +86,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
   private uniqueFeature(formControl: AbstractControl): ValidationErrors {
     const currentFeatureName = formControl.value;
     let isFeatureDuplicated = this.features.some((feature: Feature) => {
-      return feature.name == currentFeatureName;
+      return formControl.dirty && feature.name == currentFeatureName;
     });
 
     return isFeatureDuplicated ? { conflict: true } : null;
@@ -103,6 +103,15 @@ export class FeatureComponent implements OnInit, OnDestroy {
       this.closeAndResetModal();
     } else {
       this.renderer.addClass(this.inputNameRef.nativeElement, 'invalid');
+    }
+  }
+
+  updateFeature(): void {
+    if (this.isFeatureNameValid(this.inputEditName)) {
+      this.featureService.createOrUpdateFeature({ id: this.latestFeatureClicked.id, name: this.inputEditName.value });
+      this.editFeatureDialog.close();
+    } else {
+      this.renderer.addClass(this.inputEditNameRef.nativeElement, 'invalid');
     }
   }
 
@@ -124,6 +133,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
 
     // Avoids that the label appears behind of the input field text
     this.renderer.addClass(this.inputNameEditLabelRef.nativeElement, 'active');
+    this.inputEditName.reset();
     this.inputEditName.setValue(feature.name);
     this.editFeatureDialog.open();
   }
