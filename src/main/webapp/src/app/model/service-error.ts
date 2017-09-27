@@ -9,6 +9,8 @@ export class ServiceError {
     switch (status) {
       case 204:  // No Content
         return new ServiceError(ErrorType.EMPTY, 'The requested resource is empty');
+      case 409:  // Conflict
+        return new ServiceError(ErrorType.CONFLICT, 'Resource already exists');
       case 504:  // Gateway Timeout
         return new ServiceError(ErrorType.GATEWAY_TIMEOUT, 'The server is probably is down or cannot be reached');
       default:

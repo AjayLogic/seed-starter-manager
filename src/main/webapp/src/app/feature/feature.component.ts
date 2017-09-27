@@ -1,6 +1,5 @@
-import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
-import { MaterializeAction } from 'angular2-materialize';
+import { Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AbstractControl, FormControl, ValidationErrors, Validators } from '@angular/forms';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/takeUntil';
 
@@ -8,6 +7,7 @@ import { FeatureService } from './feature.service';
 import { Feature } from '../model/feature';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
+import { SimpleDialogComponent } from '../shared/simple-dialog/simple-dialog.component';
 
 @Component({
   selector: 'app-feature',
@@ -16,21 +16,31 @@ import { ErrorType } from '../model/error-type.enum';
 })
 export class FeatureComponent implements OnInit, OnDestroy {
 
-  private features: Feature[];
-  private subject: Subject<void> = new Subject();
-  private modalActions: EventEmitter<MaterializeAction> = new EventEmitter();
-  private readonly maxFeatureName = 50; // TODO: fetch this information from database
-
-  private inputName: FormControl;
   @ViewChild('inputNameRef') inputNameRef: ElementRef;
   @ViewChild('inputNameLabelRef') inputNameLabelRef: ElementRef;
 
-  constructor(private featureService: FeatureService) {}
+  @ViewChild('inputEditNameRef') inputEditNameRef: ElementRef;
+  @ViewChild('inputEditNameLabelRef') inputNameEditLabelRef: ElementRef;
+
+  @ViewChild('addFeatureDialog') addFeatureDialog: SimpleDialogComponent;
+  @ViewChild('editFeatureDialog') editFeatureDialog: SimpleDialogComponent;
+
+  features: Feature[];
+
+  inputName: FormControl;
+  inputEditName: FormControl;
+
+  private readonly maxFeatureName = 50; // TODO: fetch this information from database
+  private latestFeatureClicked: Feature;
+  private subject: Subject<void> = new Subject();
+
+  constructor(private featureService: FeatureService,
+              private renderer: Renderer2) {}
 
   ngOnInit(): void {
     this.fetchAllFeatures();
     this.registerForErrors();
-    this.initializeAddFeatureForm();
+    this.initializeFormControls();
   }
 
   ngOnDestroy(): void {
@@ -41,7 +51,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
   private fetchAllFeatures(): void {
     this.featureService.features
       .takeUntil(this.subject)
-      .subscribe((features: Feature[]) => this.features = features);
+      .subscribe((features: Feature[]) => this.onFeaturesUpdated(features));
   }
 
   private registerForErrors(): void {
@@ -63,46 +73,86 @@ export class FeatureComponent implements OnInit, OnDestroy {
       });
   }
 
-  private initializeAddFeatureForm(): void {
+  private initializeFormControls(): void {
     this.inputName = new FormControl('', [
-      Validators.required, Validators.maxLength(this.maxFeatureName)
+      Validators.required, Validators.maxLength(this.maxFeatureName), this.uniqueFeature.bind(this)
+    ]);
+
+    this.inputEditName = new FormControl('', [
+      Validators.required, Validators.maxLength(this.maxFeatureName), this.uniqueFeature.bind(this)
     ]);
   }
 
-  private addFeature(): void {
-    const featureName = this.inputName.value;
-    if (!featureName || featureName.trim().length == 0 || this.inputName.invalid) {
-      this.inputNameRef.nativeElement.classList.add('invalid');
-    } else {
-      this.featureService.addFeature(featureName);
+  private uniqueFeature(formControl: AbstractControl): ValidationErrors {
+    const currentFeatureName = formControl.value;
+    let isFeatureDuplicated = this.features.some((feature: Feature) => {
+      return formControl.dirty && feature.name == currentFeatureName;
+    });
+
+    return isFeatureDuplicated ? { conflict: true } : null;
+  }
+
+  private onFeaturesUpdated(features: Feature[]): void {
+    this.features = features;
+  }
+
+  addFeature(): void {
+    if (this.isFeatureNameValid(this.inputName)) {
+      const featureName: string = this.inputName.value;
+      this.featureService.createOrUpdateFeature({ id: null, name: featureName });
       this.closeAndResetModal();
+    } else {
+      this.renderer.addClass(this.inputNameRef.nativeElement, 'invalid');
     }
   }
 
+  updateFeature(): void {
+    if (this.isFeatureNameValid(this.inputEditName)) {
+      this.featureService.createOrUpdateFeature({ id: this.latestFeatureClicked.id, name: this.inputEditName.value });
+      this.editFeatureDialog.close();
+    } else {
+      this.renderer.addClass(this.inputEditNameRef.nativeElement, 'invalid');
+    }
+  }
+
+  private isFeatureNameValid(input: FormControl): boolean {
+    const feature = input.value;
+    return !(!feature || feature.trim().length == 0 || input.invalid);
+  }
+
   private closeAndResetModal(): void {
-    this.closeAddFeatureModal();
+    this.addFeatureDialog.close();
     this.inputName.reset();
 
     // Avoids that the label appears on top of the input field
-    this.inputNameLabelRef.nativeElement.classList.remove('active');
+    this.renderer.removeClass(this.inputNameLabelRef.nativeElement, 'active');
   }
 
-  private closeAddFeatureModal(): void {
-    this.modalActions.emit({ action: 'modal', params: ['close'] });
+  openEditDialog(feature: Feature): void {
+    this.latestFeatureClicked = feature;
+
+    // Avoids that the label appears behind of the input field text
+    this.renderer.addClass(this.inputNameEditLabelRef.nativeElement, 'active');
+    this.inputEditName.reset();
+    this.inputEditName.setValue(feature.name);
+    this.editFeatureDialog.open();
   }
 
-  private openAddFeatureModal(): void {
-    this.modalActions.emit({ action: 'modal', params: ['open'] });
-  }
-
-  private get hasFeatures(): boolean {
+  get hasFeatures(): boolean {
     return Array.isArray(this.features) && this.features.length > 0;
   }
 
-  private get inputNameClass(): string {
-    return this.inputName.valid ? 'valid' :
-      this.inputName.invalid && this.inputName.touched ||
-      this.inputName.invalid && this.inputName.dirty ? 'invalid' : '';
+  get errorMessages(): any {
+    return {
+      required: 'Feature must have a name',
+      maxlength: 'The feature name must have less than ' + this.maxFeatureName + ' characters',
+      conflict: 'This Feature already exists'
+    };
+  }
+
+  getInputFieldClass(input: FormControl): string {
+    return input.valid ? 'valid' :
+      input.invalid && input.touched || input.invalid && input.dirty ? 'invalid' : '';
   }
 
 }
