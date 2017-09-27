@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, ValidationErrors, Validators } from '@angular/forms';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/takeUntil';
 
@@ -26,11 +26,11 @@ export class FeatureComponent implements OnInit, OnDestroy {
   @ViewChild('editFeatureDialog') editFeatureDialog: SimpleDialogComponent;
 
   features: Feature[];
-  readonly maxFeatureName = 50; // TODO: fetch this information from database
 
   inputName: FormControl;
   inputEditName: FormControl;
 
+  private readonly maxFeatureName = 50; // TODO: fetch this information from database
   private latestFeatureClicked: Feature;
   private subject: Subject<void> = new Subject();
 
@@ -75,12 +75,21 @@ export class FeatureComponent implements OnInit, OnDestroy {
 
   private initializeFormControls(): void {
     this.inputName = new FormControl('', [
-      Validators.required, Validators.maxLength(this.maxFeatureName)
+      Validators.required, Validators.maxLength(this.maxFeatureName), this.uniqueFeature.bind(this)
     ]);
 
     this.inputEditName = new FormControl('', [
-      Validators.required, Validators.maxLength(this.maxFeatureName)
+      Validators.required, Validators.maxLength(this.maxFeatureName), this.uniqueFeature.bind(this)
     ]);
+  }
+
+  private uniqueFeature(formControl: AbstractControl): ValidationErrors {
+    const currentFeatureName = formControl.value;
+    let isFeatureDuplicated = this.features.some((feature: Feature) => {
+      return feature.name == currentFeatureName;
+    });
+
+    return isFeatureDuplicated ? { conflict: true } : null;
   }
 
   private onFeaturesUpdated(features: Feature[]): void {
@@ -121,6 +130,14 @@ export class FeatureComponent implements OnInit, OnDestroy {
 
   get hasFeatures(): boolean {
     return Array.isArray(this.features) && this.features.length > 0;
+  }
+
+  get errorMessages(): any {
+    return {
+      required: 'Feature must have a name',
+      maxlength: 'The feature name must have less than ' + this.maxFeatureName + ' characters',
+      conflict: 'This Feature already exists'
+    };
   }
 
   getInputFieldClass(input: FormControl): string {

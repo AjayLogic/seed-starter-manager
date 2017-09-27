@@ -11,11 +11,7 @@
           <input id="input-edit-name" type="text" [formControl]="inputEditName" #inputEditNameRef
                  [class]="getInputFieldClass(inputEditName)">
           <label for="input-edit-name" appInputErrorLabel labelText="Feature" #inputEditNameLabelRef
-                 [inputErrors]="inputEditName.errors"
-                 [errorMessages]="{
-                  'required': 'Feature must have a name',
-                  'maxlength': 'The feature name must have less than ' + maxFeatureName + ' characters'
-                 }">
+                 [inputErrors]="inputEditName.errors" [errorMessages]="errorMessages">
           </label>
         </div>
       </div>
@@ -43,11 +39,7 @@
         <input id="input-name" type="text" [formControl]="inputName" #inputNameRef
                [class]="getInputFieldClass(inputName)">
         <label for="input-name" appInputErrorLabel labelText="Feature" #inputNameLabelRef
-               [inputErrors]="inputName.errors"
-               [errorMessages]="{
-                  'required': 'Feature must have a name',
-                  'maxlength': 'The feature name must have less than ' + maxFeatureName + ' characters'
-               }">
+               [inputErrors]="inputName.errors" [errorMessages]="errorMessages">
         </label>
       </div>
     </div>
