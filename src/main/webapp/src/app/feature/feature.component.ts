@@ -33,7 +33,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.fetchAllFeatures();
     this.registerForErrors();
-    this.initializeAddFeatureForm();
+    this.initializeFormControls();
   }
 
   ngOnDestroy(): void {
@@ -66,7 +66,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
       });
   }
 
-  private initializeAddFeatureForm(): void {
+  private initializeFormControls(): void {
     this.inputName = new FormControl('', [
       Validators.required, Validators.maxLength(this.maxFeatureName)
     ]);
