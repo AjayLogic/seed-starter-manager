@@ -44,7 +44,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
   private fetchAllFeatures(): void {
     this.featureService.features
       .takeUntil(this.subject)
-      .subscribe((features: Feature[]) => this.features = features);
+      .subscribe((features: Feature[]) => this.onFeaturesUpdated(features));
   }
 
   private registerForErrors(): void {
@@ -70,6 +70,10 @@ export class FeatureComponent implements OnInit, OnDestroy {
     this.inputName = new FormControl('', [
       Validators.required, Validators.maxLength(this.maxFeatureName)
     ]);
+  }
+
+  private onFeaturesUpdated(features: Feature[]): void {
+    this.features = features;
   }
 
   addFeature(): void {
