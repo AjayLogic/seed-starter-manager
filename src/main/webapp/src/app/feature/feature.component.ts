@@ -19,12 +19,19 @@ export class FeatureComponent implements OnInit, OnDestroy {
   @ViewChild('inputNameRef') inputNameRef: ElementRef;
   @ViewChild('inputNameLabelRef') inputNameLabelRef: ElementRef;
 
+  @ViewChild('inputEditNameRef') inputEditNameRef: ElementRef;
+  @ViewChild('inputEditNameLabelRef') inputNameEditLabelRef: ElementRef;
+
   @ViewChild('addFeatureDialog') addFeatureDialog: SimpleDialogComponent;
+  @ViewChild('editFeatureDialog') editFeatureDialog: SimpleDialogComponent;
 
   features: Feature[];
   readonly maxFeatureName = 50; // TODO: fetch this information from database
 
-  private inputName: FormControl;
+  inputName: FormControl;
+  inputEditName: FormControl;
+
+  private latestFeatureClicked: Feature;
   private subject: Subject<void> = new Subject();
 
   constructor(private featureService: FeatureService,
@@ -70,6 +77,10 @@ export class FeatureComponent implements OnInit, OnDestroy {
     this.inputName = new FormControl('', [
       Validators.required, Validators.maxLength(this.maxFeatureName)
     ]);
+
+    this.inputEditName = new FormControl('', [
+      Validators.required, Validators.maxLength(this.maxFeatureName)
+    ]);
   }
 
   private onFeaturesUpdated(features: Feature[]): void {
@@ -97,6 +108,15 @@ export class FeatureComponent implements OnInit, OnDestroy {
 
     // Avoids that the label appears on top of the input field
     this.renderer.removeClass(this.inputNameLabelRef.nativeElement, 'active');
+  }
+
+  openEditDialog(feature: Feature): void {
+    this.latestFeatureClicked = feature;
+
+    // Avoids that the label appears behind of the input field text
+    this.renderer.addClass(this.inputNameEditLabelRef.nativeElement, 'active');
+    this.inputEditName.setValue(feature.name);
+    this.editFeatureDialog.open();
   }
 
   get hasFeatures(): boolean {

@@ -1,5 +1,30 @@
 <ng-container *ngIf="hasFeatures">
-  <app-simple-list [listItems]="features"></app-simple-list>
+  <app-simple-list [listItems]="features"
+                   (onListItemClicked)="openEditDialog($event)">
+  </app-simple-list>
+
+  <!-- edit feature - modal structure -->
+  <app-simple-dialog #editFeatureDialog>
+    <ng-container modal-content>
+      <div class="row">
+        <div class="input-field col s12">
+          <input id="input-edit-name" type="text" [formControl]="inputEditName" #inputEditNameRef
+                 [class]="getInputFieldClass(inputEditName)">
+          <label for="input-edit-name" appInputErrorLabel labelText="Feature" #inputEditNameLabelRef
+                 [inputErrors]="inputEditName.errors"
+                 [errorMessages]="{
+                  'required': 'Feature must have a name',
+                  'maxlength': 'The feature name must have less than ' + maxFeatureName + ' characters'
+                 }">
+          </label>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container modal-footer>
+      <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
+      <a class="modal-action waves-effect waves-green btn-flat">Done</a>
+    </ng-container>
+  </app-simple-dialog>
 </ng-container>
 
 <!-- add feature - modal trigger -->
