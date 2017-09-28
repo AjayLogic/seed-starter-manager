@@ -1,11 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpHeaders,
-  HttpResponse,
-  HttpResponseBase
-} from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 
@@ -23,15 +17,15 @@ export class FeatureService {
     this.loadInitialData();
   }
 
-  public get features(): Observable<Feature[]> {
+  get features(): Observable<Feature[]> {
     return this.featuresSubject.asObservable();
   }
 
-  public get errors(): Observable<ServiceError> {
+  get errors(): Observable<ServiceError> {
     return this.errorSubject.asObservable();
   }
 
-  public createOrUpdateFeature(feature: Feature): void {
+  createOrUpdateFeature(feature: Feature): void {
     let header = new HttpHeaders({ 'Content-Type': 'application/json' });
 
     this.httpClient.post(`${this.endpointUrl}`, feature, { headers: header, observe: 'response' })
