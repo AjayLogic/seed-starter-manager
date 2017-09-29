@@ -1,11 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpHeaders,
-  HttpResponse,
-  HttpResponseBase
-} from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 
@@ -16,6 +10,7 @@ import { ServiceError } from '../model/service-error';
 export class FeatureService {
 
   private readonly endpointUrl: string = '/api/feature';
+  private httpHeader: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
   private featuresSubject: BehaviorSubject<Feature[]> = new BehaviorSubject([]);
   private errorSubject: BehaviorSubject<ServiceError> = new BehaviorSubject(null);
 
@@ -23,18 +18,16 @@ export class FeatureService {
     this.loadInitialData();
   }
 
-  public get features(): Observable<Feature[]> {
+  get features(): Observable<Feature[]> {
     return this.featuresSubject.asObservable();
   }
 
-  public get errors(): Observable<ServiceError> {
+  get errors(): Observable<ServiceError> {
     return this.errorSubject.asObservable();
   }
 
-  public createOrUpdateFeature(feature: Feature): void {
-    let header = new HttpHeaders({ 'Content-Type': 'application/json' });
-
-    this.httpClient.post(`${this.endpointUrl}`, feature, { headers: header, observe: 'response' })
+  createOrUpdateFeature(feature: Feature): void {
+    this.httpClient.post(`${this.endpointUrl}`, feature, { headers: this.httpHeader, observe: 'response' })
       .subscribe((response: HttpResponse<Feature>) => {
           switch (response.status) {
             case 200:  // Ok (Feature has been updated successfully)
@@ -42,6 +35,21 @@ export class FeatureService {
               break;
             case 201:  // Created (Feature has been created successfully)
               this.onFeatureCreated(response.body);
+              break;
+            default:
+              this.publishError(response);
+          }
+        },
+        (error: HttpErrorResponse) => this.publishError(error)
+      );
+  }
+
+  deleteFeature(feature: Feature): void {
+    this.httpClient.delete(`${this.endpointUrl}/${feature.id}`, { headers: this.httpHeader, observe: 'response' })
+      .subscribe((response: HttpResponse<null>) => {
+          switch (response.status) {
+            case 200:
+              this.onFeatureDeleted(feature);
               break;
             default:
               this.publishError(response);
@@ -75,6 +83,14 @@ export class FeatureService {
   private onFeatureCreated(newFeature: Feature) {
     let features: Feature[] = this.featuresSubject.getValue();
     this.featuresSubject.next(features.concat(newFeature));
+  }
+
+  private onFeatureDeleted(feature: Feature): void {
+    // Removes the deleted Feature from the array
+    let features: Feature[] = this.featuresSubject.getValue()
+      .filter((feat: Feature) => feat.id != feature.id);
+
+    this.featuresSubject.next(features);
   }
 
   private publishError(response: HttpResponseBase) {

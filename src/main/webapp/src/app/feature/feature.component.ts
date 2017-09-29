@@ -24,14 +24,15 @@ export class FeatureComponent implements OnInit, OnDestroy {
 
   @ViewChild('addFeatureDialog') addFeatureDialog: SimpleDialogComponent;
   @ViewChild('editFeatureDialog') editFeatureDialog: SimpleDialogComponent;
+  @ViewChild('deleteFeatureDialog') deleteFeatureDialog: SimpleDialogComponent;
 
   features: Feature[];
+  latestFeatureClicked: Feature;
 
   inputName: FormControl;
   inputEditName: FormControl;
 
   private readonly maxFeatureName = 50; // TODO: fetch this information from database
-  private latestFeatureClicked: Feature;
   private subject: Subject<void> = new Subject();
 
   constructor(private featureService: FeatureService,
@@ -112,6 +113,14 @@ export class FeatureComponent implements OnInit, OnDestroy {
       this.editFeatureDialog.close();
     } else {
       this.renderer.addClass(this.inputEditNameRef.nativeElement, 'invalid');
+    }
+  }
+
+  deleteFeature(): void {
+    if (!this.latestFeatureClicked.uses) {
+      this.featureService.deleteFeature(this.latestFeatureClicked);
+      this.editFeatureDialog.close();
+      this.deleteFeatureDialog.close();
     }
   }
 

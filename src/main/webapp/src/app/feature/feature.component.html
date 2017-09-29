@@ -18,7 +18,43 @@
     </ng-container>
     <ng-container modal-footer>
       <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
+      <a class="modal-action waves-effect waves-red btn-flat" (click)="deleteFeatureDialog.open()">Delete</a>
       <a class="modal-action waves-effect waves-green btn-flat" (click)="updateFeature()">Done</a>
+    </ng-container>
+  </app-simple-dialog>
+
+  <app-simple-dialog #deleteFeatureDialog>
+    <ng-container modal-content>
+      <div class="row">
+        <div class="input-field col s12">
+          <ng-container *ngIf="latestFeatureClicked?.uses">
+            <p>
+              <b>"{{latestFeatureClicked?.name}}"</b> cannot be deleted because it's currently in
+              use by some seed starter, you should delete the seed starter(s) before delete it.
+            </p>
+          </ng-container>
+
+          <ng-container *ngIf="!latestFeatureClicked?.uses">
+            <h4>Delete "{{latestFeatureClicked?.name}}" ?</h4>
+            <p>
+              <b>"{{latestFeatureClicked?.name}}"</b> will be removed from the feature list and
+              <b>this operation cannot be undone</b>. You are really want delete this feature?
+            </p>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container modal-footer>
+      <ng-container *ngIf="latestFeatureClicked?.uses">
+        <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
+        <!-- TODO: find all seed starters that uses the clicked feature and show them when user clicks on "View Seed Starters" -->
+        <a class="modal-action waves-effect waves-light btn-flat">View Seed Starters</a>
+      </ng-container>
+
+      <ng-container *ngIf="!latestFeatureClicked?.uses">
+        <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
+        <a class="modal-action waves-effect waves-red btn-flat" (click)="deleteFeature()">Delete</a>
+      </ng-container>
     </ng-container>
   </app-simple-dialog>
 </ng-container>
