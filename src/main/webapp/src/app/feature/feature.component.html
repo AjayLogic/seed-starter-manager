@@ -61,7 +61,8 @@
 
 <!-- add feature - modal trigger -->
 <div class="fixed-action-btn">
-  <a class="btn-floating btn-large teal waves-effect" (click)="addFeatureDialog.open()">
+  <a class="btn-floating btn-large teal waves-effect" [ngClass]="{'pulse': !hasFeatures}"
+     (click)="addFeatureDialog.open()">
     <i class="large material-icons">add</i>
   </a>
 </div>
