@@ -58,9 +58,16 @@ public class MaterialTypeController {
             return ResponseEntity.badRequest().body(validationError);
         }
 
+        boolean isNewMaterial = materialType.getId() == null;
+
         MaterialType newMaterial = materialTypeService.save(materialType);
         URI location = uriBuilder.path("/material/{id}").build(newMaterial.getId());
-        return ResponseEntity.created(location).build();
+
+        if (isNewMaterial) {
+            return ResponseEntity.created(location).body(newMaterial);
+        }
+
+        return ResponseEntity.ok().location(location).body(newMaterial);
     }
 
     @GetMapping("/{id}")
