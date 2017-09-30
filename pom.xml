@@ -6,7 +6,7 @@
 
     <groupId>com.eustacio.seedstartermanager</groupId>
     <artifactId>seedstartermanager</artifactId>
-    <version>0.14.0-SNAPSHOT</version>
+    <version>0.15.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <repositories>
@@ -31,7 +31,7 @@
 
         <!-- Dependencies -->
         <servlet.api.version>4.0.0</servlet.api.version>
-        <spring.version>5.0.0.RC4</spring.version>
+        <spring.version>5.0.0.RELEASE</spring.version>
         <spring.data.jpa.version>2.0.0.RC3</spring.data.jpa.version>
         <h2.version>1.4.196</h2.version>
         <hibernate.core.version>5.2.11.Final</hibernate.core.version>

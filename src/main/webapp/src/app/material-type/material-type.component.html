@@ -1,0 +1,31 @@
+<ng-container *ngIf="hasMaterials">
+  <app-simple-list [listItems]="materials"></app-simple-list>
+</ng-container>
+
+<!-- add material type - modal trigger -->
+<div class="fixed-action-btn">
+  <a class="btn-floating btn-large teal waves-effect" [ngClass]="{'pulse': !hasMaterials}"
+     (click)="addMaterialDialog.open()">
+    <i class="large material-icons">add</i>
+  </a>
+</div>
+
+<!-- add feature - modal structure -->
+<app-simple-dialog #addMaterialDialog>
+  <ng-container modal-content>
+    <h4>Add a new Material Type</h4>
+    <div class="row">
+      <div class="input-field col s12">
+        <input id="input-name" type="text" [formControl]="inputName" #inputNameRef
+               [class]="getInputFieldClass(inputName)">
+        <label for="input-name" appInputErrorLabel labelText="Material Type" #inputNameLabelRef
+               [inputErrors]="inputName.errors" [errorMessages]="errorMessages">
+        </label>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container modal-footer>
+    <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
+    <a class="modal-action waves-effect waves-green btn-flat" (click)="addMaterial()">Add</a>
+  </ng-container>
+</app-simple-dialog>

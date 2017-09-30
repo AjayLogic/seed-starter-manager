@@ -82,22 +82,49 @@ class MaterialTypeControllerIT {
     }
 
     @Test
-    void createOrUpdateMaterial() throws Exception {
-        MaterialType newMaterial = new MaterialType("Gold");
-        String payload = convertToJson(newMaterial);
+    void createOrUpdateMaterial_ShouldReturnStatusOk_WhenMaterialTypeExistsAndIsUpdated() throws Exception {
+        Long materialId = 321L;
 
-        MaterialType savedMaterial = new MaterialType(newMaterial.getName());
-        setId(79L, savedMaterial);
+        MaterialType newMaterialType = new MaterialType("Antimatter");
+        setId(materialId, newMaterialType);
 
-        String expectedLocation = "/material/" + savedMaterial.getId();
+        MaterialType updatedMaterialType = new MaterialType(newMaterialType.getName());
+        setId(materialId, updatedMaterialType);
 
-        when(mockService.save(newMaterial)).thenReturn(savedMaterial);
+        String expectedLocation = "/material/" + materialId;
 
+        when(mockService.save(newMaterialType)).thenReturn(updatedMaterialType);
+
+        String payload = convertToJson(newMaterialType);
+
+        mockMvc.perform(post("/material").contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(payload))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.LOCATION, Matchers.endsWith(expectedLocation)))
+                .andExpect(jsonPath("$.id", is(equalTo(materialId.intValue()))))
+                .andExpect(jsonPath("$.name", is(equalTo(updatedMaterialType.getName()))));
+    }
+
+    @Test
+    void createOrUpdateMaterial_ShouldReturnStatusCreated_WhenMaterialTypeIsNew() throws Exception {
+        MaterialType newMaterialType = new MaterialType("Californium");
+
+        Long materialId = 123123321L;
+        MaterialType savedMaterialType = new MaterialType(newMaterialType.getName());
+        setId(materialId, savedMaterialType);
+
+        String expectedLocation = "/material/" + materialId;
+
+        when(mockService.save(newMaterialType)).thenReturn(savedMaterialType);
+
+        String payload = convertToJson(newMaterialType);
 
         mockMvc.perform(post("/material").contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(payload))
                 .andExpect(status().isCreated())
-                .andExpect(header().string(HttpHeaders.LOCATION, Matchers.endsWith(expectedLocation)));
+                .andExpect(header().string(HttpHeaders.LOCATION, Matchers.endsWith(expectedLocation)))
+                .andExpect(jsonPath("$.id", is(equalTo(materialId.intValue()))))
+                .andExpect(jsonPath("$.name", is(equalTo(savedMaterialType.getName()))));
     }
 
     @Test
