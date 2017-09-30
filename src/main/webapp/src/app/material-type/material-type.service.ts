@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpResponse, HttpResponseBase } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
@@ -10,6 +10,7 @@ import { MaterialType } from '../model/material-type';
 export class MaterialTypeService {
 
   private readonly endpointUrl: string = '/api/material';
+  private httpHeader: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
   private materialsSubject: BehaviorSubject<MaterialType[]> = new BehaviorSubject([]);
   private errorSubject: BehaviorSubject<ServiceError> = new BehaviorSubject(null);
 
@@ -25,6 +26,21 @@ export class MaterialTypeService {
     return this.errorSubject.asObservable();
   }
 
+  createOrUpdateMaterial(material: MaterialType): void {
+    this.httpClient.post(`${this.endpointUrl}`, material, { headers: this.httpHeader, observe: 'response' })
+      .subscribe((response: HttpResponse<MaterialType>) => {
+          switch (response.status) {
+            case 201:  // Created (MaterialType has been created successfully)
+              this.onMaterialCreated(response.body);
+              break;
+            default:
+              this.publishError(response);
+          }
+        },
+        (error: HttpErrorResponse) => this.publishError(error)
+      );
+  }
+
   private loadInitialData(): void {
     this.httpClient.get<MaterialType[]>(`${this.endpointUrl}`, { observe: 'response' })
       .subscribe((response: HttpResponse<MaterialType[]>) => {
@@ -33,6 +49,11 @@ export class MaterialTypeService {
         },
         (error: HttpErrorResponse) => this.publishError(error)
       );
+  }
+
+  private onMaterialCreated(newMaterial: MaterialType) {
+    let materials: MaterialType[] = this.materialsSubject.getValue();
+    this.materialsSubject.next(materials.concat(newMaterial));
   }
 
   private publishError(response: HttpResponseBase) {
