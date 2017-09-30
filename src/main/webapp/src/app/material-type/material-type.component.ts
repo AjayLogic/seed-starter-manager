@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { AbstractControl, FormControl, ValidationErrors, Validators } from '@angular/forms';
 import { Subject } from 'rxjs/Subject';
 
@@ -6,6 +6,7 @@ import { MaterialTypeService } from './material-type.service';
 import { MaterialType } from '../model/material-type';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
+import { SimpleDialogComponent } from '../shared/simple-dialog/simple-dialog.component';
 
 @Component({
   selector: 'app-material-type',
@@ -14,6 +15,11 @@ import { ErrorType } from '../model/error-type.enum';
 })
 export class MaterialTypeComponent implements OnInit, OnDestroy {
 
+  @ViewChild('inputNameRef') inputNameRef: ElementRef;
+  @ViewChild('inputNameLabelRef') inputNameLabelRef: ElementRef;
+
+  @ViewChild('addMaterialDialog') addFeatureDialog: SimpleDialogComponent;
+
   inputName: FormControl;
 
   materials: MaterialType[];
@@ -21,7 +27,7 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
   private readonly maxMaterialName = 50; // TODO: fetch this information from database
   private subject: Subject<void> = new Subject();
 
-  constructor(private materialTypeService: MaterialTypeService) {}
+  constructor(private materialTypeService: MaterialTypeService, private renderer: Renderer2) {}
 
   ngOnInit(): void {
     this.fetchAllMaterialTypes();
@@ -49,6 +55,16 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
   getInputFieldClass(input: FormControl): string {
     return input.valid ? 'valid' :
       input.invalid && input.touched || input.invalid && input.dirty ? 'invalid' : '';
+  }
+
+  addMaterial(): void {
+    if (this.isMaterialNameValid(this.inputName)) {
+      const materialName: string = this.inputName.value;
+      this.materialTypeService.createOrUpdateMaterial({ id: null, name: materialName });
+      this.closeAndResetAddMaterialTypeModal();
+    } else {
+      this.renderer.addClass(this.inputNameRef.nativeElement, 'invalid');
+    }
   }
 
   private fetchAllMaterialTypes(): void {
@@ -89,6 +105,19 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
     });
 
     return isMaterialDuplicated ? { conflict: true } : null;
+  }
+
+  private isMaterialNameValid(input: FormControl): boolean {
+    const material = input.value;
+    return !(!material || material.trim().length == 0 || input.invalid);
+  }
+
+  private closeAndResetAddMaterialTypeModal(): void {
+    this.addFeatureDialog.close();
+    this.inputName.reset();
+
+    // Avoids that the label appears on top of the input field
+    this.renderer.removeClass(this.inputNameLabelRef.nativeElement, 'active');
   }
 
 }
