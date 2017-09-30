@@ -5,6 +5,7 @@ import { CoreModule } from './core/core.module';
 import { AppRoutingModule } from './app-routing.module';
 import { HomeModule } from './home/home.module';
 import { FeatureModule } from './feature/feature.module';
+import { MaterialTypeModule } from './material-type/material-type.module';
 import { SeedVarietyModule } from './seed-variety/seed-variety.module';
 
 import { AppComponent } from './app.component';
@@ -18,6 +19,7 @@ import { AppComponent } from './app.component';
     CoreModule,
     HomeModule,
     FeatureModule,
+    MaterialTypeModule,
     SeedVarietyModule,
     AppRoutingModule
   ],
