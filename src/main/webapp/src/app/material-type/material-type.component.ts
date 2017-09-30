@@ -3,6 +3,8 @@ import { Subject } from 'rxjs/Subject';
 
 import { MaterialTypeService } from './material-type.service';
 import { MaterialType } from '../model/material-type';
+import { ServiceError } from '../model/service-error';
+import { ErrorType } from '../model/error-type.enum';
 
 @Component({
   selector: 'app-material-type',
@@ -19,6 +21,7 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.fetchAllMaterialTypes();
+    this.registerForErrors();
   }
 
   ngOnDestroy(): void {
@@ -34,6 +37,25 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
     this.materialTypeService.materials
       .takeUntil(this.subject)
       .subscribe((materials: MaterialType[]) => this.materials = materials);
+  }
+
+  private registerForErrors(): void {
+    this.materialTypeService.errors
+      .takeUntil(this.subject)
+      .subscribe((error: ServiceError) => {
+        if (error) {
+          switch (error.type) {
+            case ErrorType.EMPTY:
+              // TODO: Show the proper image on the template and pulse the add material button
+              break;
+            case ErrorType.GATEWAY_TIMEOUT:
+              // TODO: Show the proper error dialog
+              break;
+            default:
+              console.log('Cannot match any error type for the error: ', error);
+          }
+        }
+      });
   }
 
 }
