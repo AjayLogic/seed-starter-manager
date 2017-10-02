@@ -44,6 +44,21 @@ export class MaterialTypeService {
       );
   }
 
+  deleteMaterial(material: MaterialType): void {
+    this.httpClient.delete(`${this.endpointUrl}/${material.id}`, { headers: this.httpHeader, observe: 'response' })
+      .subscribe((response: HttpResponse<null>) => {
+          switch (response.status) {
+            case 200:
+              this.onMaterialDeleted(material);
+              break;
+            default:
+              this.publishError(response);
+          }
+        },
+        (error: HttpErrorResponse) => this.publishError(error)
+      );
+  }
+
   private loadInitialData(): void {
     this.httpClient.get<MaterialType[]>(`${this.endpointUrl}`, { observe: 'response' })
       .subscribe((response: HttpResponse<MaterialType[]>) => {
@@ -68,6 +83,14 @@ export class MaterialTypeService {
   private onMaterialCreated(newMaterial: MaterialType) {
     let materials: MaterialType[] = this.materialsSubject.getValue();
     this.materialsSubject.next(materials.concat(newMaterial));
+  }
+
+  private onMaterialDeleted(deletedMaterial: MaterialType): void {
+    // Removes the deleted Material Type from the array
+    let materials: MaterialType[] = this.materialsSubject.getValue()
+      .filter((material: MaterialType) => material.id != deletedMaterial.id);
+
+    this.materialsSubject.next(materials);
   }
 
   private publishError(response: HttpResponseBase) {
