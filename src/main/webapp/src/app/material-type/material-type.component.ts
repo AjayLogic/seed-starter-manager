@@ -23,6 +23,7 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
 
   @ViewChild('addMaterialDialog') addFeatureDialog: SimpleDialogComponent;
   @ViewChild('editMaterialDialog') editMaterialDialog: SimpleDialogComponent;
+  @ViewChild('deleteMaterialDialog') deleteMaterialDialog: SimpleDialogComponent;
 
   inputName: FormControl;
   inputEditName: FormControl;
@@ -79,6 +80,14 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
       this.editMaterialDialog.close();
     } else {
       this.renderer.addClass(this.inputEditNameRef.nativeElement, 'invalid');
+    }
+  }
+
+  deleteMaterial(): void {
+    if (!this.latestMaterialTypeClicked.uses) {
+      this.materialTypeService.deleteMaterial(this.latestMaterialTypeClicked);
+      this.editMaterialDialog.close();
+      this.deleteMaterialDialog.close();
     }
   }
 
