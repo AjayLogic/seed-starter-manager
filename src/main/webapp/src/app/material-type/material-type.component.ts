@@ -18,11 +18,17 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
   @ViewChild('inputNameRef') inputNameRef: ElementRef;
   @ViewChild('inputNameLabelRef') inputNameLabelRef: ElementRef;
 
+  @ViewChild('inputEditNameRef') inputEditNameRef: ElementRef;
+  @ViewChild('inputEditNameLabelRef') inputNameEditLabelRef: ElementRef;
+
   @ViewChild('addMaterialDialog') addFeatureDialog: SimpleDialogComponent;
+  @ViewChild('editMaterialDialog') editMaterialDialog: SimpleDialogComponent;
 
   inputName: FormControl;
+  inputEditName: FormControl;
 
   materials: MaterialType[];
+  latestMaterialTypeClicked: MaterialType;
 
   private readonly maxMaterialName = 50; // TODO: fetch this information from database
   private subject: Subject<void> = new Subject();
@@ -67,6 +73,25 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
     }
   }
 
+  updateMaterial(): void {
+    if (this.isMaterialNameValid(this.inputEditName)) {
+      this.materialTypeService.createOrUpdateMaterial({ id: this.latestMaterialTypeClicked.id, name: this.inputEditName.value });
+      this.editMaterialDialog.close();
+    } else {
+      this.renderer.addClass(this.inputEditNameRef.nativeElement, 'invalid');
+    }
+  }
+
+  openEditDialog(materialType: MaterialType): void {
+    this.latestMaterialTypeClicked = materialType;
+
+    // Avoids that the label appears behind of the input field text
+    this.renderer.addClass(this.inputNameEditLabelRef.nativeElement, 'active');
+    this.inputEditName.reset();
+    this.inputEditName.setValue(materialType.name);
+    this.editMaterialDialog.open();
+  }
+
   private fetchAllMaterialTypes(): void {
     this.materialTypeService.materials
       .takeUntil(this.subject)
@@ -94,6 +119,10 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
 
   private initializeFormControls(): void {
     this.inputName = new FormControl('', [
+      Validators.required, Validators.maxLength(this.maxMaterialName), this.uniqueMaterialType.bind(this)
+    ]);
+
+    this.inputEditName = new FormControl('', [
       Validators.required, Validators.maxLength(this.maxMaterialName), this.uniqueMaterialType.bind(this)
     ]);
   }

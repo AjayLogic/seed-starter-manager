@@ -30,6 +30,9 @@ export class MaterialTypeService {
     this.httpClient.post(`${this.endpointUrl}`, material, { headers: this.httpHeader, observe: 'response' })
       .subscribe((response: HttpResponse<MaterialType>) => {
           switch (response.status) {
+            case 200:  // Ok (Material Type has been updated successfully)
+              this.onMaterialUpdated(material);
+              break;
             case 201:  // Created (MaterialType has been created successfully)
               this.onMaterialCreated(response.body);
               break;
@@ -49,6 +52,17 @@ export class MaterialTypeService {
         },
         (error: HttpErrorResponse) => this.publishError(error)
       );
+  }
+
+  private onMaterialUpdated(updatedMaterial: MaterialType) {
+    this.materialsSubject.getValue().find((existentMaterial: MaterialType) => {
+      // Updates the name of the corresponding Material Type in the current list, and publish it
+      if (existentMaterial.id == updatedMaterial.id) {
+        existentMaterial.name = updatedMaterial.name;
+        this.materialsSubject.next(this.materialsSubject.getValue());
+        return true;
+      }
+    });
   }
 
   private onMaterialCreated(newMaterial: MaterialType) {
