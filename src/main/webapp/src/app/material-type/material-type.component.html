@@ -1,5 +1,27 @@
 <ng-container *ngIf="hasMaterials">
-  <app-simple-list [listItems]="materials"></app-simple-list>
+  <app-simple-list [listItems]="materials"
+                   (onListItemClicked)="openEditDialog($event)">
+  </app-simple-list>
+
+  <!-- edit material - modal structure -->
+  <app-simple-dialog #editMaterialDialog>
+    <ng-container modal-content>
+      <div class="row">
+        <div class="input-field col s12">
+          <input id="input-edit-name" type="text" [formControl]="inputEditName" #inputEditNameRef
+                 [class]="getInputFieldClass(inputEditName)">
+          <label for="input-edit-name" appInputErrorLabel labelText="Material Type"
+                 #inputEditNameLabelRef
+                 [inputErrors]="inputEditName.errors" [errorMessages]="errorMessages">
+          </label>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container modal-footer>
+      <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
+      <a class="modal-action waves-effect waves-green btn-flat" (click)="updateMaterial()">Done</a>
+    </ng-container>
+  </app-simple-dialog>
 </ng-container>
 
 <!-- add material type - modal trigger -->
@@ -10,7 +32,7 @@
   </a>
 </div>
 
-<!-- add feature - modal structure -->
+<!-- add material - modal structure -->
 <app-simple-dialog #addMaterialDialog>
   <ng-container modal-content>
     <h4>Add a new Material Type</h4>
