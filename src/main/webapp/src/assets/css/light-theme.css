@@ -2,3 +2,17 @@
 nav .nav-wrapper {
   background-color: #00C853;
 }
+
+/***************************
+***** Seed Variety Card *****
+ ***************************/
+
+/* Sets the size of the card title to keep the options icon on the right */
+.card-content .card-title {
+  width: 95%;
+}
+
+/* Sets the cursor type for the card options icon */
+.card-content .dropdown-button {
+  cursor: pointer;
+}
