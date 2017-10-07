@@ -17,7 +17,7 @@
 
           <!-- Dropdown structure -->
           <ul [attr.id]="'dropdown-card-options-' + i" class='dropdown-content'>
-            <li><a>Delete</a></li>
+            <li (click)="deleteVariety(variety)"><a>Delete</a></li>
           </ul>
         </div>
         <a *ngIf="variety.uses">{{variety.uses}} usage</a>
