@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpResponse, HttpResponseBase } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 
@@ -10,6 +10,7 @@ import { SeedVariety } from '../model/seed-variety';
 export class SeedVarietyService {
 
   private readonly endpointUrl: string = '/api/variety';
+  private httpHeader: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
   private varietySubject: BehaviorSubject<SeedVariety[]> = new BehaviorSubject([]);
   private errorSubject: BehaviorSubject<ServiceError> = new BehaviorSubject(null);
 
@@ -23,6 +24,29 @@ export class SeedVarietyService {
 
   get errors(): Observable<ServiceError> {
     return this.errorSubject.asObservable();
+  }
+
+  deleteSeedVariety(variety: SeedVariety): void {
+    this.httpClient.delete(`${this.endpointUrl}/${variety.id}`, { headers: this.httpHeader, observe: 'response' })
+      .subscribe((response: HttpResponse<null>) => {
+          switch (response.status) {
+            case 200:
+              this.onSeedVarietyDeleted(variety);
+              break;
+            default:
+              this.publishError(response);
+          }
+        },
+        (error: HttpErrorResponse) => this.publishError(error)
+      );
+  }
+
+  private onSeedVarietyDeleted(deletedSeedVariety: SeedVariety): void {
+    // Removes the deleted SeedVariety from the array
+    let variety: SeedVariety[] = this.varietySubject.getValue()
+      .filter((variety: SeedVariety) => variety.id != deletedSeedVariety.id);
+
+    this.varietySubject.next(variety);
   }
 
   private loadInitialData(): void {
