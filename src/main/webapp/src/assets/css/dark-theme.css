@@ -51,3 +51,29 @@ span.badge.new {
   color: #C2C3C5;
   background-color: #343A40;
 }
+
+/***************************
+***** Seed Variety Card *****
+ ***************************/
+
+/* Sets the card content background color */
+.card-content {
+  background-color: #343A40;
+}
+
+/* Sets the color of the 'usages' link */
+.card-content a {
+  color: #22958A;
+}
+
+/* Sets the color and size of the card title */
+.card-content .card-title {
+  width: 95%; /* Sets the size of the card title to keep the options icon on the right */
+  color: #C2C3C5;
+}
+
+/* Sets the color and the cursor type for the card options icon */
+.card-content .dropdown-button {
+  cursor: pointer;
+  color: #C2C3C5;
+}

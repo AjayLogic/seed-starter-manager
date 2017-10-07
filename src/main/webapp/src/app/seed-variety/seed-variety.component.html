@@ -1,0 +1,27 @@
+<div class="row">
+  <!-- TODO: Show the proper image when has don't have any seed variety -->
+  <masonry class="col s12" [options]="{itemSelector: '.card', gutter: 10}" *ngIf="varieties">
+    <masonry-brick class="card z-depth-2" style="width: 250px; margin-bottom: 5px" *ngFor="let variety of varieties; index as i">
+      <div class="card-image" *ngIf="variety.image">
+        <img src="{{variety.image}}">
+      </div>
+
+      <div class="card-content">
+        <div style="display: flex">
+          <span class="card-title tooltipped truncate" data-position="bottom" data-delay="50"
+                [attr.data-tooltip]="variety.name">{{variety.name}}</span>
+
+          <!-- TODO: Add a circular waves-effect for the icon -->
+          <!-- Dropdown trigger -->
+          <i class="dropdown-button material-icons" [attr.data-activates]="'dropdown-card-options-' + i">more_vert</i>
+
+          <!-- Dropdown structure -->
+          <ul [attr.id]="'dropdown-card-options-' + i" class='dropdown-content'>
+            <li><a>Delete</a></li>
+          </ul>
+        </div>
+        <a *ngIf="variety.uses">{{variety.uses}} usage</a>
+      </div>
+    </masonry-brick>
+  </masonry>
+</div>
