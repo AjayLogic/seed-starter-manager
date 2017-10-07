@@ -24,6 +24,12 @@ export class SeedVarietyComponent implements OnInit {
     this.registerForErrors();
   }
 
+  deleteVariety(variety: SeedVariety): void {
+    if (!variety.uses) {
+      this.seedVarietyService.deleteSeedVariety(variety);
+    }
+  }
+
   private fetchAllSeedVarieties(): void {
     this.seedVarietyService.varieties
       .takeUntil(this.subject)
