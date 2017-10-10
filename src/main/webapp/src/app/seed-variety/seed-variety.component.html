@@ -25,3 +25,32 @@
     </masonry-brick>
   </masonry>
 </div>
+
+<!-- add material type - modal trigger -->
+<div class="fixed-action-btn">
+  <a class="btn-floating btn-large teal waves-effect" [ngClass]="{'pulse': !varieties}" (click)="addSeedVarietyDialog.open()">
+    <i class="large material-icons">add</i>
+  </a>
+</div>
+
+<!-- add material - modal structure -->
+<app-simple-dialog #addSeedVarietyDialog>
+  <ng-container modal-content>
+    <h4>Add a new Seed Variety</h4>
+    <div class="row valign-wrapper">
+      <div class="col s3">
+        <img id="img-variety" class="circle" (click)="inputSeedVarietyImageFile.click()"/>
+        <input type="file" accept="image/jpeg,image/png" style="display: none" #inputSeedVarietyImageFile>
+      </div>
+
+      <div class="input-field col s9">
+        <input id="input-name" type="text">
+        <label for="input-name" appInputErrorLabel labelText="Seed Variety"></label>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container modal-footer>
+    <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
+    <a class="modal-action waves-effect waves-green btn-flat">Add</a>
+  </ng-container>
+</app-simple-dialog>
