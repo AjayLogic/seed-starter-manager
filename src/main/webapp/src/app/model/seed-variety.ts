@@ -1,6 +1,6 @@
 export class SeedVariety {
   id: number;
   name: string;
-  image?: any;
+  image?: File;
   uses?: number;
 }
