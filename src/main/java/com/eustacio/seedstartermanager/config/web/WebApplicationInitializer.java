@@ -1,9 +1,15 @@
 package com.eustacio.seedstartermanager.config.web;
 
 import com.eustacio.seedstartermanager.config.RootApplicationContext;
+import com.eustacio.seedstartermanager.util.FileUtils;
 
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+
+import java.util.Properties;
+
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.ServletRegistration;
 
 /**
  * @author Wallison Freitas
@@ -25,6 +31,22 @@ public class WebApplicationInitializer extends AbstractAnnotationConfigDispatche
     @Override
     protected String[] getServletMappings() {
         return new String[]{"/api/*"};
+    }
+
+    @Override
+    protected void customizeRegistration(ServletRegistration.Dynamic registration) {
+        registration.setMultipartConfig(this.getMultipartConfigElement());
+    }
+
+    private MultipartConfigElement getMultipartConfigElement() {
+        Properties applicationProperties = FileUtils.getPropertiesFromFile("application.properties");
+
+        final String location = applicationProperties.getProperty("server.upload.location");
+        final long maxFileSize = Long.parseLong(applicationProperties.getProperty("server.upload.file.size.max"));
+        final long maxRequestSize = Long.parseLong(applicationProperties.getProperty("server.upload.request.size.max"));
+        final int fileSizeThreshold = Integer.parseInt(applicationProperties.getProperty("server.upload.file.threshold.max"));
+
+        return new MultipartConfigElement(location, maxFileSize, maxRequestSize, fileSizeThreshold);
     }
 
 }
