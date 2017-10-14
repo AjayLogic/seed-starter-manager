@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 
 import { SeedVarietyService } from './seed-variety.service';
@@ -13,11 +13,14 @@ import { ErrorType } from '../model/error-type.enum';
 })
 export class SeedVarietyComponent implements OnInit {
 
+  @ViewChild('seedVarietyImage') seedVarietyImage: ElementRef;
+
   varieties: SeedVariety[];
 
+  private latestSelectedSeedVarietyImage: File;
   private subject: Subject<void> = new Subject();
 
-  constructor(private seedVarietyService: SeedVarietyService) {}
+  constructor(private seedVarietyService: SeedVarietyService, private renderer: Renderer2) {}
 
   ngOnInit(): void {
     this.fetchAllSeedVarieties();
@@ -27,6 +30,20 @@ export class SeedVarietyComponent implements OnInit {
   deleteVariety(variety: SeedVariety): void {
     if (!variety.uses) {
       this.seedVarietyService.deleteSeedVariety(variety);
+    }
+  }
+
+  onSeedVarietyImageSelected(changeEvent: any) {
+    const fileList: FileList = changeEvent.target.files;
+    if (fileList.length > 0) {
+      let fileReader: FileReader = new FileReader();
+      fileReader.onload = () => {
+        this.renderer.setAttribute(this.seedVarietyImage.nativeElement, 'src', fileReader.result);
+      };
+
+      const selectedImageFile = fileList.item(0);
+      this.latestSelectedSeedVarietyImage = selectedImageFile;
+      fileReader.readAsDataURL(selectedImageFile);
     }
   }
 

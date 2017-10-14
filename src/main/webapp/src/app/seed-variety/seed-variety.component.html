@@ -39,8 +39,8 @@
     <h4>Add a new Seed Variety</h4>
     <div class="row valign-wrapper">
       <div class="col s3">
-        <img id="img-variety" class="circle" (click)="inputSeedVarietyImageFile.click()"/>
-        <input type="file" accept="image/jpeg,image/png" style="display: none" #inputSeedVarietyImageFile>
+        <img id="img-variety" class="circle" (click)="inputSeedVarietyImageFile.click()" #seedVarietyImage/>
+        <input type="file" accept="image/jpeg,image/png" style="display: none" (change)="onSeedVarietyImageSelected($event)" #inputSeedVarietyImageFile>
       </div>
 
       <div class="input-field col s9">
