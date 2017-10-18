@@ -1,7 +1,7 @@
 package com.eustacio.seedstartermanager.config.web;
 
 import com.eustacio.seedstartermanager.config.RootApplicationContext;
-import com.eustacio.seedstartermanager.util.FileUtils;
+import com.eustacio.seedstartermanager.util.PropertiesUtils;
 
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
@@ -39,7 +39,7 @@ public class WebApplicationInitializer extends AbstractAnnotationConfigDispatche
     }
 
     private MultipartConfigElement getMultipartConfigElement() {
-        Properties applicationProperties = FileUtils.getPropertiesFromFile("application.properties");
+        Properties applicationProperties = PropertiesUtils.getApplicationProperties();
 
         final String location = applicationProperties.getProperty("server.upload.location");
         final long maxFileSize = Long.parseLong(applicationProperties.getProperty("server.upload.file.size.max"));
