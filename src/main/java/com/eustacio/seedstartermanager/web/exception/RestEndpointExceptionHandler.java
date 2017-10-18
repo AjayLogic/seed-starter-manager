@@ -25,6 +25,11 @@ public class RestEndpointExceptionHandler {
         return getResponseEntityOfApiError(HttpStatus.NOT_FOUND, exception);
     }
 
+    @ExceptionHandler
+    public ResponseEntity<ApiError> handleUnsupportedFileTypeException(UnsupportedFileTypeException exception) {
+        return getResponseEntityOfApiError(HttpStatus.UNSUPPORTED_MEDIA_TYPE, exception);
+    }
+
     private ResponseEntity<ApiError> getResponseEntityOfApiError(HttpStatus httpStatus, RuntimeException error) {
         ApiError apiError = new ApiError(httpStatus, error.getMessage());
         return ResponseEntity.status(httpStatus).body(apiError);
