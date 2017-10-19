@@ -8,6 +8,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -36,6 +38,10 @@ public class StandardServerStorageManager implements ServerStorageManager {
 
         // Returns null if the 'fileName' parameter is null, empty or contains only white spaces
         return null;
+    }
+
+    protected String generateFilename() {
+        return String.valueOf(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
     }
 
     protected boolean isMultipartFileAllowed(MultipartFile file) {
