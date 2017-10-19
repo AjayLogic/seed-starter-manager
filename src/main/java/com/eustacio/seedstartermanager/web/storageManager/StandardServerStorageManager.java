@@ -38,6 +38,14 @@ public class StandardServerStorageManager implements ServerStorageManager {
         return null;
     }
 
+    protected boolean isMultipartFileAllowed(MultipartFile file) {
+        String originalFilename = file.getOriginalFilename();
+        String fileExtension = StringUtils.getFilenameExtension(originalFilename);
+
+        // The file is not allowed if it does not have an extension or if the extension is not allowed
+        return fileExtension != null && getAllAllowedFileExtensions().containsKey(fileExtension);
+    }
+
     @NotNull
     protected Hashtable<String, String> getAllAllowedFileExtensions() {
         if (allowedExtensions == null) {
