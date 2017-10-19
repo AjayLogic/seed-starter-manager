@@ -1,6 +1,7 @@
 package com.eustacio.seedstartermanager.web.storageManager;
 
 import com.eustacio.seedstartermanager.util.PropertiesUtils;
+import com.eustacio.seedstartermanager.web.exception.UnsupportedFileTypeException;
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 
@@ -9,6 +10,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
@@ -25,6 +27,32 @@ public class StandardServerStorageManager implements ServerStorageManager {
 
     @Override
     public File transferFileToServer(MultipartFile file, String newFileName) {
+        if (!file.isEmpty()) {
+            String originalFilename = file.getOriginalFilename();
+
+            if (isMultipartFileAllowed(file)) {
+                String fileExtension = StringUtils.getFilenameExtension(originalFilename);
+
+                // Uses the 'newFileName' parameter if it has some text,otherwise try use the originalFilename,
+                // if none of them have text, generates a new one by using the 'generateFilename' method.
+                String filename = StringUtils.hasText(newFileName) ? newFileName :
+                        StringUtils.hasText(originalFilename) ? originalFilename : generateFilename();
+
+                String sanitizedFilename = sanitizeFileName(filename) + "." + fileExtension;
+                String uploadLocation = getUploadLocation(fileExtension);
+                File endFile = new File(uploadLocation, sanitizedFilename);
+
+                try {
+                    file.transferTo(endFile);
+                    return endFile;
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                throw new UnsupportedFileTypeException(String.format("The file '%s' does not have an allowed extension", originalFilename));
+            }
+        }
+
         return null;
     }
 
