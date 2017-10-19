@@ -2,6 +2,7 @@ package com.eustacio.seedstartermanager.web.storageManager;
 
 import com.eustacio.seedstartermanager.util.PropertiesUtils;
 import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -42,6 +43,11 @@ public class StandardServerStorageManager implements ServerStorageManager {
 
     protected String generateFilename() {
         return String.valueOf(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
+    }
+
+    @Nullable
+    protected String getUploadLocation(String fileExtension) {
+        return getAllAllowedFileExtensions().get(fileExtension);
     }
 
     protected boolean isMultipartFileAllowed(MultipartFile file) {
