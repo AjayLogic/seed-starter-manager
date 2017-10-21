@@ -6,6 +6,7 @@ import com.eustacio.seedstartermanager.domain.SeedVariety;
 import com.eustacio.seedstartermanager.exception.EntityNotFoundException;
 import com.eustacio.seedstartermanager.service.SeedVarietyService;
 import com.eustacio.seedstartermanager.web.exception.RestEndpointExceptionHandler;
+import com.eustacio.seedstartermanager.web.storageManager.ServerStorageManager;
 
 import org.assertj.core.util.Lists;
 import org.hamcrest.Matchers;
@@ -15,13 +16,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +34,7 @@ import java.util.stream.Collectors;
 import static com.eustacio.seedstartermanager.TestUtil.convertToJson;
 import static com.eustacio.seedstartermanager.TestUtil.setId;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -42,6 +47,9 @@ class SeedVarietyControllerIT {
 
     @Autowired
     private SeedVarietyService mockService;
+
+    @Autowired
+    private ServerStorageManager mockServerStorageManager;
 
     @Autowired
     private WebApplicationContext wac;
@@ -57,7 +65,6 @@ class SeedVarietyControllerIT {
         SeedVariety castorPlants = new SeedVariety("Castor Plants");
         this.seedVarietyList = Lists.newArrayList(aconitumNapellus, castorPlants);
     }
-
 
     @Test
     void getAllVarieties() throws Exception {
@@ -86,18 +93,28 @@ class SeedVarietyControllerIT {
         SeedVariety newVariety = new SeedVariety("Belladonna");
         String payload = convertToJson(newVariety);
 
+        File savedImageFile = new File("belladonna.jpg");
+
         SeedVariety savedVariety = new SeedVariety(newVariety.getName());
+        savedVariety.setImageName(savedImageFile.getName());
         setId(345L, savedVariety);
 
         String expectedLocation = "/variety/" + savedVariety.getId();
 
         when(mockService.save(newVariety)).thenReturn(savedVariety);
+        when(mockServerStorageManager.transferFileToServer(any(), any())).thenReturn(savedImageFile);
 
 
-        mockMvc.perform(post("/variety").contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(payload))
+        mockMvc.perform(multipart("/variety")
+                .file(new MockMultipartFile("seed-variety-image", "belladonna.jpg", "image/jpeg", new byte[]{1, 2, 3}))
+                .file(new MockMultipartFile("seed-variety", "blob", "application/json", payload.getBytes()))
+        )
                 .andExpect(status().isCreated())
-                .andExpect(header().string(HttpHeaders.LOCATION, Matchers.endsWith(expectedLocation)));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(header().string(HttpHeaders.LOCATION, Matchers.endsWith(expectedLocation)))
+                .andExpect(jsonPath("$.id", is(equalTo(savedVariety.getId().intValue()))))
+                .andExpect(jsonPath("$.name", is(equalTo(savedVariety.getName()))))
+                .andExpect(jsonPath("$.imageName", is(equalTo(savedImageFile.getName()))));
     }
 
     @Test
@@ -106,8 +123,9 @@ class SeedVarietyControllerIT {
         SeedVariety invalidSeedVariety = new SeedVariety("");
         String payload = convertToJson(invalidSeedVariety);
 
-        mockMvc.perform(post("/variety").contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(payload))
+        mockMvc.perform(multipart("/variety")
+                .file(new MockMultipartFile("seed-variety", "blob", "application/json", payload.getBytes()))
+        )
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.code", is(HttpStatus.BAD_REQUEST.value())))
@@ -178,6 +196,12 @@ class SeedVarietyControllerIT {
         @Bean
         public SeedVarietyService mockSeedVarietyService() {
             return mock(SeedVarietyService.class);
+        }
+
+        @Bean
+        @Primary
+        public ServerStorageManager mockServerStorageManager() {
+            return mock(ServerStorageManager.class);
         }
     }
 

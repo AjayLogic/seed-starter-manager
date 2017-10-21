@@ -6,7 +6,7 @@
 
     <groupId>com.eustacio.seedstartermanager</groupId>
     <artifactId>seedstartermanager</artifactId>
-    <version>0.19.0-SNAPSHOT</version>
+    <version>0.19.1-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <repositories>
@@ -32,7 +32,7 @@
         <!-- Dependencies -->
         <servlet.api.version>4.0.0</servlet.api.version>
         <spring.version>5.0.0.RELEASE</spring.version>
-        <spring.data.jpa.version>2.0.0.RC3</spring.data.jpa.version>
+        <spring.data.jpa.version>2.0.0.RELEASE</spring.data.jpa.version>
         <h2.version>1.4.196</h2.version>
         <hibernate.core.version>5.2.11.Final</hibernate.core.version>
         <hibernate.validator.version>6.0.2.Final</hibernate.validator.version>
@@ -41,13 +41,14 @@
 
         <!-- Test Dependencies -->
         <equalsverifier.version>2.3.3</equalsverifier.version>
-        <junit.jupiter.api.version>5.0.0</junit.jupiter.api.version>
-        <junit.jupiter.engine.version>5.0.0</junit.jupiter.engine.version>
+        <junit.jupiter.api.version>5.0.1</junit.jupiter.api.version>
+        <junit.jupiter.engine.version>5.0.1</junit.jupiter.engine.version>
         <assertj.core.version>3.8.0</assertj.core.version>
         <hamcrest.junit.version>2.0.0.0</hamcrest.junit.version>
         <json.path.version>2.4.0</json.path.version>
         <jsonassert.version>1.5.0</jsonassert.version>
         <mockito.core.version>2.10.0</mockito.core.version>
+        <jmockit.version>1.35</jmockit.version>
         <javax.el.version>3.0.1-b08</javax.el.version>
     </properties>
 
@@ -214,6 +215,13 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>${mockito.core.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jmockit</groupId>
+            <artifactId>jmockit</artifactId>
+            <version>${jmockit.version}</version>
             <scope>test</scope>
         </dependency>
 

@@ -1,5 +1,7 @@
 package com.eustacio.seedstartermanager.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -11,8 +13,9 @@ import javax.persistence.Table;
 @Table(name = "SEED_VARIETY")
 public class SeedVariety extends NamedEntity {
 
-    @Column(name = "IMAGE")
-    private byte[] image;
+    @Column(name = "IMAGE_NAME")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String imageName;
 
     protected SeedVariety() {
         // Constructor without arguments to agree with the JPA specification
@@ -22,12 +25,12 @@ public class SeedVariety extends NamedEntity {
         super(name);
     }
 
-    public byte[] getImage() {
-        return image;
+    public String getImageName() {
+        return imageName;
     }
 
-    public void setImage(byte[] image) {
-        this.image = image;
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
     }
 
 }
