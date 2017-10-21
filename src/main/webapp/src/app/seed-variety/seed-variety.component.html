@@ -2,8 +2,8 @@
   <!-- TODO: Show the proper image when has don't have any seed variety -->
   <masonry class="col s12" [options]="{itemSelector: '.card', gutter: 10}" *ngIf="varieties">
     <masonry-brick class="card z-depth-2" style="width: 250px; margin-bottom: 5px" *ngFor="let variety of varieties; index as i">
-      <div class="card-image" *ngIf="variety.image">
-        <img src="{{variety.image}}">
+      <div class="card-image" *ngIf="variety.imageName">
+        <img src="{{variety.imageName}}">
       </div>
 
       <div class="card-content">
