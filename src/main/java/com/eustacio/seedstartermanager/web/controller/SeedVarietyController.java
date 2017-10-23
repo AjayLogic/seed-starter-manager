@@ -64,7 +64,7 @@ public class SeedVarietyController {
             return ResponseEntity.badRequest().body(validationError);
         }
 
-        if (!imageFile.isEmpty()) {
+        if (imageFile != null && !imageFile.isEmpty()) {
             // Uses the same seed variety name as the image filename
             File savedImageFile = serverStorageManager.transferFileToServer(imageFile, seedVariety.getName());
             if (savedImageFile != null) {
