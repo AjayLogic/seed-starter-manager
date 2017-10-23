@@ -26,7 +26,7 @@ export class SeedVarietyService {
     return this.errorSubject.asObservable();
   }
 
-  createOrUpdateMaterial(variety: SeedVariety): void {
+  createOrUpdateVariety(variety: SeedVariety): void {
     let payload: FormData = new FormData();
     payload.append('seed-variety', new Blob([JSON.stringify(variety)], { type: 'application/json' }));
     if (variety.imageName) {
@@ -35,12 +35,16 @@ export class SeedVarietyService {
 
     this.httpClient.post(`${this.endpointUrl}`, payload, { observe: 'response' })
       .subscribe((response: HttpResponse<SeedVariety>) => {
-        switch (response.status) {
-          case 201:
-            this.onSeedVarietyCreated(response.body);
-            break;
-        }
-      });
+          switch (response.status) {
+            case 201:  // Created (SeedVariety has been created successfully)
+              this.onSeedVarietyCreated(response.body);
+              break;
+            default:
+              this.publishError(response);
+          }
+        },
+        (error: HttpErrorResponse) => this.publishError(error)
+      );
   }
 
   deleteSeedVariety(variety: SeedVariety): void {
