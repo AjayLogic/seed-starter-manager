@@ -29,7 +29,9 @@ export class SeedVarietyService {
   createOrUpdateMaterial(variety: SeedVariety): void {
     let payload: FormData = new FormData();
     payload.append('seed-variety', new Blob([JSON.stringify(variety)], { type: 'application/json' }));
-    payload.append('seed-variety-image', variety.imageName);
+    if (variety.imageName) {
+      payload.append('seed-variety-image', variety.imageName);
+    }
 
     this.httpClient.post(`${this.endpointUrl}`, payload, { observe: 'response' })
       .subscribe((response: HttpResponse<SeedVariety>) => {
