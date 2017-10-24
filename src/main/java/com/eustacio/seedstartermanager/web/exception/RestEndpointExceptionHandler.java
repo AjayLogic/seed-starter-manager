@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.FileNotFoundException;
+
 /**
  * @author Wallison Freitas
  */
@@ -30,7 +32,12 @@ public class RestEndpointExceptionHandler {
         return getResponseEntityOfApiError(HttpStatus.UNSUPPORTED_MEDIA_TYPE, exception);
     }
 
-    private ResponseEntity<ApiError> getResponseEntityOfApiError(HttpStatus httpStatus, RuntimeException error) {
+    @ExceptionHandler
+    public ResponseEntity<ApiError> handleFileNotFoundException(FileNotFoundException exception) {
+        return getResponseEntityOfApiError(HttpStatus.NOT_FOUND, exception);
+    }
+
+    private ResponseEntity<ApiError> getResponseEntityOfApiError(HttpStatus httpStatus, Throwable error) {
         ApiError apiError = new ApiError(httpStatus, error.getMessage());
         return ResponseEntity.status(httpStatus).body(apiError);
     }
