@@ -5,12 +5,18 @@ import com.eustacio.seedstartermanager.web.exception.UnsupportedFileTypeExceptio
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 
+import org.springframework.core.io.PathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
@@ -54,6 +60,27 @@ public class StandardServerStorageManager implements ServerStorageManager {
         }
 
         return null;
+    }
+
+    @Override
+    @NotNull
+    public Resource getFileAsResource(@NotNull String fileName) {
+        Assert.hasText(fileName, "The filename must not be null or empty");
+
+        String fileExtension = StringUtils.getFilenameExtension(fileName);
+        if (fileExtension != null) {
+            String uploadFolderLocation = this.getUploadLocation(fileExtension);
+            Path filePath = Paths.get(uploadFolderLocation, fileName);
+            Resource resource = new PathResource(filePath);
+
+            if (resource.exists() && resource.isReadable()) {
+                return resource;
+            }
+        }
+
+        // Resource not exists or is not readable
+        throw new RuntimeException(new FileNotFoundException(String.format(
+                "Cannot find the file '%s' because it does not exist or is not readable", fileName)));
     }
 
     protected String sanitizeFileName(String fileName) {
