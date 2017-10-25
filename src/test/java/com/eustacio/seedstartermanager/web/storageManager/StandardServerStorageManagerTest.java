@@ -8,9 +8,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Hashtable;
@@ -26,6 +29,8 @@ import static org.mockito.ArgumentMatchers.*;
  * @author Wallison S. Freitas
  */
 class StandardServerStorageManagerTest {
+
+    private static final String USER_DIRECTORY = System.getProperty("user.home");
 
     private StandardServerStorageManager serverStorageManager;
 
@@ -64,6 +69,42 @@ class StandardServerStorageManagerTest {
 
         assertThatExceptionOfType(UnsupportedFileTypeException.class)
                 .isThrownBy(() -> serverStorageManager.transferFileToServer(mockMultipartFile, anyString()));
+    }
+
+
+    @Test
+    void getFileAsResource() throws IOException {
+        File tempFile = File.createTempFile("test-", null, Paths.get(USER_DIRECTORY).toFile());
+        tempFile.deleteOnExit();
+
+        Resource resource = serverStorageManager.getFileAsResource(tempFile.getName());
+
+        assertThat(resource).isNotNull();
+        assertThat(resource.exists()).isTrue();
+        assertThat(resource.getFile()).isEqualTo(tempFile);
+    }
+
+    @Test
+    void getFileAsResource_ShouldThrowException_WhenTheFileNotExists() {
+        assertThatExceptionOfType(RuntimeException.class)
+                .isThrownBy(() -> serverStorageManager.getFileAsResource("some file"));
+    }
+
+    @Test
+    @DisplayName("getFileAsResource() should throw exception when the filename is null")
+    void getFileAsResource_ShouldThrowException_WhenTheFilenameIsNull() {
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> serverStorageManager.getFileAsResource(null));
+    }
+
+    @Test
+    @DisplayName("getFileAsResource() should throw exception when the filename is empty or has only whitespace")
+    void getFileAsResource_ShouldThrowException_WhenTheFilenameIsEmptyOrHasOnlyWhiteSpace() {
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> serverStorageManager.getFileAsResource(""));
+
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> serverStorageManager.getFileAsResource("  "));
     }
 
     @Test
@@ -116,6 +157,7 @@ class StandardServerStorageManagerTest {
         Hashtable<String, String> expectedFileExtensions = new Hashtable<>();
         expectedFileExtensions.put("jpg", "/narnia");
         expectedFileExtensions.put("png", "/narnia");
+        expectedFileExtensions.put("tmp", USER_DIRECTORY);
 
         Hashtable<String, String> allAllowedFileExtensions = serverStorageManager.getAllAllowedFileExtensions();
 
@@ -140,7 +182,9 @@ class StandardServerStorageManagerTest {
         static Properties getApplicationProperties() {
             Properties fakeApplicationProperties = new Properties();
             fakeApplicationProperties.setProperty("server.upload.allowed_extensions.images", "jpg, png");
+            fakeApplicationProperties.setProperty("server.upload.allowed_extensions.temp_file", "tmp");
             fakeApplicationProperties.setProperty("server.upload.location.images", "/narnia");
+            fakeApplicationProperties.setProperty("server.upload.location.temp_file", USER_DIRECTORY);
             return fakeApplicationProperties;
         }
     }

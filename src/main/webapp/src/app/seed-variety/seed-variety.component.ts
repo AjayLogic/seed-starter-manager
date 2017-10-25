@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 
 import { SeedVarietyService } from './seed-variety.service';
@@ -11,7 +11,7 @@ import { ErrorType } from '../model/error-type.enum';
   templateUrl: './seed-variety.component.html',
   styleUrls: ['./seed-variety.component.css']
 })
-export class SeedVarietyComponent implements OnInit {
+export class SeedVarietyComponent implements OnInit, OnDestroy {
 
   @ViewChild('seedVarietyImage') seedVarietyImage: ElementRef;
 
@@ -25,6 +25,11 @@ export class SeedVarietyComponent implements OnInit {
   ngOnInit(): void {
     this.fetchAllSeedVarieties();
     this.registerForErrors();
+  }
+
+  ngOnDestroy(): void {
+    this.subject.next();
+    this.subject.complete();
   }
 
   deleteVariety(variety: SeedVariety): void {

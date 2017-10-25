@@ -26,6 +26,27 @@ export class SeedVarietyService {
     return this.errorSubject.asObservable();
   }
 
+  createOrUpdateVariety(variety: SeedVariety): void {
+    let payload: FormData = new FormData();
+    payload.append('seed-variety', new Blob([JSON.stringify(variety)], { type: 'application/json' }));
+    if (variety.imageName) {
+      payload.append('seed-variety-image', variety.imageName);
+    }
+
+    this.httpClient.post(`${this.endpointUrl}`, payload, { observe: 'response' })
+      .subscribe((response: HttpResponse<SeedVariety>) => {
+          switch (response.status) {
+            case 201:  // Created (SeedVariety has been created successfully)
+              this.onSeedVarietyCreated(response.body);
+              break;
+            default:
+              this.publishError(response);
+          }
+        },
+        (error: HttpErrorResponse) => this.publishError(error)
+      );
+  }
+
   deleteSeedVariety(variety: SeedVariety): void {
     this.httpClient.delete(`${this.endpointUrl}/${variety.id}`, { headers: this.httpHeader, observe: 'response' })
       .subscribe((response: HttpResponse<null>) => {
@@ -39,6 +60,11 @@ export class SeedVarietyService {
         },
         (error: HttpErrorResponse) => this.publishError(error)
       );
+  }
+
+  private onSeedVarietyCreated(newSeedVariety: SeedVariety): void {
+    let varieties: SeedVariety[] = this.varietySubject.getValue();
+    this.varietySubject.next(varieties.concat(newSeedVariety));
   }
 
   private onSeedVarietyDeleted(deletedSeedVariety: SeedVariety): void {
