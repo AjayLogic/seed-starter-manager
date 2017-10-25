@@ -32,9 +32,9 @@ public class RestEndpointExceptionHandler {
         return getResponseEntityOfApiError(HttpStatus.UNSUPPORTED_MEDIA_TYPE, exception);
     }
 
-    @ExceptionHandler
-    public ResponseEntity<ApiError> handleFileNotFoundException(FileNotFoundException exception) {
-        return getResponseEntityOfApiError(HttpStatus.NOT_FOUND, exception);
+    @ExceptionHandler(FileNotFoundException.class)
+    public ResponseEntity<ApiError> handleFileNotFoundException() {
+        return ResponseEntity.notFound().build();
     }
 
     private ResponseEntity<ApiError> getResponseEntityOfApiError(HttpStatus httpStatus, Throwable error) {
