@@ -18,6 +18,7 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   varieties: SeedVariety[];
 
   private latestSelectedSeedVarietyImage: File;
+  private imagePlaceholder: string;
   private subject: Subject<void> = new Subject();
 
   constructor(private seedVarietyService: SeedVarietyService, private renderer: Renderer2) {}
@@ -25,6 +26,7 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.fetchAllSeedVarieties();
     this.registerForErrors();
+    this.initializeFormControls();
   }
 
   ngOnDestroy(): void {
@@ -50,6 +52,15 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
       this.latestSelectedSeedVarietyImage = selectedImageFile;
       fileReader.readAsDataURL(selectedImageFile);
     }
+  }
+
+  removeLastSelectedImage(): void {
+    this.latestSelectedSeedVarietyImage = null;
+    this.renderer.setAttribute(this.seedVarietyImage.nativeElement, 'src', this.imagePlaceholder);
+  }
+
+  private initializeFormControls(): void {
+    this.imagePlaceholder = this.seedVarietyImage.nativeElement.src;
   }
 
   private fetchAllSeedVarieties(): void {
