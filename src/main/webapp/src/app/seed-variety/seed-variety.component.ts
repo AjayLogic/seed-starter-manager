@@ -59,6 +59,13 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
     this.renderer.setAttribute(this.seedVarietyImage.nativeElement, 'src', this.imagePlaceholder);
   }
 
+  onAddSeedVarietyCancelled(): void {
+    // Wait until the dialog close, and then removes the previously chosen image
+    setTimeout(() => {
+      this.removeLastSelectedImage();
+    }, 350);
+  }
+
   private initializeFormControls(): void {
     this.imagePlaceholder = this.seedVarietyImage.nativeElement.src;
   }
