@@ -5,6 +5,7 @@ import { SeedVarietyService } from './seed-variety.service';
 import { SeedVariety } from '../model/seed-variety';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
+import { AbstractControl, FormControl, ValidationErrors, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-seed-variety',
@@ -15,8 +16,11 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
 
   @ViewChild('seedVarietyImage') seedVarietyImage: ElementRef;
 
+  inputName: FormControl;
+
   varieties: SeedVariety[];
 
+  private readonly maxSeedVarietyName = 50; // TODO: fetch this information from database
   private latestSelectedSeedVarietyImage: File;
   private imagePlaceholder: string;
   private subject: Subject<void> = new Subject();
@@ -66,8 +70,34 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
     }, 350);
   }
 
+  get errorMessages(): any {
+    return {
+      required: 'The seed variety must have a name',
+      maxlength: 'The variety name must have less than ' + this.maxSeedVarietyName + ' characters',
+      conflict: 'This seed variety already exists'
+    };
+  }
+
+  getInputFieldClass(input: FormControl): string {
+    return input.valid ? 'valid' :
+      input.invalid && input.touched || input.invalid && input.dirty ? 'invalid' : '';
+  }
+
   private initializeFormControls(): void {
     this.imagePlaceholder = this.seedVarietyImage.nativeElement.src;
+
+    this.inputName = new FormControl('', [
+      Validators.required, Validators.maxLength(this.maxSeedVarietyName), this.uniqueSeedVariety.bind(this)
+    ]);
+  }
+
+  private uniqueSeedVariety(formControl: AbstractControl): ValidationErrors {
+    const currentVarietyName = formControl.value;
+    let isVarietyDuplicated = this.varieties.some((seedVariety: SeedVariety) => {
+      return formControl.dirty && seedVariety.name == currentVarietyName;
+    });
+
+    return isVarietyDuplicated ? { conflict: true } : null;
   }
 
   private fetchAllSeedVarieties(): void {
