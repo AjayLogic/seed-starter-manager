@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.io.PathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,6 +27,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +48,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebIntegrationTest
 class SeedVarietyControllerIT {
+
+    private static final String USER_DIRECTORY = System.getProperty("user.home");
 
     @Autowired
     private SeedVarietyService mockService;
@@ -86,6 +92,31 @@ class SeedVarietyControllerIT {
 
         mockMvc.perform(get("/variety"))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void getSeedVarietyImage() throws Exception {
+        File tempFile = File.createTempFile("test-", ".jpg", Paths.get(USER_DIRECTORY).toFile());
+        tempFile.deleteOnExit();
+        String fileName = tempFile.getName();
+
+        when(mockServerStorageManager.getFileAsResource(fileName))
+                .thenReturn(new PathResource(Paths.get(USER_DIRECTORY, fileName)));
+
+        mockMvc.perform(get("/variety/image/{filename}", fileName).accept("image/*"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(Files.probeContentType(tempFile.toPath())))
+                .andExpect(header().string("Content-Length", String.valueOf(tempFile.length())));
+    }
+
+    @Test
+    @DisplayName("getSeedVarietyImage() should return status not found when the image cannot be found")
+    void getSeedVarietyImage_ShouldReturnStatusNotFound_WhenTheImageCannotBeFound() throws Exception {
+        when(mockServerStorageManager.getFileAsResource(any()))
+                .thenThrow(new RuntimeException(new FileNotFoundException()));
+
+        mockMvc.perform(get("/variety/image/{filename}", "some-file.any").accept("image/*"))
+                .andExpect(status().isNotFound());
     }
 
     @Test

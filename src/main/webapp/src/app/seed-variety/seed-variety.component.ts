@@ -1,10 +1,12 @@
 import { Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AbstractControl, FormControl, ValidationErrors, Validators } from '@angular/forms';
 import { Subject } from 'rxjs/Subject';
 
 import { SeedVarietyService } from './seed-variety.service';
 import { SeedVariety } from '../model/seed-variety';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
+import { SimpleDialogComponent } from '../shared/simple-dialog/simple-dialog.component';
 
 @Component({
   selector: 'app-seed-variety',
@@ -15,9 +17,18 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
 
   @ViewChild('seedVarietyImage') seedVarietyImage: ElementRef;
 
+  @ViewChild('inputNameRef') inputNameRef: ElementRef;
+  @ViewChild('inputNameLabelRef') inputNameLabelRef: ElementRef;
+
+  @ViewChild('addSeedVarietyDialog') addSeedVarietyDialog: SimpleDialogComponent;
+
+  inputName: FormControl;
+
   varieties: SeedVariety[];
 
+  private readonly maxSeedVarietyName = 50; // TODO: fetch this information from database
   private latestSelectedSeedVarietyImage: File;
+  private imagePlaceholder: string;
   private subject: Subject<void> = new Subject();
 
   constructor(private seedVarietyService: SeedVarietyService, private renderer: Renderer2) {}
@@ -25,11 +36,22 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.fetchAllSeedVarieties();
     this.registerForErrors();
+    this.initializeFormControls();
   }
 
   ngOnDestroy(): void {
     this.subject.next();
     this.subject.complete();
+  }
+
+  addSeedVariety(): void {
+    if (this.isVarietyNameValid(this.inputName)) {
+      const seedVarietyName = this.inputName.value;
+      this.seedVarietyService.createOrUpdateVariety({ id: null, name: seedVarietyName, imageName: this.latestSelectedSeedVarietyImage });
+      this.closeAndResetAddSeedVarietyModal();
+    } else {
+      this.renderer.addClass(this.inputNameRef.nativeElement, 'invalid');
+    }
   }
 
   deleteVariety(variety: SeedVariety): void {
@@ -50,6 +72,66 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
       this.latestSelectedSeedVarietyImage = selectedImageFile;
       fileReader.readAsDataURL(selectedImageFile);
     }
+  }
+
+  removeLastSelectedImage(): void {
+    this.latestSelectedSeedVarietyImage = null;
+    this.renderer.setAttribute(this.seedVarietyImage.nativeElement, 'src', this.imagePlaceholder);
+  }
+
+  onAddSeedVarietyCancelled(): void {
+    // Wait until the dialog close, and then removes the previously chosen image
+    setTimeout(() => {
+      this.removeLastSelectedImage();
+    }, 350);
+  }
+
+  get errorMessages(): any {
+    return {
+      required: 'The seed variety must have a name',
+      maxlength: 'The variety name must have less than ' + this.maxSeedVarietyName + ' characters',
+      conflict: 'This seed variety already exists'
+    };
+  }
+
+  getInputFieldClass(input: FormControl): string {
+    return input.valid ? 'valid' :
+      input.invalid && input.touched || input.invalid && input.dirty ? 'invalid' : '';
+  }
+
+  private initializeFormControls(): void {
+    this.imagePlaceholder = this.seedVarietyImage.nativeElement.src;
+
+    this.inputName = new FormControl('', [
+      Validators.required, Validators.maxLength(this.maxSeedVarietyName), this.uniqueSeedVariety.bind(this)
+    ]);
+  }
+
+  private uniqueSeedVariety(formControl: AbstractControl): ValidationErrors {
+    const currentVarietyName = formControl.value;
+    let isVarietyDuplicated = this.varieties.some((seedVariety: SeedVariety) => {
+      return formControl.dirty && seedVariety.name == currentVarietyName;
+    });
+
+    return isVarietyDuplicated ? { conflict: true } : null;
+  }
+
+  private isVarietyNameValid(input: FormControl): boolean {
+    const variety = input.value;
+    return !(!variety || variety.trim().length == 0 || input.invalid);
+  }
+
+  private closeAndResetAddSeedVarietyModal(): void {
+    this.addSeedVarietyDialog.close();
+
+    // Resets the seed variety name input field
+    this.inputName.reset();
+
+    // Remove the previously chosen image
+    this.removeLastSelectedImage();
+
+    // Avoids that the label appears on top of the input field
+    this.renderer.removeClass(this.inputNameLabelRef.nativeElement, 'active');
   }
 
   private fetchAllSeedVarieties(): void {

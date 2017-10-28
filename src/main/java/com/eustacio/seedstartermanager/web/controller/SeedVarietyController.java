@@ -7,6 +7,7 @@ import com.eustacio.seedstartermanager.web.exception.support.ValidationError;
 import com.eustacio.seedstartermanager.web.storageManager.ServerStorageManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -53,6 +57,17 @@ public class SeedVarietyController {
         }
 
         return ResponseEntity.ok(seedVarietyList);
+    }
+
+    @GetMapping(value = "/image/{filename:.+}", produces = "image/*")
+    public ResponseEntity<Resource> getSeedVarietyImage(@PathVariable("filename") String filename) throws IOException {
+        Resource resource = serverStorageManager.getFileAsResource(filename);
+        Path resourcePath = resource.getFile().toPath();
+        MediaType resourceMediaType = MediaType.parseMediaType(Files.probeContentType(resourcePath));
+
+        return ResponseEntity.ok()
+                .contentType(resourceMediaType)
+                .body(resource);
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

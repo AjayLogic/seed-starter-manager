@@ -3,7 +3,7 @@
   <masonry class="col s12" [options]="{itemSelector: '.card', gutter: 10}" *ngIf="varieties">
     <masonry-brick class="card z-depth-2" style="width: 250px; margin-bottom: 5px" *ngFor="let variety of varieties; index as i">
       <div class="card-image" *ngIf="variety.imageName">
-        <img src="{{variety.imageName}}">
+        <img src="/api/variety/image/{{variety.imageName}}">
       </div>
 
       <div class="card-content">
@@ -39,18 +39,23 @@
     <h4>Add a new Seed Variety</h4>
     <div class="row valign-wrapper">
       <div class="col s3">
-        <img id="img-variety" class="circle" (click)="inputSeedVarietyImageFile.click()" #seedVarietyImage/>
-        <input type="file" accept="image/jpeg,image/png" style="display: none" (change)="onSeedVarietyImageSelected($event)" #inputSeedVarietyImageFile>
+        <!-- TODO: Find/make a better placeholder image -->
+        <img id="img-variety" class="circle" src="../../assets/images/ic_add_photo_white.svg"
+             (click)="inputSeedVarietyImageFile.click()" #seedVarietyImage/>
+        <i class="material-icons" style="cursor: pointer" (click)="removeLastSelectedImage()">close</i>
+        <input type="file" accept="image/jpeg,image/png" style="display: none"
+               (change)="onSeedVarietyImageSelected($event)" #inputSeedVarietyImageFile>
       </div>
 
       <div class="input-field col s9">
-        <input id="input-name" type="text">
-        <label for="input-name" appInputErrorLabel labelText="Seed Variety"></label>
+        <input id="input-name" type="text" [formControl]="inputName" [class]="getInputFieldClass(inputName)" #inputNameRef>
+        <label for="input-name" appInputErrorLabel labelText="Seed Variety" #inputNameLabelRef
+               [inputErrors]="inputName.errors" [errorMessages]="errorMessages"></label>
       </div>
     </div>
   </ng-container>
   <ng-container modal-footer>
-    <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
-    <a class="modal-action waves-effect waves-green btn-flat">Add</a>
+    <a class="modal-action modal-close waves-effect waves-light btn-flat" (click)="onAddSeedVarietyCancelled()">Cancel</a>
+    <a class="modal-action waves-effect waves-green btn-flat" (click)="addSeedVariety()">Add</a>
   </ng-container>
 </app-simple-dialog>
