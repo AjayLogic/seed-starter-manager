@@ -40,7 +40,7 @@
         <logback.classic.version>1.2.3</logback.classic.version>
 
         <!-- Test Dependencies -->
-        <equalsverifier.version>2.3.3</equalsverifier.version>
+        <equalsverifier.version>2.4</equalsverifier.version>
         <junit.jupiter.api.version>5.0.1</junit.jupiter.api.version>
         <junit.jupiter.engine.version>5.0.1</junit.jupiter.engine.version>
         <assertj.core.version>3.8.0</assertj.core.version>
