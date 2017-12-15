@@ -1,6 +1,13 @@
+/**************************************
+***** Color scheme for Light theme *****
+ **************************************/
+:root {
+  --background-color: #00C853;
+}
+
 /* Sets the navbar color */
 nav .nav-wrapper {
-  background-color: #00C853;
+  background-color: var(--background-color);
 }
 
 /***************************
