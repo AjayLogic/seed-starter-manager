@@ -1,10 +1,20 @@
+/*************************************
+***** Color scheme for Dark theme *****
+ *************************************/
+:root {
+  --background-color: #343A40;
+  --background-color-dark: #22252C;
+  --text-color: #C2C3C5;
+  --secondary-content: #22958A;
+}
+
 body {
-  background-color: #22252C;
+  background-color: var(--background-color-dark);
 }
 
 /* Sets the navbar color */
 nav .nav-wrapper {
-  background-color: #343A40;
+  background-color: var(--background-color);
 }
 
 /*****************************
@@ -13,28 +23,28 @@ nav .nav-wrapper {
 
 /* Sets the color around the list */
 .collection {
-  border-color: #343A40;
+  border-color: var(--background-color);
 }
 
 /* Sets the color of the item and the divider */
 .collection .collection-item {
-  background-color: #343A40;
+  background-color: var(--background-color);
   border-bottom-color: #484D53;
 }
 
 /* Sets the font color of the item name */
 .collection a.collection-item {
-  color: #C2C3C5;
+  color: var(--text-color);
 }
 
 /* Sets the color of the item when the mouse hover over it */
 .collection a.collection-item:not(.active):hover {
-  background-color: #22252C;
+  background-color: var(--background-color-dark);
 }
 
 /* Sets the color of the badge */
 span.badge.new {
-  background-color: #22958A;
+  background-color: var(--secondary-content);
 }
 
 /* Sets the waves effect color when click on a list item */
@@ -48,8 +58,8 @@ span.badge.new {
 
 /* Sets the modal color */
 .modal .modal-content, .modal .modal-footer, .modal .modal-footer .modal-action {
-  color: #C2C3C5;
-  background-color: #343A40;
+  color: var(--text-color);
+  background-color: var(--background-color);
 }
 
 /***************************
@@ -58,22 +68,22 @@ span.badge.new {
 
 /* Sets the card content background color */
 .card-content {
-  background-color: #343A40;
+  background-color: var(--background-color);
 }
 
 /* Sets the color of the 'usages' link */
 .card-content a {
-  color: #22958A;
+  color: var(--secondary-content);
 }
 
 /* Sets the color and size of the card title */
 .card-content .card-title {
   width: 95%; /* Sets the size of the card title to keep the options icon on the right */
-  color: #C2C3C5;
+  color: var(--text-color);
 }
 
 /* Sets the color and the cursor type for the card options icon */
 .card-content .dropdown-button {
   cursor: pointer;
-  color: #C2C3C5;
+  color: var(--text-color);
 }
