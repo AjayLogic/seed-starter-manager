@@ -6,7 +6,7 @@ export interface SeedStarter {
   id: number;
   materialType: MaterialType;
   datePlanted: Date;
-  isCovered: boolean;
+  covered: boolean;
   features: Feature[];
   rows: Row[];
 }
