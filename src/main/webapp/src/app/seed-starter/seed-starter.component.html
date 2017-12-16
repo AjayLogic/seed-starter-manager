@@ -1,0 +1,37 @@
+<div class="card table">
+  <table class="highlight bordered">
+    <thead>
+      <tr>
+        <th>Date Planted</th>
+        <th>Covered</th>
+        <th>Type</th>
+        <th>Features</th>
+        <th>Rows (#, Seed Variety, Seeds per cell)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let seedStarter of seedStarters">
+        <td>{{seedStarter.datePlanted}}</td>
+        <td>{{seedStarter.covered ? 'Yes' : 'No'}}</td>
+        <td>{{seedStarter.materialType.name}}</td>
+        <td>{{getSeedStarterFeatures(seedStarter)}}</td>
+        <td>
+          <table>
+            <tbody *ngIf="seedStarter.rows?.length == 0">
+              <tr>
+                <td>Empty</td>
+              </tr>
+            </tbody>
+            <tbody *ngFor="let row of seedStarter.rows; let i = index">
+              <tr>
+                <td>{{i + 1}}</td>
+                <td>{{row.seedVariety.name}}</td>
+                <td>{{row.seedsPerCell}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

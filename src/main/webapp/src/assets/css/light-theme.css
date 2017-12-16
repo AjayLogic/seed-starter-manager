@@ -1,6 +1,13 @@
+/**************************************
+***** Color scheme for Light theme *****
+ **************************************/
+:root {
+  --background-color: #00C853;
+}
+
 /* Sets the navbar color */
 nav .nav-wrapper {
-  background-color: #00C853;
+  background-color: var(--background-color);
 }
 
 /***************************
@@ -15,4 +22,13 @@ nav .nav-wrapper {
 /* Sets the cursor type for the card options icon */
 .card-content .dropdown-button {
   cursor: pointer;
+}
+
+/****************************
+***** Seed Starter Table *****
+ ****************************/
+
+/* Sets the table padding */
+.card.table {
+  padding: 10px;
 }
