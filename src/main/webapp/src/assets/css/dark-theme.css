@@ -6,6 +6,7 @@
   --background-color-dark: #22252C;
   --text-color: #C2C3C5;
   --secondary-content: #22958A;
+  --border-bottom-color: #484D53;
 }
 
 body {
@@ -29,7 +30,7 @@ nav .nav-wrapper {
 /* Sets the color of the item and the divider */
 .collection .collection-item {
   background-color: var(--background-color);
-  border-bottom-color: #484D53;
+  border-bottom-color: var(--border-bottom-color);
 }
 
 /* Sets the font color of the item name */
@@ -86,4 +87,29 @@ span.badge.new {
 .card-content .dropdown-button {
   cursor: pointer;
   color: var(--text-color);
+}
+
+/****************************
+***** Seed Starter Table *****
+ ****************************/
+
+/* Sets the table background color */
+.card.table {
+  background-color: var(--background-color);
+  padding: 10px;
+}
+
+/* Sets the font color of the data on the table */
+.card.table th, td {
+  color: var(--text-color);
+}
+
+/* Sets the color of the table row when the mouse hover over it */
+.card.table table.highlight > tbody > tr:hover {
+  background-color: var(--background-color-dark);
+}
+
+/* Sets the color of the item divider of the table */
+.card.table table.bordered > thead > tr, .card.table table.bordered > tbody > tr {
+  border-bottom: 1px solid var(--border-bottom-color);
 }
