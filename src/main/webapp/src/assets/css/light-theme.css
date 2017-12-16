@@ -23,3 +23,12 @@ nav .nav-wrapper {
 .card-content .dropdown-button {
   cursor: pointer;
 }
+
+/****************************
+***** Seed Starter Table *****
+ ****************************/
+
+/* Sets the table padding */
+.card.table {
+  padding: 10px;
+}
