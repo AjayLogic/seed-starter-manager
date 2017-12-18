@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterializeModule } from 'angular2-materialize';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { FeatureModule } from '../feature/feature.module';
 import { MaterialTypeModule } from '../material-type/material-type.module';
@@ -16,6 +17,7 @@ import { FormComponent } from './form/form.component';
   imports: [
     CommonModule,
     MaterializeModule,
+    ReactiveFormsModule,
     FeatureModule,
     MaterialTypeModule,
     SeedVarietyModule,
