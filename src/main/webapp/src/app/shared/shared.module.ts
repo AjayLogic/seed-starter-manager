@@ -7,9 +7,20 @@ import { SimpleDialogComponent } from './simple-dialog/simple-dialog.component';
 import { MaterializeModule } from 'angular2-materialize';
 
 @NgModule({
-  declarations: [SimpleListComponent, InputErrorLabelDirective, SimpleDialogComponent],
-  imports: [CommonModule, MaterializeModule],
-  exports: [SimpleListComponent, InputErrorLabelDirective, SimpleDialogComponent]
+  imports: [
+    CommonModule,
+    MaterializeModule
+  ],
+  declarations: [
+    SimpleListComponent,
+    InputErrorLabelDirective,
+    SimpleDialogComponent
+  ],
+  exports: [
+    SimpleListComponent,
+    InputErrorLabelDirective,
+    SimpleDialogComponent
+  ]
 })
 export class SharedModule {
 }
