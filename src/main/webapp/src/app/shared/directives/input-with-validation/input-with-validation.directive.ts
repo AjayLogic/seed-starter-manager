@@ -1,26 +1,28 @@
-import { Directive, ElementRef, Input, OnChanges, OnInit, Renderer2, SimpleChanges } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Directive, ElementRef, Input, OnInit, Renderer2 } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 
 @Directive({
   selector: '[appInputWithValidation]'
 })
-export class InputWithValidationDirective implements OnInit, OnChanges {
+export class InputWithValidationDirective implements OnInit, AfterViewInit, AfterViewChecked {
 
   @Input() control: AbstractControl;
   @Input() errorMessages: { [error: string]: string };
 
   private inputLabel: Element;
 
-  constructor(private inputElement: ElementRef, private renderer: Renderer2) {
-    this.inputLabel = this.findLabelForInput(inputElement);
-  }
+  constructor(private inputElement: ElementRef, private renderer: Renderer2) { }
 
   ngOnInit(): void {
     if (!this.control) throw new Error(`Attribute 'control' is required!`);
     if (!this.errorMessages) throw new Error(`Attribute 'errorMessages' is required!`);
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  ngAfterViewInit(): void {
+    this.inputLabel = this.findLabelForInput(this.inputElement);
+  }
+
+  ngAfterViewChecked(): void {
     this.updateInputClass();
     this.updateErrorLabel();
   }
