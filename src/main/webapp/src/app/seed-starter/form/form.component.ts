@@ -57,14 +57,30 @@ export class FormComponent implements OnInit, OnDestroy {
     const seedVarietyControl = new FormControl(this.seedVarieties[0].name, Validators.required);
     const seedsPerCellControl = new FormControl(this.minSeedsPerCell,
       [Validators.min(this.minSeedsPerCell), Validators.max(this.maxSeedsPerCell)]);
-    let controls = [seedVarietyControl, seedsPerCellControl];
 
-    this.rowsFormArray.push(this.formBuilder.array(controls));
+    // Creates a new FormArray containing the above created controls
+    let newRow: FormArray = this.formBuilder.array([seedVarietyControl, seedsPerCellControl]);
+
+    // Creates a unique name for the newRow, by converting the Math.random() return value
+    // to the base 36 (numbers + letters), and then extracts the first 10 characters after
+    // the decimal separator.
+    const controlName = 'row-' + Math.random().toString(36).substr(2, 10);
+
+    // Adds a new property called 'controlName' to the newRow, to be used into the removeRow
+    // method to remove the correspondent control from the seedStarterForm.
+    newRow['controlName'] = controlName;
+
+    // Add the newRow to the rowsFormArray so that it be rendered by the view
+    this.rowsFormArray.push(newRow);
+
+    // Add the newRow to the seedStarterForm so that it is validated before save the seed starter
+    this.seedStarterForm.addControl(controlName, newRow);
   }
 
-  removeRow(index: number): void {
+  removeRow(index: number, controlName: string): void {
     if (index >= 0 && index < this.rowsFormArray.length) {
       this.rowsFormArray.splice(index, 1);
+      this.seedStarterForm.removeControl(controlName);
     }
   }
 
