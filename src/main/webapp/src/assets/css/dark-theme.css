@@ -125,3 +125,9 @@ h5, .table th,
 .datepicker {
   color: var(--text-color);
 }
+
+/* Sets the appearance of the suggestion text */
+blockquote.suggestion-text {
+  color: var(--text-color);
+  border-left: 5px solid var(--secondary-content);
+}
