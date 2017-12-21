@@ -32,3 +32,8 @@ nav .nav-wrapper {
 .card.table {
   padding: 10px;
 }
+
+/* Sets the appearance of the suggestion text */
+blockquote.suggestion-text {
+  border-left: 5px solid teal;
+}
