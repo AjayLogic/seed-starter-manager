@@ -113,3 +113,15 @@ span.badge.new {
 .card.table table.bordered > thead > tr, .card.table table.bordered > tbody > tr {
   border-bottom: 1px solid var(--border-bottom-color);
 }
+
+/***************************
+***** Seed Starter Form *****
+ ***************************/
+
+h5, .table th,
+  /* Sets the text color of the 'select' input */
+.select-dropdown,
+  /* Sets the text color of the date picker input */
+.datepicker {
+  color: var(--text-color);
+}
