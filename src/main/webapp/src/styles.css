@@ -7,3 +7,10 @@
   top: 35px;
   right: 75px;
 }
+
+/* Sets the font of the suggestion text */
+.suggestion-text {
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  font-size: initial;
+}
