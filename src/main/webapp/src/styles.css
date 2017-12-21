@@ -1,1 +1,9 @@
-/* You can add global styles to this file, and also import other style files */
+/* Defines the appearance of the error label of the input controls */
+.input-error-label:after {
+  content: attr(data-error);
+  color: #F44336;
+  font-size: 0.8rem;
+  position: relative;
+  top: 35px;
+  right: 75px;
+}
