@@ -36,6 +36,14 @@
           <label for="input-feature-{{i}}">{{feature.name}}</label>
         </div>
       </div>
+      <div class="row" *ngIf="!features">
+        <div class="col s12">
+          <blockquote class="suggestion-text">
+            Seems like you doesn't has any feature, maybe you want <a routerLink="/features">add a new
+            one.</a>
+          </blockquote>
+        </div>
+      </div>
     </div>
 
     <div style="margin-top: 2rem">

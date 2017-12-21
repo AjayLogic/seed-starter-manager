@@ -93,9 +93,9 @@ export class FormComponent implements OnInit, OnDestroy {
     this.featureService.features
       .takeUntil(this.subject)
       .subscribe((features: Feature[]) => {
-        this.features = features;
+        if (features.length > 0) {
+          this.features = features;
 
-        if (this.features.length > 0) {
           // Creates a FormControl for each retrieved Feature
           this.seedStarterForm.addControl('features', this.mapFeaturesToFormArray(features));
           this.featuresFormArray = this.seedStarterForm.get('features') as FormArray;
