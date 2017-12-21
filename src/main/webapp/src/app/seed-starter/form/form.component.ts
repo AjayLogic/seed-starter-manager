@@ -96,9 +96,9 @@ export class FormComponent implements OnInit, OnDestroy {
     this.materialTypeService.materials
       .takeUntil(this.subject)
       .subscribe((materials: MaterialType[]) => {
-        this.materials = materials;
+        if (materials.length > 0) {
+          this.materials = materials;
 
-        if (this.materials.length > 0) {
           // Sets the initial value of the materialTypeFormControl
           this.materialTypeFormControl.setValue(this.materials[0]);
         }
@@ -122,7 +122,11 @@ export class FormComponent implements OnInit, OnDestroy {
   private fetchAllSeedVarieties(): void {
     this.seedVarietyService.varieties
       .takeUntil(this.subject)
-      .subscribe((varieties: SeedVariety[]) => this.seedVarieties = varieties);
+      .subscribe((varieties: SeedVariety[]) => {
+        if (varieties.length > 0) {
+          this.seedVarieties = varieties;
+        }
+      });
   }
 
   private initializeFormControls(): void {
