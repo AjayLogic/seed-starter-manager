@@ -6,6 +6,7 @@
   --background-color-dark: #22252C;
   --text-color: #C2C3C5;
   --secondary-content: #22958A;
+  --secondary-content-bright: #33d0c1;
   --border-bottom-color: #484D53;
 }
 
@@ -130,4 +131,9 @@ h5, .table th,
 blockquote.suggestion-text {
   color: var(--text-color);
   border-left: 5px solid var(--secondary-content);
+}
+
+/* Specific color for the Materialize 'toast' messages */
+.toast-message {
+  color: var(--secondary-content-bright);
 }
