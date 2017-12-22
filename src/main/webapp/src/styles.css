@@ -14,3 +14,18 @@
   font-weight: 300;
   font-size: initial;
 }
+
+/* Sets the position of the Materialize Toast, to be displayed on the right
+   top of the screen in medium size screens. */
+@media only screen and (min-width: 601px) and (max-width: 992px) {
+  #toast-container {
+    top: 10% !important;
+    right: 7% !important;
+    left: unset !important;
+  }
+}
+
+/* Specific color for display error messages on the Materialize toast */
+.toast-error {
+  color: #F44336;
+}
