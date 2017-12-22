@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpResponse, HttpResponseBase } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 
@@ -10,11 +10,27 @@ import { ServiceError } from '../model/service-error';
 export class SeedStarterService {
 
   private readonly endpointUrl: string = '/api/seed-starter';
+  private httpHeader: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
   private seedStarterSubject: BehaviorSubject<SeedStarter[]> = new BehaviorSubject([]);
   private errorSubject: BehaviorSubject<ServiceError> = new BehaviorSubject(null);
 
   constructor(private httpClient: HttpClient) {
     this.loadInitialData();
+  }
+
+  createOrUpdateSeedStarter(seedStarter: SeedStarter): void {
+    this.httpClient.post(this.endpointUrl, seedStarter, { headers: this.httpHeader, observe: 'response' })
+      .subscribe((response: HttpResponse<SeedStarter>) => {
+          switch (response.status) {
+            case 201:  // SeedStarter has been created successfully
+              this.onSeedStarterCreated(response.body);
+              break;
+            default:
+              this.publishError(response);
+          }
+        },
+        (error: HttpErrorResponse) => this.publishError(error)
+      );
   }
 
   get seedStarters(): Observable<SeedStarter[]> {
@@ -37,6 +53,11 @@ export class SeedStarterService {
 
   private publishError(response: HttpResponseBase) {
     this.errorSubject.next(ServiceError.fromStatusCode(response.status));
+  }
+
+  private onSeedStarterCreated(newSeedStarter: SeedStarter): void {
+    const seedStarters: SeedStarter[] = this.seedStarterSubject.getValue().concat(newSeedStarter);
+    this.seedStarterSubject.next(seedStarters);
   }
 
 }
