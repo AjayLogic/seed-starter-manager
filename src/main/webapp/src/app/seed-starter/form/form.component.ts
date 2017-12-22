@@ -1,14 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs/Subject';
+import { toast } from 'angular2-materialize';
 
 import { FeatureService } from '../../feature/feature.service';
 import { MaterialTypeService } from '../../material-type/material-type.service';
 import { SeedVarietyService } from '../../seed-variety/seed-variety.service';
+import { SeedStarterService } from '../seed-starter.service';
 
 import { Feature } from '../../model/feature';
 import { MaterialType } from '../../model/material-type';
 import { SeedVariety } from '../../model/seed-variety';
+import { ServiceEvent } from '../../model/service-event.enum';
 
 @Component({
   selector: 'app-form',
@@ -39,10 +42,12 @@ export class FormComponent implements OnInit, OnDestroy {
   constructor(private featureService: FeatureService,
               private materialTypeService: MaterialTypeService,
               private seedVarietyService: SeedVarietyService,
+              private seedStarterService: SeedStarterService,
               private formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
     this.initializeFormControls();
+    this.registerForServiceEvents();
     this.fetchAllMaterialTypes();
     this.fetchAllFeatures();
     this.fetchAllSeedVarieties();
@@ -92,6 +97,24 @@ export class FormComponent implements OnInit, OnDestroy {
     };
   }
 
+  private registerForServiceEvents(): void {
+    this.seedStarterService.events
+      .takeUntil(this.subject)
+      .subscribe((event: ServiceEvent) => {
+        switch (event) {
+          case ServiceEvent.ENTITY_CREATED:
+            this.onSeedStarterCreated();
+            break;
+        }
+      });
+  }
+
+  private onSeedStarterCreated(): void {
+    this.seedStarterForm.reset();
+    toast('Seed Starter Created!', 3000, 'rounded');
+    window.scrollTo(0, 0);
+  }
+
   private fetchAllMaterialTypes(): void {
     this.materialTypeService.materials
       .takeUntil(this.subject)
@@ -100,7 +123,7 @@ export class FormComponent implements OnInit, OnDestroy {
           this.materials = materials;
 
           // Sets the initial value of the materialTypeFormControl
-          this.materialTypeFormControl.setValue(this.materials[0]);
+          this.materialTypeFormControl.setValue(this.materials[0].name);
         }
       });
   }
