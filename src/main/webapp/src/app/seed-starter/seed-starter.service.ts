@@ -5,14 +5,17 @@ import { Observable } from 'rxjs/Observable';
 
 import { SeedStarter } from '../model/seed-starter';
 import { ServiceError } from '../model/service-error';
+import { ServiceEvent } from '../model/service-event.enum';
 
 @Injectable()
 export class SeedStarterService {
 
   private readonly endpointUrl: string = '/api/seed-starter';
   private httpHeader: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
+
   private seedStarterSubject: BehaviorSubject<SeedStarter[]> = new BehaviorSubject([]);
   private errorSubject: BehaviorSubject<ServiceError> = new BehaviorSubject(null);
+  private eventSubject: BehaviorSubject<ServiceEvent> = new BehaviorSubject(null);
 
   constructor(private httpClient: HttpClient) {
     this.loadInitialData();
@@ -24,6 +27,7 @@ export class SeedStarterService {
           switch (response.status) {
             case 201:  // SeedStarter has been created successfully
               this.onSeedStarterCreated(response.body);
+              this.eventSubject.next(ServiceEvent.ENTITY_CREATED);
               break;
             default:
               this.publishError(response);
@@ -35,6 +39,10 @@ export class SeedStarterService {
 
   get seedStarters(): Observable<SeedStarter[]> {
     return this.seedStarterSubject.asObservable();
+  }
+
+  get events(): Observable<ServiceEvent> {
+    return this.eventSubject.asObservable();
   }
 
   get errors(): Observable<ServiceError> {
