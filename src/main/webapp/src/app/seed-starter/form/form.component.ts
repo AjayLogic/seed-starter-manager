@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs/Subject';
 import { toast } from 'angular2-materialize';
 
@@ -11,6 +11,8 @@ import { SeedStarterService } from '../seed-starter.service';
 import { Feature } from '../../model/feature';
 import { MaterialType } from '../../model/material-type';
 import { SeedVariety } from '../../model/seed-variety';
+import { SeedStarter } from '../../model/seed-starter';
+import { Row } from '../../model/row';
 import { ServiceEvent } from '../../model/service-event.enum';
 
 @Component({
@@ -89,6 +91,24 @@ export class FormComponent implements OnInit, OnDestroy {
     }
   }
 
+  saveSeedStarter(): void {
+    if (this.seedStarterForm.valid) {
+      const newSeedStarter: SeedStarter = {
+        id: null,
+        datePlanted: this.getSelectedDatePlanted(),
+        materialType: this.getSelectedMaterialType(),
+        covered: this.coveredFormControl.value,
+        features: this.getSelectedFeatures(),
+        rows: this.getAddedRows()
+      };
+
+      this.seedStarterService.createOrUpdateSeedStarter(newSeedStarter);
+    } else {
+      // TODO: show all required fields not filled
+      toast('Please fill all required fields', 2000, 'toast-error');
+    }
+  }
+
   get errorMessages(): any {
     return {
       required: 'This field is required!',
@@ -111,8 +131,9 @@ export class FormComponent implements OnInit, OnDestroy {
 
   private onSeedStarterCreated(): void {
     this.seedStarterForm.reset();
-    toast('Seed Starter Created!', 3000, 'rounded');
+    toast('Seed Starter Created!', 3000, 'toast-message');
     window.scrollTo(0, 0);
+    // TODO: remove the 'valid' class from the controls
   }
 
   private fetchAllMaterialTypes(): void {
@@ -178,6 +199,45 @@ export class FormComponent implements OnInit, OnDestroy {
     }
 
     return this.formBuilder.array([]);
+  }
+
+  private getSelectedDatePlanted(): string {
+    // Returns a date in the format YYYY-MM-dd without the time information
+    return new Date(this.datePlantedFormControl.value)
+      .toISOString()
+      .substr(0, 10);
+  }
+
+  private getSelectedMaterialType(): MaterialType {
+    return this.materials.find((material: MaterialType) => {
+      return material.name === this.materialTypeFormControl.value;
+    });
+  }
+
+  private getSelectedFeatures(): Feature[] {
+    let selectedFeatures: Feature[] = [];
+    this.featuresFormArray.controls.forEach((control: AbstractControl, index: number) => {
+      // Checks if the feature checkbox is checked, and adds the correspondent feature to the array
+      if (control.value === true) {
+        selectedFeatures.push(this.features[index]);
+      }
+    });
+
+    return selectedFeatures;
+  }
+
+  private getAddedRows(): Row[] {
+    return this.rowsFormArray.map((formArray: FormArray) => {
+      const selectedSeedVariety: SeedVariety = this.seedVarieties.find((variety: SeedVariety) => {
+        return variety.name === formArray.at(0).value;
+      });
+
+      return {
+        id: null,
+        seedVariety: selectedSeedVariety,
+        seedsPerCell: formArray.at(1).value
+      };
+    });
   }
 
 }
