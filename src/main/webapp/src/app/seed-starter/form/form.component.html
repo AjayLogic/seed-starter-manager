@@ -1,0 +1,100 @@
+<div class="row">
+  <form class="col s12" novalidate [formGroup]="seedStarterForm">
+    <div class="row" style="margin-top: 10px">
+      <div class="input-field col s6">
+        <label for="input-date-planted" class="input-error-label">Date Planted</label>
+        <input id="input-date-planted" type="date" class="datepicker" materialize="pickadate"
+               [formControl]="datePlantedFormControl" appInputWithValidation
+               [control]="datePlantedFormControl" [errorMessages]="errorMessages">
+      </div>
+
+      <div class="input-field col s6">
+        <select id="select-material-type" materialize="material_select" [materializeSelectOptions]="materials"
+                [formControl]="materialTypeFormControl" appInputWithValidation
+                [control]="materialTypeFormControl" [errorMessages]="errorMessages">
+          <ng-container *ngFor="let material of materials">
+            <option value="{{material.name}}">{{material.name}}</option>
+          </ng-container>
+        </select>
+        <label for="select-material-type" class="input-error-label">Material Type</label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col s6">
+        <p>
+          <input id="input-covered" type="checkbox" [formControl]="coveredFormControl"/>
+          <label for="input-covered">Covered</label>
+        </p>
+      </div>
+    </div>
+    <div style="margin-top: 2rem">
+      <h5>Features</h5>
+      <div class="row" *ngIf="features">
+        <div class="col s4" *ngFor="let feature of features; let i = index">
+          <input id="input-feature-{{i}}" type="checkbox" [formControl]="featuresFormArray.at(i)"/>
+          <label for="input-feature-{{i}}">{{feature.name}}</label>
+        </div>
+      </div>
+      <div class="row" *ngIf="!features">
+        <div class="col s12">
+          <blockquote class="suggestion-text">
+            Seems like you doesn't has any feature, maybe you want <a routerLink="/features">add a new
+            one.</a>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 2rem">
+      <h5>Rows</h5>
+      <div class="row">
+        <table class="table" style="margin-left: 7px">
+          <thead>
+            <tr>
+              <th>Row</th>
+              <th>Variety</th>
+              <th>Seeds per cell</th>
+              <th>
+                <a class="btn teal waves-effect waves-light" (click)="addRow()">
+                  <i class="material-icons">add</i>
+                </a>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of rowsFormArray; let i = index">
+              <td>{{i + 1}}</td>
+              <td>
+                <select id="select-material-type-{{i}}" materialize="material_select" [formControl]="row.at(0)"
+                        appInputWithValidation [control]="row.at(0)" [errorMessages]="errorMessages">
+                  <ng-container *ngFor="let variety of seedVarieties">
+                    <option value="{{variety.name}}">{{variety.name}}</option>
+                  </ng-container>
+                </select>
+                <label for="select-material-type-{{i}}" class="input-error-label"></label>
+              </td>
+              <td>
+                <input id="input-seeds-per-cell-{{i}}" type="number" [min]="minSeedsPerCell" [max]="maxSeedsPerCell"
+                       [formControl]="row.at(1)" appInputWithValidation
+                       [control]="row.at(1)" [errorMessages]="errorMessages">
+                <label for="input-seeds-per-cell-{{i}}" class="input-error-label"></label>
+              </td>
+              <td>
+                <a class="btn teal waves-effect waves-light" (click)="removeRow(i, row['controlName'])">
+                  <i class="material-icons">remove</i>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </form>
+
+  <div class="fixed-action-btn">
+    <a class="btn-floating btn-large teal waves-effect" (click)="saveSeedStarter()">
+      <i class="large material-icons">check</i>
+    </a>
+  </div>
+</div>

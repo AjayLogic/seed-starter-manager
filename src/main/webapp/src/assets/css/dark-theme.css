@@ -6,6 +6,7 @@
   --background-color-dark: #22252C;
   --text-color: #C2C3C5;
   --secondary-content: #22958A;
+  --secondary-content-bright: #33d0c1;
   --border-bottom-color: #484D53;
 }
 
@@ -112,4 +113,27 @@ span.badge.new {
 /* Sets the color of the item divider of the table */
 .card.table table.bordered > thead > tr, .card.table table.bordered > tbody > tr {
   border-bottom: 1px solid var(--border-bottom-color);
+}
+
+/***************************
+***** Seed Starter Form *****
+ ***************************/
+
+h5, .table th,
+  /* Sets the text color of the 'select' input */
+.select-dropdown,
+  /* Sets the text color of the date picker input */
+.datepicker {
+  color: var(--text-color);
+}
+
+/* Sets the appearance of the suggestion text */
+blockquote.suggestion-text {
+  color: var(--text-color);
+  border-left: 5px solid var(--secondary-content);
+}
+
+/* Specific color for the Materialize 'toast' messages */
+.toast-message {
+  color: var(--secondary-content-bright);
 }

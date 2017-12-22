@@ -1,0 +1,5 @@
+/* Sets the position of the error label on the 'seeds per cell' input */
+input[type=number] + label.input-error-label:after {
+  position: relative;
+  top: -25px;
+}
