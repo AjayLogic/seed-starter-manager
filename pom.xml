@@ -49,7 +49,7 @@
         <jsonassert.version>1.5.0</jsonassert.version>
         <mockito.core.version>2.13.0</mockito.core.version>
         <jmockit.version>1.37</jmockit.version>
-        <javax.el.version>3.0.1-b08</javax.el.version>
+        <javax.el.version>3.0.1-b09</javax.el.version>
     </properties>
 
     <build>
