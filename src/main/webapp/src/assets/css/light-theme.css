@@ -33,6 +33,23 @@ nav .nav-wrapper {
   padding: 10px;
 }
 
+/* Defines the appearance of the delete icon of the seed starter */
+.card.table i.tooltipped {
+  border-radius: 50%;
+  transition: background-color 150ms linear;
+}
+
+/* Defines the appearance of the delete icon of the seed starter when the mouse hovers over it */
+.card.table i.tooltipped:hover {
+  background-color: #424242;
+  border-radius: 50%;
+  color: white;
+}
+
+/***************************
+***** Seed Starter Form *****
+ ***************************/
+
 /* Sets the appearance of the suggestion text */
 blockquote.suggestion-text {
   border-left: 5px solid teal;
