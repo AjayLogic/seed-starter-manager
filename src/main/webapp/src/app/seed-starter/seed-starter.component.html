@@ -44,16 +44,19 @@
     <ng-container modal-content>
       <div class="row">
         <div class="input-field col s12">
-          <p class="dialog-message">
+          <p class="dialog-message" *ngIf="!isDeletingSeedStarter">
             This seed starter will be removed and <b>this operation cannot be undone</b>.<br/>
             You really want to delete it?
           </p>
+          <app-loading class="dialog-loading" *ngIf="isDeletingSeedStarter"></app-loading>
         </div>
       </div>
     </ng-container>
     <ng-container modal-footer>
-      <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
-      <a class="modal-action waves-effect waves-red btn-flat">Delete</a>
+      <a class="modal-action modal-close waves-effect waves-light btn-flat"
+         [attr.disabled]="isDeletingSeedStarter ? true : null">Cancel</a>
+      <a class="modal-action waves-effect waves-red btn-flat" (click)="deleteSeedStarter()"
+         [attr.disabled]="isDeletingSeedStarter ? true : null">Delete</a>
     </ng-container>
   </app-simple-dialog>
 </div>
