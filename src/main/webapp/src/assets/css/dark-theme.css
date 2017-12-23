@@ -130,6 +130,16 @@ span.badge.new {
   color: var(--background-color-dark);
 }
 
+/* Decreases the size of the sk-cube-grid into the dialog */
+.dialog-loading .sk-cube-grid {
+  margin: 10% auto 0 !important;
+}
+
+/* Sets the color of the sk-cube-grid animation */
+.dialog-loading .sk-cube-grid .sk-cube {
+  background: var(--text-color) !important;
+}
+
 /***************************
 ***** Seed Starter Form *****
  ***************************/
