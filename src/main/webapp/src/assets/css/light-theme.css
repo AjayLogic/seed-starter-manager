@@ -46,6 +46,11 @@ nav .nav-wrapper {
   color: white;
 }
 
+/* Decreases the size of the sk-cube-grid into the dialog */
+.dialog-loading .sk-cube-grid {
+  margin: 10% auto 0 !important;
+}
+
 /***************************
 ***** Seed Starter Form *****
  ***************************/
