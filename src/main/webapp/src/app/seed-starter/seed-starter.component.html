@@ -7,10 +7,11 @@
         <th>Type</th>
         <th>Features</th>
         <th>Rows (#, Seed Variety, Seeds per cell)</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let seedStarter of seedStarters">
+      <tr class="hoverable" *ngFor="let seedStarter of seedStarters">
         <td>{{seedStarter.datePlanted}}</td>
         <td>{{seedStarter.covered ? 'Yes' : 'No'}}</td>
         <td>{{seedStarter.materialType.name}}</td>
@@ -30,6 +31,10 @@
               </tr>
             </tbody>
           </table>
+        </td>
+        <td>
+          <i class="material-icons tooltipped" materialize="tooltip"
+             data-position="left" data-delay="50" data-tooltip="Delete">close</i>
         </td>
       </tr>
     </tbody>
