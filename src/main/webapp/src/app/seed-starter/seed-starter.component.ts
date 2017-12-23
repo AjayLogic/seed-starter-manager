@@ -35,6 +35,10 @@ export class SeedStarterComponent implements OnInit {
     return 'No Features';
   }
 
+  get hasSeedStarters(): boolean {
+    return this.seedStarters && this.seedStarters.length > 0;
+  }
+
   private fetchAllSeedStarters(): void {
     this.seedStarterService.seedStarters
       .takeUntil(this.subject)

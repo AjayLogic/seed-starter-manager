@@ -1,4 +1,4 @@
-<div class="card table" *ngIf="seedStarters">
+<div class="card table" *ngIf="hasSeedStarters">
   <table class="highlight bordered">
     <thead>
       <tr>
@@ -37,7 +37,7 @@
 </div>
 
 <div class="fixed-action-btn">
-  <a class="btn-floating btn-large teal waves-effect" [ngClass]="{'pulse': !seedStarters}" routerLink="./new">
+  <a class="btn-floating btn-large teal waves-effect" [ngClass]="{'pulse': !hasSeedStarters}" routerLink="./new">
     <i class="large material-icons">add</i>
   </a>
 </div>
