@@ -36,6 +36,19 @@ export class SeedStarterService {
       );
   }
 
+  deleteSeedStarter(seedStarter: SeedStarter): void {
+    this.httpClient.delete(`${this.endpointUrl}/${seedStarter.id}`, { observe: 'response' })
+      .subscribe((response: HttpResponse<null>) => {
+        switch (response.status) {
+          case 200:
+            this.onSeedStarterDeleted(seedStarter);
+            break;
+          default:
+            this.publishError(response);
+        }
+      });
+  }
+
   get seedStarters(): Observable<SeedStarter[]> {
     return this.seedStarterSubject.asObservable();
   }
@@ -67,6 +80,15 @@ export class SeedStarterService {
 
     this.seedStarterSubject.next(seedStarters);
     this.eventSubject.next(ServiceEvent.ENTITY_CREATED);
+  }
+
+  private onSeedStarterDeleted(deletedSeedStarter: SeedStarter): void {
+    // Removes the deleted seed starter from the seedStarterSubject
+    const seedStarters = this.seedStarterSubject.getValue()
+      .filter((seedStarter: SeedStarter) => seedStarter.id != deletedSeedStarter.id);
+
+    this.seedStarterSubject.next(seedStarters);
+    this.eventSubject.next(ServiceEvent.ENTITY_DELETED);
   }
 
 }
