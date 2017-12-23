@@ -8,6 +8,7 @@
   --secondary-content: #22958A;
   --secondary-content-bright: #33d0c1;
   --border-bottom-color: #484D53;
+  --delete-icon: #5c6166;
 }
 
 body {
@@ -113,6 +114,20 @@ span.badge.new {
 /* Sets the color of the item divider of the table */
 .card.table table.bordered > thead > tr, .card.table table.bordered > tbody > tr {
   border-bottom: 1px solid var(--border-bottom-color);
+}
+
+/* Defines the appearance of the delete icon of the seed starter */
+.card.table i.tooltipped {
+  border-radius: 50%;
+  color: var(--delete-icon);
+  transition: background-color 150ms linear;
+}
+
+/* Defines the appearance of the delete icon of the seed starter when the mouse hovers over it */
+.card.table i.tooltipped:hover {
+  background-color: var(--delete-icon);
+  border-radius: 50%;
+  color: var(--background-color-dark);
 }
 
 /***************************
