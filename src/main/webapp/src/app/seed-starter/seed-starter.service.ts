@@ -13,7 +13,7 @@ export class SeedStarterService {
   private readonly endpointUrl: string = '/api/seed-starter';
   private httpHeader: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-  private seedStarterSubject: BehaviorSubject<SeedStarter[]> = new BehaviorSubject([]);
+  private seedStarterSubject: BehaviorSubject<SeedStarter[]> = new BehaviorSubject(null);
   private errorSubject: BehaviorSubject<ServiceError> = new BehaviorSubject(null);
   private eventSubject: BehaviorSubject<ServiceEvent> = new BehaviorSubject(null);
 
@@ -27,7 +27,6 @@ export class SeedStarterService {
           switch (response.status) {
             case 201:  // SeedStarter has been created successfully
               this.onSeedStarterCreated(response.body);
-              this.eventSubject.next(ServiceEvent.ENTITY_CREATED);
               break;
             default:
               this.publishError(response);
@@ -35,6 +34,19 @@ export class SeedStarterService {
         },
         (error: HttpErrorResponse) => this.publishError(error)
       );
+  }
+
+  deleteSeedStarter(seedStarter: SeedStarter): void {
+    this.httpClient.delete(`${this.endpointUrl}/${seedStarter.id}`, { observe: 'response' })
+      .subscribe((response: HttpResponse<null>) => {
+        switch (response.status) {
+          case 200:
+            this.onSeedStarterDeleted(seedStarter);
+            break;
+          default:
+            this.publishError(response);
+        }
+      });
   }
 
   get seedStarters(): Observable<SeedStarter[]> {
@@ -65,7 +77,18 @@ export class SeedStarterService {
 
   private onSeedStarterCreated(newSeedStarter: SeedStarter): void {
     const seedStarters: SeedStarter[] = this.seedStarterSubject.getValue().concat(newSeedStarter);
+
     this.seedStarterSubject.next(seedStarters);
+    this.eventSubject.next(ServiceEvent.ENTITY_CREATED);
+  }
+
+  private onSeedStarterDeleted(deletedSeedStarter: SeedStarter): void {
+    // Removes the deleted seed starter from the seedStarterSubject
+    const seedStarters = this.seedStarterSubject.getValue()
+      .filter((seedStarter: SeedStarter) => seedStarter.id != deletedSeedStarter.id);
+
+    this.seedStarterSubject.next(seedStarters);
+    this.eventSubject.next(ServiceEvent.ENTITY_DELETED);
   }
 
 }

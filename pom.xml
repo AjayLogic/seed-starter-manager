@@ -6,7 +6,7 @@
 
     <groupId>com.eustacio.seedstartermanager</groupId>
     <artifactId>seedstartermanager</artifactId>
-    <version>0.22.0-SNAPSHOT</version>
+    <version>0.23.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <repositories>
@@ -35,7 +35,7 @@
         <spring.data.jpa.version>2.0.2.RELEASE</spring.data.jpa.version>
         <h2.version>1.4.196</h2.version>
         <hibernate.core.version>5.2.12.Final</hibernate.core.version>
-        <hibernate.validator.version>6.0.5.Final</hibernate.validator.version>
+        <hibernate.validator.version>6.0.7.Final</hibernate.validator.version>
         <jackson.databind.version>2.9.3</jackson.databind.version>
         <logback.classic.version>1.2.3</logback.classic.version>
 
@@ -49,7 +49,7 @@
         <jsonassert.version>1.5.0</jsonassert.version>
         <mockito.core.version>2.13.0</mockito.core.version>
         <jmockit.version>1.37</jmockit.version>
-        <javax.el.version>3.0.1-b08</javax.el.version>
+        <javax.el.version>3.0.1-b09</javax.el.version>
     </properties>
 
     <build>

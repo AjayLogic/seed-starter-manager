@@ -6,6 +6,7 @@ import { InputErrorLabelDirective } from './error-label/error-label.directive';
 import { SimpleDialogComponent } from './simple-dialog/simple-dialog.component';
 import { MaterializeModule } from 'angular2-materialize';
 import { InputWithValidationDirective } from './directives/input-with-validation/input-with-validation.directive';
+import { LoadingComponent } from './ui/loading/loading.component';
 
 @NgModule({
   imports: [
@@ -16,13 +17,15 @@ import { InputWithValidationDirective } from './directives/input-with-validation
     SimpleListComponent,
     InputErrorLabelDirective,
     SimpleDialogComponent,
-    InputWithValidationDirective
+    InputWithValidationDirective,
+    LoadingComponent
   ],
   exports: [
     SimpleListComponent,
     InputErrorLabelDirective,
     SimpleDialogComponent,
-    InputWithValidationDirective
+    InputWithValidationDirective,
+    LoadingComponent
   ]
 })
 export class SharedModule {

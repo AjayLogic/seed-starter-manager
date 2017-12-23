@@ -1,11 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
+import { toast } from 'angular2-materialize';
 
 import { SeedStarterService } from './seed-starter.service';
 import { SeedStarter } from '../model/seed-starter';
 import { Feature } from '../model/feature';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
+import { SimpleDialogComponent } from '../shared/simple-dialog/simple-dialog.component';
+import { ServiceEvent } from '../model/service-event.enum';
 
 @Component({
   selector: 'app-seed-starter',
@@ -14,15 +17,32 @@ import { ErrorType } from '../model/error-type.enum';
 })
 export class SeedStarterComponent implements OnInit {
 
+  @ViewChild('deleteDialog') deleteDialog: SimpleDialogComponent;
+
   seedStarters: SeedStarter[];
+  isDeletingSeedStarter: boolean = false;
 
   private subject: Subject<void> = new Subject();
+  private latestClickedSeedStarter: SeedStarter;
 
   constructor(private seedStarterService: SeedStarterService) { }
 
   ngOnInit(): void {
     this.fetchAllSeedStarters();
+    this.registerForServiceEvents();
     this.registerForErrors();
+  }
+
+  deleteSeedStarter(): void {
+    if (this.latestClickedSeedStarter) {
+      this.isDeletingSeedStarter = true;
+      this.seedStarterService.deleteSeedStarter(this.latestClickedSeedStarter);
+    }
+  }
+
+  openDeleteConfirmDialog(seedStarter: SeedStarter): void {
+    this.latestClickedSeedStarter = seedStarter;
+    this.deleteDialog.open();
   }
 
   getSeedStarterFeatures(seedStarter: SeedStarter): string {
@@ -35,10 +55,26 @@ export class SeedStarterComponent implements OnInit {
     return 'No Features';
   }
 
+  get hasSeedStarters(): boolean {
+    return this.seedStarters && this.seedStarters.length > 0;
+  }
+
   private fetchAllSeedStarters(): void {
     this.seedStarterService.seedStarters
       .takeUntil(this.subject)
       .subscribe((seedStarters: SeedStarter[]) => this.seedStarters = seedStarters);
+  }
+
+  private registerForServiceEvents(): void {
+    this.seedStarterService.events
+      .takeUntil(this.subject)
+      .subscribe((event: ServiceEvent) => {
+        switch (event) {
+          case ServiceEvent.ENTITY_DELETED:
+            this.onSeedStarterDeleted();
+            break;
+        }
+      });
   }
 
   private registerForErrors(): void {
@@ -58,6 +94,17 @@ export class SeedStarterComponent implements OnInit {
           }
         }
       });
+  }
+
+  private onSeedStarterDeleted(): void {
+    // Closes the dialog
+    this.deleteDialog.close();
+
+    // Displays a message indicating success
+    toast('Deleted!', 3000, 'toast-message');
+
+    // Resets the isDeletingSeedStarter status to false, to stops the loading animation
+    this.isDeletingSeedStarter = false;
   }
 
 }

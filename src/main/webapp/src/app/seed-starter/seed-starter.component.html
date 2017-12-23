@@ -1,4 +1,4 @@
-<div class="card table">
+<div class="card table" *ngIf="hasSeedStarters">
   <table class="highlight bordered">
     <thead>
       <tr>
@@ -7,10 +7,11 @@
         <th>Type</th>
         <th>Features</th>
         <th>Rows (#, Seed Variety, Seeds per cell)</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let seedStarter of seedStarters">
+      <tr class="hoverable" *ngFor="let seedStarter of seedStarters">
         <td>{{seedStarter.datePlanted}}</td>
         <td>{{seedStarter.covered ? 'Yes' : 'No'}}</td>
         <td>{{seedStarter.materialType.name}}</td>
@@ -31,7 +32,37 @@
             </tbody>
           </table>
         </td>
+        <td>
+          <i class="material-icons tooltipped" materialize="tooltip" (click)="openDeleteConfirmDialog(seedStarter)"
+             data-position="left" data-delay="50" data-tooltip="Delete">close</i>
+        </td>
       </tr>
     </tbody>
   </table>
+
+  <app-simple-dialog #deleteDialog>
+    <ng-container modal-content>
+      <div class="row">
+        <div class="input-field col s12">
+          <p class="dialog-message" *ngIf="!isDeletingSeedStarter">
+            This seed starter will be removed and <b>this operation cannot be undone</b>.<br/>
+            You really want to delete it?
+          </p>
+          <app-loading class="dialog-loading" *ngIf="isDeletingSeedStarter"></app-loading>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container modal-footer>
+      <a class="modal-action modal-close waves-effect waves-light btn-flat"
+         [attr.disabled]="isDeletingSeedStarter ? true : null">Cancel</a>
+      <a class="modal-action waves-effect waves-red btn-flat" (click)="deleteSeedStarter()"
+         [attr.disabled]="isDeletingSeedStarter ? true : null">Delete</a>
+    </ng-container>
+  </app-simple-dialog>
+</div>
+
+<div class="fixed-action-btn">
+  <a class="btn-floating btn-large teal waves-effect" [ngClass]="{'pulse': !hasSeedStarters}" routerLink="./new">
+    <i class="large material-icons">add</i>
+  </a>
 </div>
