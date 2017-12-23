@@ -6,6 +6,7 @@ import { SeedStarter } from '../model/seed-starter';
 import { Feature } from '../model/feature';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
+import { ServiceEvent } from '../model/service-event.enum';
 
 @Component({
   selector: 'app-seed-starter',
@@ -22,6 +23,7 @@ export class SeedStarterComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchAllSeedStarters();
+    this.registerForServiceEvents();
     this.registerForErrors();
   }
 
@@ -43,6 +45,14 @@ export class SeedStarterComponent implements OnInit {
     this.seedStarterService.seedStarters
       .takeUntil(this.subject)
       .subscribe((seedStarters: SeedStarter[]) => this.seedStarters = seedStarters);
+  }
+
+  private registerForServiceEvents(): void {
+    this.seedStarterService.events
+      .takeUntil(this.subject)
+      .subscribe((event: ServiceEvent) => {
+
+      });
   }
 
   private registerForErrors(): void {
