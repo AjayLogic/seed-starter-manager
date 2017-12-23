@@ -29,3 +29,8 @@
 .toast-error {
   color: #F44336;
 }
+
+/* Sets the font size of the text inside a dialog */
+.dialog-message {
+  font-size: 1.1rem;
+}

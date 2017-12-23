@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 
 import { SeedStarterService } from './seed-starter.service';
@@ -6,6 +6,7 @@ import { SeedStarter } from '../model/seed-starter';
 import { Feature } from '../model/feature';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
+import { SimpleDialogComponent } from '../shared/simple-dialog/simple-dialog.component';
 import { ServiceEvent } from '../model/service-event.enum';
 
 @Component({
@@ -15,9 +16,12 @@ import { ServiceEvent } from '../model/service-event.enum';
 })
 export class SeedStarterComponent implements OnInit {
 
+  @ViewChild('deleteDialog') deleteDialog: SimpleDialogComponent;
+
   seedStarters: SeedStarter[];
 
   private subject: Subject<void> = new Subject();
+  private latestClickedSeedStarter: SeedStarter;
 
   constructor(private seedStarterService: SeedStarterService) { }
 
@@ -25,6 +29,11 @@ export class SeedStarterComponent implements OnInit {
     this.fetchAllSeedStarters();
     this.registerForServiceEvents();
     this.registerForErrors();
+  }
+
+  openDeleteConfirmDialog(seedStarter: SeedStarter): void {
+    this.latestClickedSeedStarter = seedStarter;
+    this.deleteDialog.open();
   }
 
   getSeedStarterFeatures(seedStarter: SeedStarter): string {
