@@ -27,7 +27,6 @@ export class SeedStarterService {
           switch (response.status) {
             case 201:  // SeedStarter has been created successfully
               this.onSeedStarterCreated(response.body);
-              this.eventSubject.next(ServiceEvent.ENTITY_CREATED);
               break;
             default:
               this.publishError(response);
@@ -65,7 +64,9 @@ export class SeedStarterService {
 
   private onSeedStarterCreated(newSeedStarter: SeedStarter): void {
     const seedStarters: SeedStarter[] = this.seedStarterSubject.getValue().concat(newSeedStarter);
+
     this.seedStarterSubject.next(seedStarters);
+    this.eventSubject.next(ServiceEvent.ENTITY_CREATED);
   }
 
 }
