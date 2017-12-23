@@ -13,7 +13,7 @@ export class SeedStarterService {
   private readonly endpointUrl: string = '/api/seed-starter';
   private httpHeader: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-  private seedStarterSubject: BehaviorSubject<SeedStarter[]> = new BehaviorSubject([]);
+  private seedStarterSubject: BehaviorSubject<SeedStarter[]> = new BehaviorSubject(null);
   private errorSubject: BehaviorSubject<ServiceError> = new BehaviorSubject(null);
   private eventSubject: BehaviorSubject<ServiceEvent> = new BehaviorSubject(null);
 
