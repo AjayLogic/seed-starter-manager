@@ -117,6 +117,18 @@ export class FormComponent implements OnInit, OnDestroy {
     };
   }
 
+  private initializeFormControls(): void {
+    this.seedStarterForm = this.formBuilder.group({
+      datePlanted: ['', Validators.required],
+      materialType: ['', Validators.required],
+      covered: false
+    });
+
+    this.datePlantedFormControl = this.seedStarterForm.get('datePlanted') as FormControl;
+    this.materialTypeFormControl = this.seedStarterForm.get('materialType') as FormControl;
+    this.coveredFormControl = this.seedStarterForm.get('covered') as FormControl;
+  }
+
   private registerForServiceEvents(): void {
     this.seedStarterService.events
       .takeUntil(this.subject)
@@ -127,13 +139,6 @@ export class FormComponent implements OnInit, OnDestroy {
             break;
         }
       });
-  }
-
-  private onSeedStarterCreated(): void {
-    this.seedStarterForm.reset();
-    toast('Seed Starter Created!', 3000, 'toast-message');
-    window.scrollTo(0, 0);
-    // TODO: remove the 'valid' class from the controls
   }
 
   private fetchAllMaterialTypes(): void {
@@ -173,16 +178,11 @@ export class FormComponent implements OnInit, OnDestroy {
       });
   }
 
-  private initializeFormControls(): void {
-    this.seedStarterForm = this.formBuilder.group({
-      datePlanted: ['', Validators.required],
-      materialType: ['', Validators.required],
-      covered: false
-    });
-
-    this.datePlantedFormControl = this.seedStarterForm.get('datePlanted') as FormControl;
-    this.materialTypeFormControl = this.seedStarterForm.get('materialType') as FormControl;
-    this.coveredFormControl = this.seedStarterForm.get('covered') as FormControl;
+  private onSeedStarterCreated(): void {
+    this.seedStarterForm.reset();
+    toast('Seed Starter Created!', 3000, 'toast-message');
+    window.scrollTo(0, 0);
+    // TODO: remove the 'valid' class from the controls
   }
 
   /**
