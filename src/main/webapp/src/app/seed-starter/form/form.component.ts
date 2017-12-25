@@ -147,6 +147,9 @@ export class FormComponent implements OnInit, OnDestroy {
           case ServiceEvent.ENTITY_CREATED:
             this.onSeedStarterCreated();
             break;
+          case ServiceEvent.ENTITY_UPDATED:
+            this.onSeedStarterUpdated();
+            break;
         }
       });
   }
@@ -189,6 +192,11 @@ export class FormComponent implements OnInit, OnDestroy {
     toast('Seed Starter Created!', 3000, 'toast-message');
     window.scrollTo(0, 0);
     // TODO: remove the 'valid' class from the controls
+  }
+
+  private onSeedStarterUpdated(): void {
+    toast('Updated!', 3000, 'toast-message');
+    window.scrollTo(0, 0);
   }
 
   /**
