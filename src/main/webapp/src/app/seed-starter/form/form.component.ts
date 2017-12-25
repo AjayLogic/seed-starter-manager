@@ -41,6 +41,7 @@ export class FormComponent implements OnInit, OnDestroy {
   private readonly minSeedsPerCell = 1;
   private readonly maxSeedsPerCell = 10;
 
+  private seedStarterId: number;
   private subject: Subject<void> = new Subject();
 
   constructor(private featureService: FeatureService,
@@ -104,7 +105,7 @@ export class FormComponent implements OnInit, OnDestroy {
   saveSeedStarter(): void {
     if (this.seedStarterForm.valid) {
       const newSeedStarter: SeedStarter = {
-        id: null,
+        id: this.seedStarterId,
         datePlanted: this.getSelectedDatePlanted(),
         materialType: this.getSelectedMaterialType(),
         covered: this.coveredFormControl.value,
