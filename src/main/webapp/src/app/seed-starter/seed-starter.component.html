@@ -11,7 +11,8 @@
       </tr>
     </thead>
     <tbody>
-      <tr class="hoverable" *ngFor="let seedStarter of seedStarters">
+      <tr class="hoverable" style="cursor: pointer;" [routerLink]="[seedStarter.id, 'edit']"
+          *ngFor="let seedStarter of seedStarters">
         <td>{{seedStarter.datePlanted}}</td>
         <td>{{seedStarter.covered ? 'Yes' : 'No'}}</td>
         <td>{{seedStarter.materialType.name}}</td>
