@@ -106,6 +106,7 @@ export class SeedStarterService {
     // Replaces the existing seed starter with the updated one, and publish the updated array
     seedStarters[existentSeedStarterIndex] = updatedSeedStarter;
     this.seedStarterSubject.next(seedStarters);
+    this.eventSubject.next(ServiceEvent.ENTITY_UPDATED);
   }
 
   private onSeedStarterCreated(newSeedStarter: SeedStarter): void {
