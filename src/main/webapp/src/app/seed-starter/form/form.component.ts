@@ -60,9 +60,15 @@ export class FormComponent implements OnInit, OnDestroy {
     this.subject.complete();
   }
 
-  addRow(): void {
-    const seedVarietyControl = new FormControl(this.seedVarieties[0].name, Validators.required);
-    const seedsPerCellControl = new FormControl(this.minSeedsPerCell,
+  addRow(existentRow?: Row): void {
+    // Creates a form control restoring data from a existing row, or just with the initial data,
+    // to be used as a 'select' input into the form.
+    const seedVarietyControl = new FormControl(existentRow ? existentRow.seedVariety.name : this.seedVarieties[0].name,
+      Validators.required);
+
+    // Creates a form control restoring data from a existing row, or just with the initial data,
+    // to be used as a number input into the form.
+    const seedsPerCellControl = new FormControl(existentRow ? existentRow.seedsPerCell : this.minSeedsPerCell,
       [Validators.min(this.minSeedsPerCell), Validators.max(this.maxSeedsPerCell)]);
 
     // Creates a new FormArray containing the above created controls
@@ -73,9 +79,13 @@ export class FormComponent implements OnInit, OnDestroy {
     // the decimal separator.
     const controlName = 'row-' + Math.random().toString(36).substr(2, 10);
 
-    // Adds a new property called 'controlName' to the newRow, to be used into the removeRow
-    // method to remove the correspondent control from the seedStarterForm.
+    // Adds a new property called 'controlName' to the newRow to be used into the removeRow
+    // method, to remove the correspondent control from the seedStarterForm.
     newRow['controlName'] = controlName;
+
+    // Adds a new property called 'rowId' to the newRow to be used into the getAddedRows
+    // method, to be able to update an existing row when editing some seed starter.
+    newRow['rowId'] = existentRow ? existentRow.id : null;
 
     // Add the newRow to the rowsFormArray so that it be rendered by the view
     this.rowsFormArray.push(newRow);
