@@ -1,7 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Params } from '@angular/router';
 import { Subject } from 'rxjs/Subject';
 import { toast } from 'angular2-materialize';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/combineLatest';
 
 import { FeatureService } from '../../feature/feature.service';
 import { MaterialTypeService } from '../../material-type/material-type.service';
@@ -39,20 +42,20 @@ export class FormComponent implements OnInit, OnDestroy {
   private readonly minSeedsPerCell = 1;
   private readonly maxSeedsPerCell = 10;
 
+  private seedStarterId: number;
   private subject: Subject<void> = new Subject();
 
   constructor(private featureService: FeatureService,
               private materialTypeService: MaterialTypeService,
               private seedVarietyService: SeedVarietyService,
               private seedStarterService: SeedStarterService,
-              private formBuilder: FormBuilder) { }
+              private formBuilder: FormBuilder,
+              private activatedRoute: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.initializeFormControls();
     this.registerForServiceEvents();
-    this.fetchAllMaterialTypes();
-    this.fetchAllFeatures();
-    this.fetchAllSeedVarieties();
+    this.loadRequiredData();
   }
 
   ngOnDestroy(): void {
@@ -60,9 +63,15 @@ export class FormComponent implements OnInit, OnDestroy {
     this.subject.complete();
   }
 
-  addRow(): void {
-    const seedVarietyControl = new FormControl(this.seedVarieties[0].name, Validators.required);
-    const seedsPerCellControl = new FormControl(this.minSeedsPerCell,
+  addRow(existentRow?: Row): void {
+    // Creates a form control restoring data from a existing row, or just with the initial data,
+    // to be used as a 'select' input into the form.
+    const seedVarietyControl = new FormControl(existentRow ? existentRow.seedVariety.name : this.seedVarieties[0].name,
+      Validators.required);
+
+    // Creates a form control restoring data from a existing row, or just with the initial data,
+    // to be used as a number input into the form.
+    const seedsPerCellControl = new FormControl(existentRow ? existentRow.seedsPerCell : this.minSeedsPerCell,
       [Validators.min(this.minSeedsPerCell), Validators.max(this.maxSeedsPerCell)]);
 
     // Creates a new FormArray containing the above created controls
@@ -73,9 +82,13 @@ export class FormComponent implements OnInit, OnDestroy {
     // the decimal separator.
     const controlName = 'row-' + Math.random().toString(36).substr(2, 10);
 
-    // Adds a new property called 'controlName' to the newRow, to be used into the removeRow
-    // method to remove the correspondent control from the seedStarterForm.
+    // Adds a new property called 'controlName' to the newRow to be used into the removeRow
+    // method, to remove the correspondent control from the seedStarterForm.
     newRow['controlName'] = controlName;
+
+    // Adds a new property called 'rowId' to the newRow to be used into the getAddedRows
+    // method, to be able to update an existing row when editing some seed starter.
+    newRow['rowId'] = existentRow ? existentRow.id : null;
 
     // Add the newRow to the rowsFormArray so that it be rendered by the view
     this.rowsFormArray.push(newRow);
@@ -94,7 +107,7 @@ export class FormComponent implements OnInit, OnDestroy {
   saveSeedStarter(): void {
     if (this.seedStarterForm.valid) {
       const newSeedStarter: SeedStarter = {
-        id: null,
+        id: this.seedStarterId,
         datePlanted: this.getSelectedDatePlanted(),
         materialType: this.getSelectedMaterialType(),
         covered: this.coveredFormControl.value,
@@ -117,62 +130,6 @@ export class FormComponent implements OnInit, OnDestroy {
     };
   }
 
-  private registerForServiceEvents(): void {
-    this.seedStarterService.events
-      .takeUntil(this.subject)
-      .subscribe((event: ServiceEvent) => {
-        switch (event) {
-          case ServiceEvent.ENTITY_CREATED:
-            this.onSeedStarterCreated();
-            break;
-        }
-      });
-  }
-
-  private onSeedStarterCreated(): void {
-    this.seedStarterForm.reset();
-    toast('Seed Starter Created!', 3000, 'toast-message');
-    window.scrollTo(0, 0);
-    // TODO: remove the 'valid' class from the controls
-  }
-
-  private fetchAllMaterialTypes(): void {
-    this.materialTypeService.materials
-      .takeUntil(this.subject)
-      .subscribe((materials: MaterialType[]) => {
-        if (materials.length > 0) {
-          this.materials = materials;
-
-          // Sets the initial value of the materialTypeFormControl
-          this.materialTypeFormControl.setValue(this.materials[0].name);
-        }
-      });
-  }
-
-  private fetchAllFeatures(): void {
-    this.featureService.features
-      .takeUntil(this.subject)
-      .subscribe((features: Feature[]) => {
-        if (features.length > 0) {
-          this.features = features;
-
-          // Creates a FormControl for each retrieved Feature
-          this.seedStarterForm.addControl('features', this.mapFeaturesToFormArray(features));
-          this.featuresFormArray = this.seedStarterForm.get('features') as FormArray;
-        }
-      });
-  }
-
-  private fetchAllSeedVarieties(): void {
-    this.seedVarietyService.varieties
-      .takeUntil(this.subject)
-      .subscribe((varieties: SeedVariety[]) => {
-        if (varieties.length > 0) {
-          this.seedVarieties = varieties;
-        }
-      });
-  }
-
   private initializeFormControls(): void {
     this.seedStarterForm = this.formBuilder.group({
       datePlanted: ['', Validators.required],
@@ -185,14 +142,119 @@ export class FormComponent implements OnInit, OnDestroy {
     this.coveredFormControl = this.seedStarterForm.get('covered') as FormControl;
   }
 
+  private registerForServiceEvents(): void {
+    this.seedStarterService.events
+      .takeUntil(this.subject)
+      .subscribe((event: ServiceEvent) => {
+        switch (event) {
+          case ServiceEvent.ENTITY_CREATED:
+            this.onSeedStarterCreated();
+            break;
+          case ServiceEvent.ENTITY_UPDATED:
+            this.onSeedStarterUpdated();
+            break;
+        }
+      });
+  }
+
+  private loadRequiredData(): void {
+    Observable.combineLatest(
+      this.featureService.features,
+      this.materialTypeService.materials,
+      this.seedVarietyService.varieties
+    )
+      .takeUntil(this.subject)
+      .subscribe(([features, materials, varieties]) => {
+        // Generates the feature checkboxes after we fetch it
+        if (!this.features && features.length > 0) {
+          this.features = features;
+          this.generateFeatureCheckboxes();
+        }
+
+        // TODO: handle when we don't have materials or varieties
+        // Setup the form controls after fetch the materials and varieties
+        if (materials.length > 0 && varieties.length > 0) {
+          this.materials = materials;
+          this.seedVarieties = varieties;
+          this.setupFormControls();
+        }
+      });
+  }
+
+  private generateFeatureCheckboxes(): void {
+    this.seedStarterForm.addControl('features', this.mapFeaturesToFormArray(this.features));
+    this.featuresFormArray = this.seedStarterForm.get('features') as FormArray;
+  }
+
+  private setupFormControls(): void {
+    this.activatedRoute.params
+      .subscribe((params: Params) => {
+        const seedStarterId = params['id'];
+
+        // Checks if we are editing some seed starter
+        if (seedStarterId) {
+          // Retrieves the seed starter and fills the form controls with your data
+          this.seedStarterService.findSeedStarterById(seedStarterId)
+            .subscribe((seedStarter: SeedStarter) => {
+              // TODO: handle when the seed starter cannot be found
+              // 'null' is returned from the server when the seed starter cannot be found
+              if (seedStarter != null) {
+                this.seedStarterId = seedStarter.id;
+                this.restoreFormControlsFromSeedStarter(seedStarter);
+              }
+            });
+        } else {
+          // We are creating a new seed starter
+          this.materialTypeFormControl.setValue(this.materials[0].name);
+        }
+      });
+  }
+
+  private restoreFormControlsFromSeedStarter(seedStarter: SeedStarter) {
+    this.datePlantedFormControl.setValue(seedStarter.datePlanted);
+    this.materialTypeFormControl.setValue(seedStarter.materialType.name);
+    this.coveredFormControl.setValue(seedStarter.covered);
+
+    // Restore the feature checkboxes
+    this.featuresFormArray.controls.forEach((control: AbstractControl) => {
+      seedStarter.features.forEach((feature: Feature) => {
+        if (feature.name === control['feature']) {
+          control.setValue(true);
+        }
+      });
+    });
+
+    // Restore the rows
+    seedStarter.rows.forEach((row: Row) => {
+      this.addRow(row);
+    });
+  }
+
+  private onSeedStarterCreated(): void {
+    this.seedStarterForm.reset();
+    toast('Seed Starter Created!', 3000, 'toast-message');
+    window.scrollTo(0, 0);
+    // TODO: remove the 'valid' class from the controls
+  }
+
+  private onSeedStarterUpdated(): void {
+    toast('Updated!', 3000, 'toast-message');
+    window.scrollTo(0, 0);
+  }
+
   /**
    * Creates a {@link FormControl} instance for each {@link Feature}.
    * @return a {@link FormArray} containing all FormControl's.
    */
   private mapFeaturesToFormArray(features: Feature[]): FormArray {
     if (features) {
-      const controls = features.map(() => {
-        return this.formBuilder.control(false);
+      const controls = features.map((feature: Feature) => {
+        let checkbox = this.formBuilder.control(false);
+
+        // Adds a new property to the control, to be used when restore the
+        // values from a existing seed starter when editing.
+        checkbox['feature'] = feature.name;
+        return checkbox;
       });
 
       return this.formBuilder.array(controls);
@@ -233,7 +295,7 @@ export class FormComponent implements OnInit, OnDestroy {
       });
 
       return {
-        id: null,
+        id: formArray['rowId'],
         seedVariety: selectedSeedVariety,
         seedsPerCell: formArray.at(1).value
       };

@@ -62,7 +62,11 @@ export class SeedStarterComponent implements OnInit {
   private fetchAllSeedStarters(): void {
     this.seedStarterService.seedStarters
       .takeUntil(this.subject)
-      .subscribe((seedStarters: SeedStarter[]) => this.seedStarters = seedStarters);
+      .subscribe((seedStarters: SeedStarter[]) => {
+        if (seedStarters.length > 0) {
+          this.seedStarters = seedStarters;
+        }
+      });
   }
 
   private registerForServiceEvents(): void {

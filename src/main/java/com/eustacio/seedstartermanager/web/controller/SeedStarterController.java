@@ -58,9 +58,16 @@ public class SeedStarterController {
             return ResponseEntity.badRequest().body(validationError);
         }
 
+        boolean isUpdating = seedStarter.getId() != null;
+
         SeedStarter newSeedStarter = seedStarterService.save(seedStarter);
         URI location = uriBuilder.path("/seed-starter/{id}").build(newSeedStarter.getId());
-        return ResponseEntity.created(location).build();
+
+        if (isUpdating) {
+            return ResponseEntity.ok().location(location).body(newSeedStarter);
+        }
+
+        return ResponseEntity.created(location).body(newSeedStarter);
     }
 
     @GetMapping("/{id}")
