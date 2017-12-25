@@ -247,7 +247,7 @@ export class FormComponent implements OnInit, OnDestroy {
       });
 
       return {
-        id: null,
+        id: formArray['rowId'],
         seedVariety: selectedSeedVariety,
         seedsPerCell: formArray.at(1).value
       };
