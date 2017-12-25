@@ -6,7 +6,8 @@ import { FormComponent } from './form/form.component';
 
 const routes: Routes = [
   { path: 'seed-starter', component: SeedStarterComponent },
-  { path: 'seed-starter/new', component: FormComponent }
+  { path: 'seed-starter/new', component: FormComponent },
+  { path: 'seed-starter/:id/edit', component: FormComponent }
 ];
 
 @NgModule({
