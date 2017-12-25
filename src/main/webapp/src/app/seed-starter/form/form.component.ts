@@ -205,8 +205,13 @@ export class FormComponent implements OnInit, OnDestroy {
    */
   private mapFeaturesToFormArray(features: Feature[]): FormArray {
     if (features) {
-      const controls = features.map(() => {
-        return this.formBuilder.control(false);
+      const controls = features.map((feature: Feature) => {
+        let checkbox = this.formBuilder.control(false);
+
+        // Adds a new property to the control, to be used when restore the
+        // values from a existing seed starter when editing.
+        checkbox['feature'] = feature.name;
+        return checkbox;
       });
 
       return this.formBuilder.array(controls);
