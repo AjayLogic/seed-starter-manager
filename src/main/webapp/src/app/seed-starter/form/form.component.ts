@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Params } from '@angular/router';
 import { Subject } from 'rxjs/Subject';
 import { toast } from 'angular2-materialize';
 import { Observable } from 'rxjs/Observable';
@@ -48,7 +49,8 @@ export class FormComponent implements OnInit, OnDestroy {
               private materialTypeService: MaterialTypeService,
               private seedVarietyService: SeedVarietyService,
               private seedStarterService: SeedStarterService,
-              private formBuilder: FormBuilder) { }
+              private formBuilder: FormBuilder,
+              private activatedRoute: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.initializeFormControls();
@@ -185,7 +187,47 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   private setupFormControls(): void {
-    this.materialTypeFormControl.setValue(this.materials[0].name);
+    this.activatedRoute.params
+      .subscribe((params: Params) => {
+        const seedStarterId = params['id'];
+
+        // Checks if we are editing some seed starter
+        if (seedStarterId) {
+          // Retrieves the seed starter and fills the form controls with your data
+          this.seedStarterService.findSeedStarterById(seedStarterId)
+            .subscribe((seedStarter: SeedStarter) => {
+              // TODO: handle when the seed starter cannot be found
+              // 'null' is returned from the server when the seed starter cannot be found
+              if (seedStarter != null) {
+                this.seedStarterId = seedStarter.id;
+                this.restoreFormControlsFromSeedStarter(seedStarter);
+              }
+            });
+        } else {
+          // We are creating a new seed starter
+          this.materialTypeFormControl.setValue(this.materials[0].name);
+        }
+      });
+  }
+
+  private restoreFormControlsFromSeedStarter(seedStarter: SeedStarter) {
+    this.datePlantedFormControl.setValue(seedStarter.datePlanted);
+    this.materialTypeFormControl.setValue(seedStarter.materialType.name);
+    this.coveredFormControl.setValue(seedStarter.covered);
+
+    // Restore the feature checkboxes
+    this.featuresFormArray.controls.forEach((control: AbstractControl) => {
+      seedStarter.features.forEach((feature: Feature) => {
+        if (feature.name === control['feature']) {
+          control.setValue(true);
+        }
+      });
+    });
+
+    // Restore the rows
+    seedStarter.rows.forEach((row: Row) => {
+      this.addRow(row);
+    });
   }
 
   private onSeedStarterCreated(): void {
