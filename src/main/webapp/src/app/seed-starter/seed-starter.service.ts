@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/catch';
+import 'rxjs/add/observable/of';
 
 import { SeedStarter } from '../model/seed-starter';
 import { ServiceError } from '../model/service-error';
@@ -49,6 +52,20 @@ export class SeedStarterService {
           default:
             this.publishError(response);
         }
+      });
+  }
+
+  findSeedStarterById(id: number): Observable<SeedStarter> {
+    return this.httpClient.get(`${this.endpointUrl}/${id}`, { observe: 'response' })
+      .map((response: HttpResponse<SeedStarter>) => {
+        // Checks if the seed starter was found
+        if (response.status === 200) {
+          return response.body;
+        }
+      })
+      .catch((response: HttpResponse<SeedStarter>) => {
+        this.publishError(response);
+        return Observable.of(null);
       });
   }
 
