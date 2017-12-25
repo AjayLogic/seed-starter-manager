@@ -2,6 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs/Subject';
 import { toast } from 'angular2-materialize';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/combineLatest';
 
 import { FeatureService } from '../../feature/feature.service';
 import { MaterialTypeService } from '../../material-type/material-type.service';
@@ -50,9 +52,7 @@ export class FormComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initializeFormControls();
     this.registerForServiceEvents();
-    this.fetchAllMaterialTypes();
-    this.fetchAllFeatures();
-    this.fetchAllSeedVarieties();
+    this.loadRequiredData();
   }
 
   ngOnDestroy(): void {
@@ -141,41 +141,37 @@ export class FormComponent implements OnInit, OnDestroy {
       });
   }
 
-  private fetchAllMaterialTypes(): void {
-    this.materialTypeService.materials
+  private loadRequiredData(): void {
+    Observable.combineLatest(
+      this.featureService.features,
+      this.materialTypeService.materials,
+      this.seedVarietyService.varieties
+    )
       .takeUntil(this.subject)
-      .subscribe((materials: MaterialType[]) => {
-        if (materials.length > 0) {
-          this.materials = materials;
-
-          // Sets the initial value of the materialTypeFormControl
-          this.materialTypeFormControl.setValue(this.materials[0].name);
-        }
-      });
-  }
-
-  private fetchAllFeatures(): void {
-    this.featureService.features
-      .takeUntil(this.subject)
-      .subscribe((features: Feature[]) => {
-        if (features.length > 0) {
+      .subscribe(([features, materials, varieties]) => {
+        // Generates the feature checkboxes after we fetch it
+        if (!this.features && features.length > 0) {
           this.features = features;
+          this.generateFeatureCheckboxes();
+        }
 
-          // Creates a FormControl for each retrieved Feature
-          this.seedStarterForm.addControl('features', this.mapFeaturesToFormArray(features));
-          this.featuresFormArray = this.seedStarterForm.get('features') as FormArray;
+        // TODO: handle when we don't have materials or varieties
+        // Setup the form controls after fetch the materials and varieties
+        if (materials.length > 0 && varieties.length > 0) {
+          this.materials = materials;
+          this.seedVarieties = varieties;
+          this.setupFormControls();
         }
       });
   }
 
-  private fetchAllSeedVarieties(): void {
-    this.seedVarietyService.varieties
-      .takeUntil(this.subject)
-      .subscribe((varieties: SeedVariety[]) => {
-        if (varieties.length > 0) {
-          this.seedVarieties = varieties;
-        }
-      });
+  private generateFeatureCheckboxes(): void {
+    this.seedStarterForm.addControl('features', this.mapFeaturesToFormArray(this.features));
+    this.featuresFormArray = this.seedStarterForm.get('features') as FormArray;
+  }
+
+  private setupFormControls(): void {
+    this.materialTypeFormControl.setValue(this.materials[0].name);
   }
 
   private onSeedStarterCreated(): void {
