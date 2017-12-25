@@ -25,6 +25,9 @@ export class SeedStarterService {
     this.httpClient.post(this.endpointUrl, seedStarter, { headers: this.httpHeader, observe: 'response' })
       .subscribe((response: HttpResponse<SeedStarter>) => {
           switch (response.status) {
+            case 200: // SeedStarter has been updated successfully
+              this.onSeedStarterUpdated(response.body);
+              break;
             case 201:  // SeedStarter has been created successfully
               this.onSeedStarterCreated(response.body);
               break;
@@ -73,6 +76,19 @@ export class SeedStarterService {
 
   private publishError(response: HttpResponseBase) {
     this.errorSubject.next(ServiceError.fromStatusCode(response.status));
+  }
+
+  private onSeedStarterUpdated(updatedSeedStarter: SeedStarter): void {
+    let seedStarters = this.seedStarterSubject.getValue();
+
+    // Finds the index of the updated seed starter on the array
+    const existentSeedStarterIndex = seedStarters.findIndex((existentSeedStarter: SeedStarter) => {
+      return existentSeedStarter.id === updatedSeedStarter.id;
+    });
+
+    // Replaces the existing seed starter with the updated one, and publish the updated array
+    seedStarters[existentSeedStarterIndex] = updatedSeedStarter;
+    this.seedStarterSubject.next(seedStarters);
   }
 
   private onSeedStarterCreated(newSeedStarter: SeedStarter): void {
