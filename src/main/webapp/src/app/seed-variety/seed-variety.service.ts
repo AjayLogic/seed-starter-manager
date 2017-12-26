@@ -11,6 +11,7 @@ export class SeedVarietyService {
 
   private readonly endpointUrl: string = '/api/variety';
   private httpHeader: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
+
   private varietySubject: BehaviorSubject<SeedVariety[]> = new BehaviorSubject([]);
   private errorSubject: BehaviorSubject<ServiceError> = new BehaviorSubject(null);
 
@@ -63,20 +64,20 @@ export class SeedVarietyService {
   }
 
   private onSeedVarietyCreated(newSeedVariety: SeedVariety): void {
-    let varieties: SeedVariety[] = this.varietySubject.getValue();
-    this.varietySubject.next(varieties.concat(newSeedVariety));
+    let varieties: SeedVariety[] = this.varietySubject.getValue().concat(newSeedVariety);
+    this.varietySubject.next(varieties);
   }
 
   private onSeedVarietyDeleted(deletedSeedVariety: SeedVariety): void {
     // Removes the deleted SeedVariety from the array
-    let variety: SeedVariety[] = this.varietySubject.getValue()
+    let varieties: SeedVariety[] = this.varietySubject.getValue()
       .filter((variety: SeedVariety) => variety.id != deletedSeedVariety.id);
 
-    this.varietySubject.next(variety);
+    this.varietySubject.next(varieties);
   }
 
   private loadInitialData(): void {
-    this.httpClient.get<SeedVariety[]>(`${this.endpointUrl}`, { observe: 'response' })
+    this.httpClient.get(`${this.endpointUrl}`, { observe: 'response' })
       .subscribe((response: HttpResponse<SeedVariety[]>) => {
           if (response.status == 200) this.varietySubject.next(response.body);
           else this.publishError(response);
