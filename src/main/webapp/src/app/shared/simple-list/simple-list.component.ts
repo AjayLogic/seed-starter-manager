@@ -13,11 +13,11 @@ export class SimpleListComponent {
   @Output() onListItemClicked: EventEmitter<ListItem> = new EventEmitter();
   @Output() onListItemBadgeClicked: EventEmitter<ListItem> = new EventEmitter();
 
-  private onItemClicked(item: ListItem): void {
+  onItemClicked(item: ListItem): void {
     this.onListItemClicked.emit(item);
   }
 
-  private onItemBadgeClicked(item: ListItem): void {
+  onItemBadgeClicked(item: ListItem): void {
     this.onListItemBadgeClicked.emit(item);
   }
 
