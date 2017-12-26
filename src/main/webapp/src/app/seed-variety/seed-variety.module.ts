@@ -1,15 +1,16 @@
 import { NgModule } from '@angular/core';
-import { MasonryModule } from 'angular2-masonry';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MasonryModule } from 'angular2-masonry';
+
+import { SharedModule } from '../shared/shared.module';
+import { SeedVarietyRoutingModule } from './seed-variety-routing.module';
+
+import { SeedVarietyService } from './seed-variety.service';
 
 import { SeedVarietyComponent } from './seed-variety.component';
-import { SeedVarietyRoutingModule } from './seed-variety-routing.module';
-import { SeedVarietyService } from './seed-variety.service';
-import { SharedModule } from '../shared/shared.module';
-import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [SeedVarietyComponent],
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -17,7 +18,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     SharedModule,
     SeedVarietyRoutingModule
   ],
+  declarations: [SeedVarietyComponent],
   providers: [SeedVarietyService]
 })
-export class SeedVarietyModule {
-}
+export class SeedVarietyModule {}
