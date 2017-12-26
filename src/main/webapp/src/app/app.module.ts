@@ -9,9 +9,6 @@ import { SeedStarterModule } from './seed-starter/seed-starter.module';
 import { AppComponent } from './app.component';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
   imports: [
     BrowserModule,
     CoreModule,
@@ -19,7 +16,9 @@ import { AppComponent } from './app.component';
     SeedStarterModule,
     AppRoutingModule
   ],
-  providers: [],
+  declarations: [
+    AppComponent
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {
