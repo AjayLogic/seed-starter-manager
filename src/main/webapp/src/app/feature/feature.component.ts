@@ -4,10 +4,12 @@ import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/takeUntil';
 
 import { FeatureService } from './feature.service';
+
+import { SimpleDialogComponent } from '../shared/ui/simple-dialog/simple-dialog.component';
+
 import { Feature } from '../model/feature';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
-import { SimpleDialogComponent } from '../shared/simple-dialog/simple-dialog.component';
 
 @Component({
   selector: 'app-feature',
