@@ -3,10 +3,12 @@ import { AbstractControl, FormControl, ValidationErrors, Validators } from '@ang
 import { Subject } from 'rxjs/Subject';
 
 import { SeedVarietyService } from './seed-variety.service';
+
+import { SimpleDialogComponent } from '../shared/ui/simple-dialog/simple-dialog.component';
+
 import { SeedVariety } from '../model/seed-variety';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
-import { SimpleDialogComponent } from '../shared/simple-dialog/simple-dialog.component';
 
 @Component({
   selector: 'app-seed-variety',
@@ -23,7 +25,6 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   @ViewChild('addSeedVarietyDialog') addSeedVarietyDialog: SimpleDialogComponent;
 
   inputName: FormControl;
-
   varieties: SeedVariety[];
 
   private readonly maxSeedVarietyName = 50; // TODO: fetch this information from database
