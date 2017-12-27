@@ -7,6 +7,7 @@ import { SeedVarietyService } from './seed-variety.service';
 import { SimpleDialogComponent } from '../shared/ui/simple-dialog/simple-dialog.component';
 
 import { SeedVariety } from '../model/seed-variety';
+import { ServiceEvent } from '../model/service-event.enum';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
 
@@ -36,6 +37,7 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.fetchAllSeedVarieties();
+    this.registerForServiceEvents();
     this.registerForErrors();
     this.initializeFormControls();
   }
@@ -48,8 +50,11 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   addSeedVariety(): void {
     if (this.isVarietyNameValid(this.inputName)) {
       const seedVarietyName = this.inputName.value;
-      this.seedVarietyService.createOrUpdateVariety({ id: null, name: seedVarietyName, imageName: this.latestSelectedSeedVarietyImage });
-      this.closeAndResetAddSeedVarietyModal();
+      this.seedVarietyService.createOrUpdateVariety({
+        id: null,
+        name: seedVarietyName,
+        imageName: this.latestSelectedSeedVarietyImage
+      });
     } else {
       this.renderer.addClass(this.inputNameRef.nativeElement, 'invalid');
     }
@@ -136,6 +141,18 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
       .subscribe((varieties: SeedVariety[]) => this.varieties = varieties);
   }
 
+  private registerForServiceEvents(): void {
+    this.seedVarietyService.events
+      .takeUntil(this.subject)
+      .subscribe((event: ServiceEvent) => {
+        switch (event) {
+          case ServiceEvent.ENTITY_CREATED:
+            this.onSeedVarietyCreated();
+            break;
+        }
+      });
+  }
+
   private registerForErrors(): void {
     this.seedVarietyService.errors
       .takeUntil(this.subject)
@@ -150,6 +167,10 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
           }
         }
       });
+  }
+
+  private onSeedVarietyCreated(): void {
+    this.closeAndResetAddSeedVarietyModal();
   }
 
 }
