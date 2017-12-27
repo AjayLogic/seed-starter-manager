@@ -4,6 +4,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 
 import { ServiceError } from '../model/service-error';
+import { ServiceEvent } from '../model/service-event.enum';
 import { SeedVariety } from '../model/seed-variety';
 
 @Injectable()
@@ -13,18 +14,11 @@ export class SeedVarietyService {
   private httpHeader: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
 
   private varietySubject: BehaviorSubject<SeedVariety[]> = new BehaviorSubject([]);
+  private eventSubject: BehaviorSubject<ServiceEvent> = new BehaviorSubject(null);
   private errorSubject: BehaviorSubject<ServiceError> = new BehaviorSubject(null);
 
   constructor(private httpClient: HttpClient) {
     this.loadInitialData();
-  }
-
-  get varieties(): Observable<SeedVariety[]> {
-    return this.varietySubject.asObservable();
-  }
-
-  get errors(): Observable<ServiceError> {
-    return this.errorSubject.asObservable();
   }
 
   createOrUpdateVariety(variety: SeedVariety): void {
@@ -61,6 +55,18 @@ export class SeedVarietyService {
         },
         (error: HttpErrorResponse) => this.publishError(error)
       );
+  }
+
+  get varieties(): Observable<SeedVariety[]> {
+    return this.varietySubject.asObservable();
+  }
+
+  get events(): Observable<ServiceEvent> {
+    return this.eventSubject.asObservable();
+  }
+
+  get errors(): Observable<ServiceError> {
+    return this.errorSubject.asObservable();
   }
 
   private onSeedVarietyCreated(newSeedVariety: SeedVariety): void {
