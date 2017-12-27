@@ -31,7 +31,10 @@ export class SeedVarietyService {
     this.httpClient.post(`${this.endpointUrl}`, payload, { observe: 'response' })
       .subscribe((response: HttpResponse<SeedVariety>) => {
           switch (response.status) {
-            case 201:  // Created (SeedVariety has been created successfully)
+            case 200:  // SeedVariety has been updated successfully
+              this.onSeedVarietyUpdated(response.body);
+              break;
+            case 201:  // SeedVariety has been created successfully
               this.onSeedVarietyCreated(response.body);
               break;
             default:
@@ -67,6 +70,20 @@ export class SeedVarietyService {
 
   get errors(): Observable<ServiceError> {
     return this.errorSubject.asObservable();
+  }
+
+  private onSeedVarietyUpdated(updatedSeedVariety: SeedVariety): void {
+    let varieties = this.varietySubject.getValue();
+
+    // Finds the index of the updated variety on the array
+    const existentSeedVarietyIndex = varieties.findIndex((existentSeedVariety: SeedVariety) => {
+      return existentSeedVariety.id === updatedSeedVariety.id;
+    });
+
+    // Replaces the existing variety with the updated one, and publish the updated array
+    varieties[existentSeedVarietyIndex] = updatedSeedVariety;
+    this.varietySubject.next(varieties);
+    this.eventSubject.next(ServiceEvent.ENTITY_UPDATED);
   }
 
   private onSeedVarietyCreated(newSeedVariety: SeedVariety): void {
