@@ -72,6 +72,7 @@ export class SeedVarietyService {
   private onSeedVarietyCreated(newSeedVariety: SeedVariety): void {
     let varieties: SeedVariety[] = this.varietySubject.getValue().concat(newSeedVariety);
     this.varietySubject.next(varieties);
+    this.eventSubject.next(ServiceEvent.ENTITY_CREATED);
   }
 
   private onSeedVarietyDeleted(deletedSeedVariety: SeedVariety): void {
@@ -80,6 +81,7 @@ export class SeedVarietyService {
       .filter((variety: SeedVariety) => variety.id != deletedSeedVariety.id);
 
     this.varietySubject.next(varieties);
+    this.eventSubject.next(ServiceEvent.ENTITY_DELETED);
   }
 
   private loadInitialData(): void {
