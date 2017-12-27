@@ -34,6 +34,7 @@ import java.util.Optional;
 import static com.eustacio.seedstartermanager.TestUtil.convertToJson;
 import static com.eustacio.seedstartermanager.TestUtil.setId;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -92,7 +93,7 @@ class SeedStarterControllerIT {
     }
 
     @Test
-    void createOrUpdateSeedStarter() throws Exception {
+    void createOrUpdateSeedStarter_ShouldReturnStatusOk_WhenSeedStarterIsUpdated() throws Exception {
         SeedStarter newSeedStarter = seedStarterList.get(0);
         setId(999L, newSeedStarter);
 
@@ -100,6 +101,24 @@ class SeedStarterControllerIT {
 
         String payload = convertToJson(newSeedStarter);
         String expectedLocation = "/seed-starter/" + newSeedStarter.getId();
+
+        mockMvc.perform(post("/seed-starter").contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(payload))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.LOCATION, Matchers.endsWith(expectedLocation)));
+    }
+
+    @Test
+    void createOrUpdateSeedStarter_ShouldReturnStatusCreated_WhenSeedStarterIsCreated() throws Exception {
+        SeedStarter newSeedStarter = seedStarterList.get(0);
+
+        SeedStarter updatedSeedStarter = seedStarterList.get(1);
+        setId(112233L, updatedSeedStarter);
+
+        when(mockService.save(any())).thenReturn(updatedSeedStarter);
+
+        String payload = convertToJson(newSeedStarter);
+        String expectedLocation = "/seed-starter/" + updatedSeedStarter.getId();
 
         mockMvc.perform(post("/seed-starter").contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(payload))

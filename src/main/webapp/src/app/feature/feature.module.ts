@@ -7,12 +7,11 @@ import { MaterializeModule } from 'angular2-materialize';
 import { FeatureRoutingModule } from './feature-routing.module';
 import { SharedModule } from '../shared/shared.module';
 
-import { FeatureComponent } from './feature.component';
-
 import { FeatureService } from './feature.service';
 
+import { FeatureComponent } from './feature.component';
+
 @NgModule({
-  declarations: [FeatureComponent],
   imports: [
     CommonModule,
     HttpClientModule,
@@ -21,6 +20,7 @@ import { FeatureService } from './feature.service';
     FeatureRoutingModule,
     SharedModule
   ],
+  declarations: [FeatureComponent],
   providers: [FeatureService]
 })
 export class FeatureModule {

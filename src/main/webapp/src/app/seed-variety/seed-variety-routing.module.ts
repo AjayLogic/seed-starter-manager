@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+
 import { SeedVarietyComponent } from './seed-variety.component';
 
 const routes: Routes = [

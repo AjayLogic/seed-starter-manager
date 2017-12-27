@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import $ from 'jquery';
 
 import { Theme } from './theme';
 
@@ -24,9 +23,11 @@ export class ThemeManagerService {
   setTheme(themeName: string): void {
     const theme: Theme = this.themes.find((theme: Theme) => theme.name == themeName);
     if (theme) {
-      let themeTag = $('#theme');
-      themeTag.attr('href', theme.location);
-      themeTag.appendTo('head');
+      let themeTag: HTMLElement = document.getElementById('theme');
+      themeTag.setAttribute('href', theme.location);
+
+      // Ensures that the theme can replace any other CSS file above it on the 'head' tag
+      document.getElementsByTagName('head')[0].appendChild(themeTag);
       this.saveThemeOnLocalStorage(themeName);
     } else {
       console.error(`Cannot find the theme '${themeName}'; setting the default theme...`);

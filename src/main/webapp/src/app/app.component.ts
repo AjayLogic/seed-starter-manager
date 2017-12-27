@@ -9,7 +9,7 @@ import { ThemeManagerService } from './core/theme-manager/theme-manager.service'
 })
 export class AppComponent implements OnInit {
 
-  private themes: string[];
+  themes: string[];
 
   constructor(private themeManager: ThemeManagerService) {}
 
@@ -17,7 +17,7 @@ export class AppComponent implements OnInit {
     this.themes = this.themeManager.getThemes();
   }
 
-  private onThemeSelected(themeName: string): void {
+  onThemeSelected(themeName: string): void {
     this.themeManager.setTheme(themeName);
   }
 

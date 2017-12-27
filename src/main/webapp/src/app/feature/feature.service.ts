@@ -11,6 +11,7 @@ export class FeatureService {
 
   private readonly endpointUrl: string = '/api/feature';
   private httpHeader: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
+
   private featuresSubject: BehaviorSubject<Feature[]> = new BehaviorSubject([]);
   private errorSubject: BehaviorSubject<ServiceError> = new BehaviorSubject(null);
 

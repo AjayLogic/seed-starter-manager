@@ -48,9 +48,9 @@
       </div>
 
       <div class="input-field col s9">
-        <input id="input-name" type="text" [formControl]="inputName" [class]="getInputFieldClass(inputName)" #inputNameRef>
-        <label for="input-name" appInputErrorLabel labelText="Seed Variety" #inputNameLabelRef
-               [inputErrors]="inputName.errors" [errorMessages]="errorMessages"></label>
+        <input id="input-name" type="text" [formControl]="inputName" #inputNameRef appInputWithValidation
+               [control]="inputName" [errorMessages]="errorMessages">
+        <label for="input-name" class="input-error-label" #inputNameLabelRef>Seed Variety</label>
       </div>
     </div>
   </ng-container>

@@ -3,11 +3,13 @@ import { Subject } from 'rxjs/Subject';
 import { toast } from 'angular2-materialize';
 
 import { SeedStarterService } from './seed-starter.service';
+
+import { SimpleDialogComponent } from '../shared/ui/simple-dialog/simple-dialog.component';
+
 import { SeedStarter } from '../model/seed-starter';
 import { Feature } from '../model/feature';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
-import { SimpleDialogComponent } from '../shared/simple-dialog/simple-dialog.component';
 import { ServiceEvent } from '../model/service-event.enum';
 
 @Component({

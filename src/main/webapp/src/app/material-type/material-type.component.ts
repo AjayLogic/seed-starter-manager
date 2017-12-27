@@ -3,10 +3,12 @@ import { AbstractControl, FormControl, ValidationErrors, Validators } from '@ang
 import { Subject } from 'rxjs/Subject';
 
 import { MaterialTypeService } from './material-type.service';
+
+import { SimpleDialogComponent } from '../shared/ui/simple-dialog/simple-dialog.component';
+
 import { MaterialType } from '../model/material-type';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
-import { SimpleDialogComponent } from '../shared/simple-dialog/simple-dialog.component';
 
 @Component({
   selector: 'app-material-type',
@@ -57,11 +59,6 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
       maxlength: 'The material name must have less than ' + this.maxMaterialName + ' characters',
       conflict: 'This material already exists'
     };
-  }
-
-  getInputFieldClass(input: FormControl): string {
-    return input.valid ? 'valid' :
-      input.invalid && input.touched || input.invalid && input.dirty ? 'invalid' : '';
   }
 
   addMaterial(): void {

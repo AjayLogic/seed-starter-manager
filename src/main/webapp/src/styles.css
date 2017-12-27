@@ -1,3 +1,9 @@
+/* Define the size of the label to avoid break the error message on each
+   space character */
+.input-error-label {
+  width: 100%;
+}
+
 /* Defines the appearance of the error label of the input controls */
 .input-error-label:after {
   content: attr(data-error);
