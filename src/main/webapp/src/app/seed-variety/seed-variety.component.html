@@ -17,23 +17,60 @@
 
           <!-- Dropdown structure -->
           <ul [attr.id]="'dropdown-card-options-' + i" class='dropdown-content'>
-            <li (click)="deleteVariety(variety)"><a>Delete</a></li>
+            <li (click)="showDeletionDialog(variety)"><a>Delete</a></li>
           </ul>
         </div>
         <a *ngIf="variety.uses">{{variety.uses}} usage</a>
       </div>
     </masonry-brick>
   </masonry>
+
+  <!-- Deletion confirm dialog -->
+  <app-simple-dialog #deletionDialog>
+    <ng-container modal-content>
+      <div class="row">
+        <div class="input-field col s12">
+          <ng-container *ngIf="latestSeedVarietyClicked?.uses">
+            <p>
+              <b>"{{latestSeedVarietyClicked?.name}}"</b> cannot be deleted because it's currently
+              in use by some seed starter, you should delete the seed starter(s) before delete it.
+            </p>
+          </ng-container>
+
+          <ng-container *ngIf="!latestSeedVarietyClicked?.uses">
+            <h4>Delete "{{latestSeedVarietyClicked?.name}}" ?</h4>
+            <p>
+              <b>"{{latestSeedVarietyClicked?.name}}"</b> will be removed from the list and
+              <b>this operation cannot be undone</b>. You are really want delete this variety ?
+            </p>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container modal-footer>
+      <ng-container *ngIf="latestSeedVarietyClicked?.uses">
+        <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
+        <!-- TODO: find all seed starters that uses the clicked variety and show them when user clicks on "View Seed Starters" -->
+        <a class="modal-action waves-effect waves-light btn-flat">View Seed Starters</a>
+      </ng-container>
+
+      <ng-container *ngIf="!latestSeedVarietyClicked?.uses">
+        <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
+        <a class="modal-action waves-effect waves-red btn-flat"
+           (click)="deleteVariety(latestSeedVarietyClicked)">Delete</a>
+      </ng-container>
+    </ng-container>
+  </app-simple-dialog>
 </div>
 
-<!-- add material type - modal trigger -->
+<!-- add variety - modal trigger -->
 <div class="fixed-action-btn">
   <a class="btn-floating btn-large teal waves-effect" [ngClass]="{'pulse': !varieties}" (click)="addSeedVarietyDialog.open()">
     <i class="large material-icons">add</i>
   </a>
 </div>
 
-<!-- add material - modal structure -->
+<!-- add variety - modal structure -->
 <app-simple-dialog #addSeedVarietyDialog>
   <ng-container modal-content>
     <h4>Add a new Seed Variety</h4>
@@ -56,6 +93,6 @@
   </ng-container>
   <ng-container modal-footer>
     <a class="modal-action modal-close waves-effect waves-light btn-flat" (click)="onAddSeedVarietyCancelled()">Cancel</a>
-    <a class="modal-action waves-effect waves-green btn-flat" (click)="addSeedVariety()">Add</a>
+    <a class="modal-action waves-effect waves-green btn-flat" (click)="addSeedVariety()">Save</a>
   </ng-container>
 </app-simple-dialog>

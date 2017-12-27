@@ -25,9 +25,11 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   @ViewChild('inputNameLabelRef') inputNameLabelRef: ElementRef;
 
   @ViewChild('addSeedVarietyDialog') addSeedVarietyDialog: SimpleDialogComponent;
+  @ViewChild('deletionDialog') deletionDialog: SimpleDialogComponent;
 
   inputName: FormControl;
   varieties: SeedVariety[];
+  latestSeedVarietyClicked: SeedVariety;
 
   private readonly maxSeedVarietyName = 50; // TODO: fetch this information from database
   private latestSelectedSeedVarietyImage: File;
@@ -63,10 +65,14 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
     }
   }
 
+  showDeletionDialog(variety: SeedVariety): void {
+    this.latestSeedVarietyClicked = variety;
+    this.deletionDialog.open();
+  }
+
   deleteVariety(variety: SeedVariety): void {
     if (!variety.uses) {
       this.seedVarietyService.deleteSeedVariety(variety);
-      this.toastService.showMessage('Variety Deleted Successfully!');
     }
   }
 
@@ -153,6 +159,9 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
           case ServiceEvent.ENTITY_CREATED:
             this.onSeedVarietyCreated();
             break;
+          case ServiceEvent.ENTITY_DELETED:
+            this.onSeedVarietyDeleted();
+            break;
         }
       });
   }
@@ -176,6 +185,11 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   private onSeedVarietyCreated(): void {
     this.closeAndResetAddSeedVarietyModal();
     this.toastService.showMessage('Variety Added Successfully!');
+  }
+
+  private onSeedVarietyDeleted(): void {
+    this.deletionDialog.close();
+    this.toastService.showMessage('Variety Deleted Successfully!');
   }
 
 }
