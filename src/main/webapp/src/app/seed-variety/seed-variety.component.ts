@@ -52,17 +52,24 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
     this.subject.complete();
   }
 
-  addSeedVariety(): void {
+  saveSeedVariety(): void {
     if (this.isVarietyNameValid(this.inputName)) {
       const seedVarietyName = this.inputName.value;
       this.seedVarietyService.createOrUpdateVariety({
-        id: null,
+        id: this.latestSeedVarietyClicked ? this.latestSeedVarietyClicked.id : null,
         name: seedVarietyName,
         imageName: this.latestSelectedSeedVarietyImage
       });
     } else {
       this.renderer.addClass(this.inputNameRef.nativeElement, 'invalid');
     }
+  }
+
+  showEditDialog(variety: SeedVariety): void {
+    this.latestSeedVarietyClicked = variety;
+    this.inputName.setValue(variety.name);
+    this.renderer.addClass(this.inputNameLabelRef.nativeElement, 'active');
+    this.addSeedVarietyDialog.open();
   }
 
   showDeletionDialog(variety: SeedVariety): void {
@@ -133,6 +140,7 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   }
 
   private closeAndResetAddSeedVarietyModal(): void {
+    this.latestSeedVarietyClicked = null;
     this.addSeedVarietyDialog.close();
 
     // Resets the seed variety name input field
@@ -158,6 +166,9 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
         switch (event) {
           case ServiceEvent.ENTITY_CREATED:
             this.onSeedVarietyCreated();
+            break;
+          case ServiceEvent.ENTITY_UPDATED:
+            this.onSeedVarietyUpdated();
             break;
           case ServiceEvent.ENTITY_DELETED:
             this.onSeedVarietyDeleted();
@@ -187,7 +198,13 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
     this.toastService.showMessage('Variety Added Successfully!');
   }
 
+  private onSeedVarietyUpdated(): void {
+    this.closeAndResetAddSeedVarietyModal();
+    this.toastService.showMessage('Updated Successfully!');
+  }
+
   private onSeedVarietyDeleted(): void {
+    this.latestSeedVarietyClicked = null;
     this.deletionDialog.close();
     this.toastService.showMessage('Variety Deleted Successfully!');
   }

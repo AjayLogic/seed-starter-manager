@@ -17,6 +17,7 @@
 
           <!-- Dropdown structure -->
           <ul [attr.id]="'dropdown-card-options-' + i" class='dropdown-content'>
+            <li (click)="showEditDialog(variety)"><a>Edit</a></li>
             <li (click)="showDeletionDialog(variety)"><a>Delete</a></li>
           </ul>
         </div>
@@ -70,10 +71,10 @@
   </a>
 </div>
 
-<!-- add variety - modal structure -->
+<!-- add/edit variety - modal structure -->
 <app-simple-dialog #addSeedVarietyDialog>
   <ng-container modal-content>
-    <h4>Add a new Seed Variety</h4>
+    <h4>Seed Variety</h4>
     <div class="row valign-wrapper">
       <div class="col s3">
         <!-- TODO: Find/make a better placeholder image -->
@@ -93,6 +94,6 @@
   </ng-container>
   <ng-container modal-footer>
     <a class="modal-action modal-close waves-effect waves-light btn-flat" (click)="onAddSeedVarietyCancelled()">Cancel</a>
-    <a class="modal-action waves-effect waves-green btn-flat" (click)="addSeedVariety()">Save</a>
+    <a class="modal-action waves-effect waves-green btn-flat" (click)="saveSeedVariety()">Save</a>
   </ng-container>
 </app-simple-dialog>
