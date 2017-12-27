@@ -61,11 +61,6 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
     };
   }
 
-  getInputFieldClass(input: FormControl): string {
-    return input.valid ? 'valid' :
-      input.invalid && input.touched || input.invalid && input.dirty ? 'invalid' : '';
-  }
-
   addMaterial(): void {
     if (this.isMaterialNameValid(this.inputName)) {
       const materialName: string = this.inputName.value;

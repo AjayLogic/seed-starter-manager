@@ -9,11 +9,8 @@
       <div class="row">
         <div class="input-field col s12">
           <input id="input-edit-name" type="text" [formControl]="inputEditName" #inputEditNameRef
-                 [class]="getInputFieldClass(inputEditName)">
-          <label for="input-edit-name" appInputErrorLabel labelText="Material Type"
-                 #inputEditNameLabelRef
-                 [inputErrors]="inputEditName.errors" [errorMessages]="errorMessages">
-          </label>
+                 appInputWithValidation [control]="inputEditName" [errorMessages]="errorMessages">
+          <label for="input-edit-name" class="input-error-label" #inputEditNameLabelRef>Material Type</label>
         </div>
       </div>
     </ng-container>
@@ -76,10 +73,8 @@
     <div class="row">
       <div class="input-field col s12">
         <input id="input-name" type="text" [formControl]="inputName" #inputNameRef
-               [class]="getInputFieldClass(inputName)">
-        <label for="input-name" appInputErrorLabel labelText="Material Type" #inputNameLabelRef
-               [inputErrors]="inputName.errors" [errorMessages]="errorMessages">
-        </label>
+               appInputWithValidation [control]="inputName" [errorMessages]="errorMessages">
+        <label for="input-name" class="input-error-label" #inputNameLabelRef>Material Type</label>
       </div>
     </div>
   </ng-container>
