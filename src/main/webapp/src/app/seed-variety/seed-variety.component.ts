@@ -95,11 +95,6 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
     };
   }
 
-  getInputFieldClass(input: FormControl): string {
-    return input.valid ? 'valid' :
-      input.invalid && input.touched || input.invalid && input.dirty ? 'invalid' : '';
-  }
-
   private initializeFormControls(): void {
     this.imagePlaceholder = this.seedVarietyImage.nativeElement.src;
 
