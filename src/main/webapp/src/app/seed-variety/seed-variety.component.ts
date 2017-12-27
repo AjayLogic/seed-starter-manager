@@ -7,8 +7,10 @@ import { SeedVarietyService } from './seed-variety.service';
 import { SimpleDialogComponent } from '../shared/ui/simple-dialog/simple-dialog.component';
 
 import { SeedVariety } from '../model/seed-variety';
+import { ServiceEvent } from '../model/service-event.enum';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
+import { ToastService } from '../shared/ui/toast-service/toast.service';
 
 @Component({
   selector: 'app-seed-variety',
@@ -23,19 +25,24 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   @ViewChild('inputNameLabelRef') inputNameLabelRef: ElementRef;
 
   @ViewChild('addSeedVarietyDialog') addSeedVarietyDialog: SimpleDialogComponent;
+  @ViewChild('deletionDialog') deletionDialog: SimpleDialogComponent;
 
   inputName: FormControl;
   varieties: SeedVariety[];
+  latestSeedVarietyClicked: SeedVariety;
 
   private readonly maxSeedVarietyName = 50; // TODO: fetch this information from database
   private latestSelectedSeedVarietyImage: File;
   private imagePlaceholder: string;
   private subject: Subject<void> = new Subject();
 
-  constructor(private seedVarietyService: SeedVarietyService, private renderer: Renderer2) {}
+  constructor(private seedVarietyService: SeedVarietyService,
+              private toastService: ToastService,
+              private renderer: Renderer2) {}
 
   ngOnInit(): void {
     this.fetchAllSeedVarieties();
+    this.registerForServiceEvents();
     this.registerForErrors();
     this.initializeFormControls();
   }
@@ -45,14 +52,29 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
     this.subject.complete();
   }
 
-  addSeedVariety(): void {
+  saveSeedVariety(): void {
     if (this.isVarietyNameValid(this.inputName)) {
       const seedVarietyName = this.inputName.value;
-      this.seedVarietyService.createOrUpdateVariety({ id: null, name: seedVarietyName, imageName: this.latestSelectedSeedVarietyImage });
-      this.closeAndResetAddSeedVarietyModal();
+      this.seedVarietyService.createOrUpdateVariety({
+        id: this.latestSeedVarietyClicked ? this.latestSeedVarietyClicked.id : null,
+        name: seedVarietyName,
+        imageName: this.latestSelectedSeedVarietyImage
+      });
     } else {
       this.renderer.addClass(this.inputNameRef.nativeElement, 'invalid');
     }
+  }
+
+  showEditDialog(variety: SeedVariety): void {
+    this.latestSeedVarietyClicked = variety;
+    this.inputName.setValue(variety.name);
+    this.renderer.addClass(this.inputNameLabelRef.nativeElement, 'active');
+    this.addSeedVarietyDialog.open();
+  }
+
+  showDeletionDialog(variety: SeedVariety): void {
+    this.latestSeedVarietyClicked = variety;
+    this.deletionDialog.open();
   }
 
   deleteVariety(variety: SeedVariety): void {
@@ -118,6 +140,7 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   }
 
   private closeAndResetAddSeedVarietyModal(): void {
+    this.latestSeedVarietyClicked = null;
     this.addSeedVarietyDialog.close();
 
     // Resets the seed variety name input field
@@ -136,6 +159,24 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
       .subscribe((varieties: SeedVariety[]) => this.varieties = varieties);
   }
 
+  private registerForServiceEvents(): void {
+    this.seedVarietyService.events
+      .takeUntil(this.subject)
+      .subscribe((event: ServiceEvent) => {
+        switch (event) {
+          case ServiceEvent.ENTITY_CREATED:
+            this.onSeedVarietyCreated();
+            break;
+          case ServiceEvent.ENTITY_UPDATED:
+            this.onSeedVarietyUpdated();
+            break;
+          case ServiceEvent.ENTITY_DELETED:
+            this.onSeedVarietyDeleted();
+            break;
+        }
+      });
+  }
+
   private registerForErrors(): void {
     this.seedVarietyService.errors
       .takeUntil(this.subject)
@@ -150,6 +191,22 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
           }
         }
       });
+  }
+
+  private onSeedVarietyCreated(): void {
+    this.closeAndResetAddSeedVarietyModal();
+    this.toastService.showMessage('Variety Added Successfully!');
+  }
+
+  private onSeedVarietyUpdated(): void {
+    this.closeAndResetAddSeedVarietyModal();
+    this.toastService.showMessage('Updated Successfully!');
+  }
+
+  private onSeedVarietyDeleted(): void {
+    this.latestSeedVarietyClicked = null;
+    this.deletionDialog.close();
+    this.toastService.showMessage('Variety Deleted Successfully!');
   }
 
 }

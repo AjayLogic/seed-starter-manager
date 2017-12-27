@@ -4,6 +4,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 
 import { ServiceError } from '../model/service-error';
+import { ServiceEvent } from '../model/service-event.enum';
 import { SeedVariety } from '../model/seed-variety';
 
 @Injectable()
@@ -13,18 +14,11 @@ export class SeedVarietyService {
   private httpHeader: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
 
   private varietySubject: BehaviorSubject<SeedVariety[]> = new BehaviorSubject([]);
+  private eventSubject: BehaviorSubject<ServiceEvent> = new BehaviorSubject(null);
   private errorSubject: BehaviorSubject<ServiceError> = new BehaviorSubject(null);
 
   constructor(private httpClient: HttpClient) {
     this.loadInitialData();
-  }
-
-  get varieties(): Observable<SeedVariety[]> {
-    return this.varietySubject.asObservable();
-  }
-
-  get errors(): Observable<ServiceError> {
-    return this.errorSubject.asObservable();
   }
 
   createOrUpdateVariety(variety: SeedVariety): void {
@@ -37,7 +31,10 @@ export class SeedVarietyService {
     this.httpClient.post(`${this.endpointUrl}`, payload, { observe: 'response' })
       .subscribe((response: HttpResponse<SeedVariety>) => {
           switch (response.status) {
-            case 201:  // Created (SeedVariety has been created successfully)
+            case 200:  // SeedVariety has been updated successfully
+              this.onSeedVarietyUpdated(response.body);
+              break;
+            case 201:  // SeedVariety has been created successfully
               this.onSeedVarietyCreated(response.body);
               break;
             default:
@@ -63,9 +60,36 @@ export class SeedVarietyService {
       );
   }
 
+  get varieties(): Observable<SeedVariety[]> {
+    return this.varietySubject.asObservable();
+  }
+
+  get events(): Observable<ServiceEvent> {
+    return this.eventSubject.asObservable();
+  }
+
+  get errors(): Observable<ServiceError> {
+    return this.errorSubject.asObservable();
+  }
+
+  private onSeedVarietyUpdated(updatedSeedVariety: SeedVariety): void {
+    let varieties = this.varietySubject.getValue();
+
+    // Finds the index of the updated variety on the array
+    const existentSeedVarietyIndex = varieties.findIndex((existentSeedVariety: SeedVariety) => {
+      return existentSeedVariety.id === updatedSeedVariety.id;
+    });
+
+    // Replaces the existing variety with the updated one, and publish the updated array
+    varieties[existentSeedVarietyIndex] = updatedSeedVariety;
+    this.varietySubject.next(varieties);
+    this.eventSubject.next(ServiceEvent.ENTITY_UPDATED);
+  }
+
   private onSeedVarietyCreated(newSeedVariety: SeedVariety): void {
     let varieties: SeedVariety[] = this.varietySubject.getValue().concat(newSeedVariety);
     this.varietySubject.next(varieties);
+    this.eventSubject.next(ServiceEvent.ENTITY_CREATED);
   }
 
   private onSeedVarietyDeleted(deletedSeedVariety: SeedVariety): void {
@@ -74,6 +98,7 @@ export class SeedVarietyService {
       .filter((variety: SeedVariety) => variety.id != deletedSeedVariety.id);
 
     this.varietySubject.next(varieties);
+    this.eventSubject.next(ServiceEvent.ENTITY_DELETED);
   }
 
   private loadInitialData(): void {
