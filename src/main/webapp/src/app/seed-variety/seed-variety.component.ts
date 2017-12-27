@@ -10,6 +10,7 @@ import { SeedVariety } from '../model/seed-variety';
 import { ServiceEvent } from '../model/service-event.enum';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
+import { ToastService } from '../shared/ui/toast-service/toast.service';
 
 @Component({
   selector: 'app-seed-variety',
@@ -33,7 +34,9 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   private imagePlaceholder: string;
   private subject: Subject<void> = new Subject();
 
-  constructor(private seedVarietyService: SeedVarietyService, private renderer: Renderer2) {}
+  constructor(private seedVarietyService: SeedVarietyService,
+              private toastService: ToastService,
+              private renderer: Renderer2) {}
 
   ngOnInit(): void {
     this.fetchAllSeedVarieties();
@@ -63,6 +66,7 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   deleteVariety(variety: SeedVariety): void {
     if (!variety.uses) {
       this.seedVarietyService.deleteSeedVariety(variety);
+      this.toastService.showMessage('Variety Deleted Successfully!');
     }
   }
 
@@ -171,6 +175,7 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
 
   private onSeedVarietyCreated(): void {
     this.closeAndResetAddSeedVarietyModal();
+    this.toastService.showMessage('Variety Added Successfully!');
   }
 
 }
