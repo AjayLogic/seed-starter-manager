@@ -102,7 +102,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
   addFeature(): void {
     if (this.isFeatureNameValid(this.inputName)) {
       const featureName: string = this.inputName.value;
-      this.featureService.createOrUpdateFeature({ id: null, name: featureName });
+      this.featureService.save({ id: null, name: featureName });
       this.closeAndResetModal();
     } else {
       this.renderer.addClass(this.inputNameRef.nativeElement, 'invalid');
@@ -111,7 +111,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
 
   updateFeature(): void {
     if (this.isFeatureNameValid(this.inputEditName)) {
-      this.featureService.createOrUpdateFeature({ id: this.latestFeatureClicked.id, name: this.inputEditName.value });
+      this.featureService.save({ id: this.latestFeatureClicked.id, name: this.inputEditName.value });
       this.editFeatureDialog.close();
     } else {
       this.renderer.addClass(this.inputEditNameRef.nativeElement, 'invalid');
@@ -120,7 +120,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
 
   deleteFeature(): void {
     if (!this.latestFeatureClicked.uses) {
-      this.featureService.deleteFeature(this.latestFeatureClicked);
+      this.featureService.delete(this.latestFeatureClicked);
       this.editFeatureDialog.close();
       this.deleteFeatureDialog.close();
     }
