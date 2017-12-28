@@ -1,118 +1,44 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 
-import { ServiceError } from '../model/service-error';
-import { ServiceEvent } from '../model/service-event.enum';
 import { SeedVariety } from '../model/seed-variety';
+import { EntityService } from '../service/entity-service';
 
 @Injectable()
-export class SeedVarietyService {
-
-  private readonly endpointUrl: string = '/api/variety';
-  private httpHeader: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
-
-  private varietySubject: BehaviorSubject<SeedVariety[]> = new BehaviorSubject([]);
-  private eventSubject: BehaviorSubject<ServiceEvent> = new BehaviorSubject(null);
-  private errorSubject: BehaviorSubject<ServiceError> = new BehaviorSubject(null);
+export class SeedVarietyService extends EntityService<SeedVariety> {
 
   constructor(private httpClient: HttpClient) {
-    this.loadInitialData();
+    super('/api/variety');
+    super.loadData(httpClient);
   }
 
-  createOrUpdateVariety(variety: SeedVariety): void {
+  save(variety: SeedVariety): void {
     let payload: FormData = new FormData();
+
+    // Adds the new variety to the payload
     payload.append('seed-variety', new Blob([JSON.stringify(variety)], { type: 'application/json' }));
+
+    // Adds the image to the payload if it was selected
     if (variety.imageName) {
       payload.append('seed-variety-image', variety.imageName);
     }
 
-    this.httpClient.post(`${this.endpointUrl}`, payload, { observe: 'response' })
-      .subscribe((response: HttpResponse<SeedVariety>) => {
-          switch (response.status) {
-            case 200:  // SeedVariety has been updated successfully
-              this.onSeedVarietyUpdated(response.body);
-              break;
-            case 201:  // SeedVariety has been created successfully
-              this.onSeedVarietyCreated(response.body);
-              break;
-            default:
-              this.publishError(response);
-          }
-        },
-        (error: HttpErrorResponse) => this.publishError(error)
-      );
+    // Sends the payload to the server, and then uses the superclass method to handle the response
+    const response = this.httpClient.post<SeedVariety>(`${this.endpointUrl}`, payload, { observe: 'response' });
+    super.handleSaveResponse(response);
   }
 
-  deleteSeedVariety(variety: SeedVariety): void {
-    this.httpClient.delete(`${this.endpointUrl}/${variety.id}`, { headers: this.httpHeader, observe: 'response' })
-      .subscribe((response: HttpResponse<null>) => {
-          switch (response.status) {
-            case 200:
-              this.onSeedVarietyDeleted(variety);
-              break;
-            default:
-              this.publishError(response);
-          }
-        },
-        (error: HttpErrorResponse) => this.publishError(error)
-      );
+  delete(variety: SeedVariety): void {
+    // Sends the delete request to the server, and then uses the superclass method to handle the response
+    const response = this.httpClient.delete<SeedVariety>(`${this.endpointUrl}/${variety.id}`,
+      { headers: this.jsonHttpHeader, observe: 'response' });
+
+    super.handleDeleteResponse(variety, response);
   }
 
   get varieties(): Observable<SeedVariety[]> {
-    return this.varietySubject.asObservable();
-  }
-
-  get events(): Observable<ServiceEvent> {
-    return this.eventSubject.asObservable();
-  }
-
-  get errors(): Observable<ServiceError> {
-    return this.errorSubject.asObservable();
-  }
-
-  private onSeedVarietyUpdated(updatedSeedVariety: SeedVariety): void {
-    let varieties = this.varietySubject.getValue();
-
-    // Finds the index of the updated variety on the array
-    const existentSeedVarietyIndex = varieties.findIndex((existentSeedVariety: SeedVariety) => {
-      return existentSeedVariety.id === updatedSeedVariety.id;
-    });
-
-    // Replaces the existing variety with the updated one, and publish the updated array
-    varieties[existentSeedVarietyIndex] = updatedSeedVariety;
-    this.varietySubject.next(varieties);
-    this.eventSubject.next(ServiceEvent.ENTITY_UPDATED);
-  }
-
-  private onSeedVarietyCreated(newSeedVariety: SeedVariety): void {
-    let varieties: SeedVariety[] = this.varietySubject.getValue().concat(newSeedVariety);
-    this.varietySubject.next(varieties);
-    this.eventSubject.next(ServiceEvent.ENTITY_CREATED);
-  }
-
-  private onSeedVarietyDeleted(deletedSeedVariety: SeedVariety): void {
-    // Removes the deleted SeedVariety from the array
-    let varieties: SeedVariety[] = this.varietySubject.getValue()
-      .filter((variety: SeedVariety) => variety.id != deletedSeedVariety.id);
-
-    this.varietySubject.next(varieties);
-    this.eventSubject.next(ServiceEvent.ENTITY_DELETED);
-  }
-
-  private loadInitialData(): void {
-    this.httpClient.get(`${this.endpointUrl}`, { observe: 'response' })
-      .subscribe((response: HttpResponse<SeedVariety[]>) => {
-          if (response.status == 200) this.varietySubject.next(response.body);
-          else this.publishError(response);
-        },
-        (error: HttpErrorResponse) => this.publishError(error)
-      );
-  }
-
-  private publishError(response: HttpResponseBase) {
-    this.errorSubject.next(ServiceError.fromStatusCode(response.status));
+    return this.subject.asObservable();
   }
 
 }

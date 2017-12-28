@@ -38,7 +38,7 @@ export class SeedStarterComponent implements OnInit {
   deleteSeedStarter(): void {
     if (this.latestClickedSeedStarter) {
       this.isDeletingSeedStarter = true;
-      this.seedStarterService.deleteSeedStarter(this.latestClickedSeedStarter);
+      this.seedStarterService.delete(this.latestClickedSeedStarter);
     }
   }
 

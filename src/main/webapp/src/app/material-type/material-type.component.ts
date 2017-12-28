@@ -64,7 +64,7 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
   addMaterial(): void {
     if (this.isMaterialNameValid(this.inputName)) {
       const materialName: string = this.inputName.value;
-      this.materialTypeService.createOrUpdateMaterial({ id: null, name: materialName });
+      this.materialTypeService.save({ id: null, name: materialName });
       this.closeAndResetAddMaterialTypeModal();
     } else {
       this.renderer.addClass(this.inputNameRef.nativeElement, 'invalid');
@@ -73,7 +73,7 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
 
   updateMaterial(): void {
     if (this.isMaterialNameValid(this.inputEditName)) {
-      this.materialTypeService.createOrUpdateMaterial({ id: this.latestMaterialTypeClicked.id, name: this.inputEditName.value });
+      this.materialTypeService.save({ id: this.latestMaterialTypeClicked.id, name: this.inputEditName.value });
       this.editMaterialDialog.close();
     } else {
       this.renderer.addClass(this.inputEditNameRef.nativeElement, 'invalid');
@@ -82,7 +82,7 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
 
   deleteMaterial(): void {
     if (!this.latestMaterialTypeClicked.uses) {
-      this.materialTypeService.deleteMaterial(this.latestMaterialTypeClicked);
+      this.materialTypeService.delete(this.latestMaterialTypeClicked);
       this.editMaterialDialog.close();
       this.deleteMaterialDialog.close();
     }

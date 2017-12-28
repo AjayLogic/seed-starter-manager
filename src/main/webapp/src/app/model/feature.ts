@@ -1,5 +1,4 @@
-export interface Feature {
-  id: number;
-  name: string;
-  uses?: number;
-}
+import { NamedEntity } from './named-entity';
+import { SeedStarterFeature } from './seed-starter-feature';
+
+export interface Feature extends NamedEntity, SeedStarterFeature {}

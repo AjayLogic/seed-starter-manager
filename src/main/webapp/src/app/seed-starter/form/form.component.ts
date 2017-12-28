@@ -115,7 +115,7 @@ export class FormComponent implements OnInit, OnDestroy {
         rows: this.getAddedRows()
       };
 
-      this.seedStarterService.createOrUpdateSeedStarter(newSeedStarter);
+      this.seedStarterService.save(newSeedStarter);
     } else {
       // TODO: show all required fields not filled
       toast('Please fill all required fields', 2000, 'toast-error');
