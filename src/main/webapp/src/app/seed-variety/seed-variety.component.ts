@@ -55,7 +55,7 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   saveSeedVariety(): void {
     if (this.isVarietyNameValid(this.inputName)) {
       const seedVarietyName = this.inputName.value;
-      this.seedVarietyService.createOrUpdateVariety({
+      this.seedVarietyService.save({
         id: this.latestSeedVarietyClicked ? this.latestSeedVarietyClicked.id : null,
         name: seedVarietyName,
         imageName: this.latestSelectedSeedVarietyImage
@@ -79,7 +79,7 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
 
   deleteVariety(variety: SeedVariety): void {
     if (!variety.uses) {
-      this.seedVarietyService.deleteSeedVariety(variety);
+      this.seedVarietyService.delete(variety);
     }
   }
 
