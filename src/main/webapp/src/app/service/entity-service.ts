@@ -92,6 +92,10 @@ export abstract class EntityService<T extends Entity> {
     });
   }
 
+  protected publishError(response: HttpResponseBase) {
+    this.errorSubject.next(ServiceError.fromStatusCode(response.status));
+  }
+
   get events(): Observable<ServiceEvent> {
     return this.eventSubject.asObservable();
   }
@@ -106,10 +110,6 @@ export abstract class EntityService<T extends Entity> {
 
     // Returns an empty Observable to continue
     return Observable.empty();
-  }
-
-  private publishError(response: HttpResponseBase) {
-    this.errorSubject.next(ServiceError.fromStatusCode(response.status));
   }
 
   private publishEntities(entities: T[], event: ServiceEvent): void {
