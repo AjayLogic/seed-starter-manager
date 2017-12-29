@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { toast } from 'angular2-materialize';
 
@@ -17,7 +17,7 @@ import { ServiceEvent } from '../model/service-event.enum';
   templateUrl: './seed-starter.component.html',
   styleUrls: ['./seed-starter.component.css']
 })
-export class SeedStarterComponent implements OnInit {
+export class SeedStarterComponent implements OnInit, OnDestroy {
 
   @ViewChild('deleteDialog') deleteDialog: SimpleDialogComponent;
 
@@ -33,6 +33,11 @@ export class SeedStarterComponent implements OnInit {
     this.fetchAllSeedStarters();
     this.registerForServiceEvents();
     this.registerForErrors();
+  }
+
+  ngOnDestroy(): void {
+    this.subject.next();
+    this.subject.complete();
   }
 
   deleteSeedStarter(): void {
