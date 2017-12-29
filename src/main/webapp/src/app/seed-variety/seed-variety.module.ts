@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MaterializeModule } from 'angular2-materialize';
 import { MasonryModule } from 'angular2-masonry';
 
 import { SharedModule } from '../shared/shared.module';
@@ -14,6 +15,7 @@ import { SeedVarietyComponent } from './seed-variety.component';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    MaterializeModule,
     MasonryModule,
     SharedModule,
     SeedVarietyRoutingModule
