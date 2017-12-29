@@ -9,11 +9,13 @@
       <div class="card-content">
         <div style="display: flex">
           <span class="card-title tooltipped truncate" data-position="bottom" data-delay="50"
+                materialize="tooltip" [materializeParams]="varieties"
                 [attr.data-tooltip]="variety.name">{{variety.name}}</span>
 
           <!-- TODO: Add a circular waves-effect for the icon -->
           <!-- Dropdown trigger -->
-          <i class="dropdown-button material-icons" [attr.data-activates]="'dropdown-card-options-' + i">more_vert</i>
+          <i class="dropdown-button material-icons" materialize="dropdown" [materializeParams]="varieties"
+             [attr.data-activates]="'dropdown-card-options-' + i">more_vert</i>
 
           <!-- Dropdown structure -->
           <ul [attr.id]="'dropdown-card-options-' + i" class='dropdown-content'>
