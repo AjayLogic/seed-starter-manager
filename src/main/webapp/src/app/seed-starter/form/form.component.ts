@@ -231,7 +231,12 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   private onSeedStarterCreated(): void {
+    // Resets the form
     this.seedStarterForm.reset();
+
+    // Clear all rows
+    this.rowsFormArray = [];
+
     toast('Seed Starter Created!', 3000, 'toast-message');
     window.scrollTo(0, 0);
     // TODO: remove the 'valid' class from the controls
