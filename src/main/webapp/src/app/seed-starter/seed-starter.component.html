@@ -34,7 +34,8 @@
           </table>
         </td>
         <td>
-          <i class="material-icons tooltipped" materialize="tooltip" (click)="openDeleteConfirmDialog(seedStarter)"
+          <i class="material-icons tooltipped" materialize="tooltip"
+             (click)="openDeleteConfirmDialog(seedStarter); $event.stopPropagation()"
              data-position="left" data-delay="50" data-tooltip="Delete">close</i>
         </td>
       </tr>
