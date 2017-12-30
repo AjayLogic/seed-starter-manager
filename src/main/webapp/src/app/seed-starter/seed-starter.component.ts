@@ -108,14 +108,16 @@ export class SeedStarterComponent implements OnInit, OnDestroy {
   }
 
   private onSeedStarterDeleted(): void {
-    // Closes the dialog
-    this.deleteDialog.close();
+    if (this.isDeletingSeedStarter) {
+      // Closes the dialog
+      this.deleteDialog.close();
 
-    // Displays a message indicating success
-    toast('Deleted!', 3000, 'toast-message');
+      // Displays a message indicating success
+      toast('Deleted!', 3000, 'toast-message');
 
-    // Resets the isDeletingSeedStarter status to false, to stops the loading animation
-    this.isDeletingSeedStarter = false;
+      // Resets the isDeletingSeedStarter status to false, to stops the loading animation
+      this.isDeletingSeedStarter = false;
+    }
   }
 
 }
