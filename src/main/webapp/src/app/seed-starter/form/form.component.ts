@@ -134,6 +134,10 @@ export class FormComponent implements OnInit, OnDestroy {
     return this.seedVarieties && this.seedVarieties.length > 0;
   }
 
+  get hasMaterials(): boolean {
+    return this.materials && this.materials.length > 0;
+  }
+
   private initializeFormControls(): void {
     this.seedStarterForm = this.formBuilder.group({
       datePlanted: ['', Validators.required],
@@ -175,13 +179,10 @@ export class FormComponent implements OnInit, OnDestroy {
           this.generateFeatureCheckboxes();
         }
 
-        // TODO: handle when we don't have materials or varieties
-        // Setup the form controls after fetch the materials and varieties
-        if (materials.length > 0 && varieties.length > 0) {
-          this.materials = materials;
-          this.seedVarieties = varieties;
-          this.setupFormControls();
-        }
+        if (!this.materials && materials.length > 0) this.materials = materials;
+        if (!this.seedVarieties && varieties.length > 0) this.seedVarieties = varieties;
+
+        this.setupFormControls();
       });
   }
 
@@ -209,7 +210,9 @@ export class FormComponent implements OnInit, OnDestroy {
             });
         } else {
           // We are creating a new seed starter
-          this.materialTypeFormControl.setValue(this.materials[0].name);
+          if (this.hasMaterials) {
+            this.materialTypeFormControl.setValue(this.materials[0].name);
+          }
         }
       });
   }
