@@ -238,20 +238,30 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   private onSeedStarterCreated(): void {
-    // Resets the form
-    this.seedStarterForm.reset();
+    // Checks whether the form is set and valid to prevent the message from being displayed
+    // when the page is opened for the first time after the user has created a seed starter.
+    // See the issue #27
+    if (this.seedStarterForm && this.seedStarterForm.valid) {
+      // Resets the form
+      this.seedStarterForm.reset();
 
-    // Clear all rows
-    this.rowsFormArray = [];
+      // Clear all rows
+      this.rowsFormArray = [];
 
-    toast('Seed Starter Created!', 3000, 'toast-message');
-    window.scrollTo(0, 0);
-    // TODO: remove the 'valid' class from the controls
+      toast('Seed Starter Created!', 3000, 'toast-message');
+      window.scrollTo(0, 0);
+      // TODO: remove the 'valid' class from the controls
+    }
   }
 
   private onSeedStarterUpdated(): void {
-    toast('Updated!', 3000, 'toast-message');
-    window.scrollTo(0, 0);
+    // Checks whether the form is set and valid to prevent the message from being displayed
+    // when the page is opened for the first time after the user has previously edited.
+    // See the issue #27
+    if (this.seedStarterForm && this.seedStarterForm.valid) {
+      toast('Updated!', 3000, 'toast-message');
+      window.scrollTo(0, 0);
+    }
   }
 
   /**
