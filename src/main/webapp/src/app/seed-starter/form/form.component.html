@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row" *ngIf="hasMaterials">
   <form class="col s12" novalidate [formGroup]="seedStarterForm">
     <div class="row" style="margin-top: 10px">
       <div class="input-field col s6">
@@ -104,5 +104,14 @@
     <a class="btn-floating btn-large teal waves-effect" (click)="saveSeedStarter()">
       <i class="large material-icons">check</i>
     </a>
+  </div>
+</div>
+
+<div class="row" *ngIf="!hasMaterials">
+  <div class="col s12">
+    <blockquote class="suggestion-text">
+      You must have at least one material type to be able to add a new seed starter, maybe you want
+      <a routerLink="/materials">add a new one</a>
+    </blockquote>
   </div>
 </div>
