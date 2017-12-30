@@ -130,6 +130,10 @@ export class FormComponent implements OnInit, OnDestroy {
     };
   }
 
+  get hasSeedVarieties(): boolean {
+    return this.seedVarieties && this.seedVarieties.length > 0;
+  }
+
   private initializeFormControls(): void {
     this.seedStarterForm = this.formBuilder.group({
       datePlanted: ['', Validators.required],
