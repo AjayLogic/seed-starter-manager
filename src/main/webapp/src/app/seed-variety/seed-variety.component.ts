@@ -88,7 +88,7 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
     if (fileList.length > 0) {
       let fileReader: FileReader = new FileReader();
       fileReader.onload = () => {
-        this.renderer.setAttribute(this.seedVarietyImage.nativeElement, 'src', fileReader.result);
+        this.setDialogImageSrc(fileReader.result);
       };
 
       const selectedImageFile = fileList.item(0);
@@ -99,7 +99,7 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
 
   removeLastSelectedImage(): void {
     this.latestSelectedSeedVarietyImage = null;
-    this.renderer.setAttribute(this.seedVarietyImage.nativeElement, 'src', this.imagePlaceholder);
+    this.setDialogImageSrc(this.imagePlaceholder);
   }
 
   onAddSeedVarietyCancelled(): void {
@@ -141,6 +141,10 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   private isVarietyNameValid(input: FormControl): boolean {
     const variety = input.value;
     return !(!variety || variety.trim().length == 0 || input.invalid);
+  }
+
+  private setDialogImageSrc(src: string): void {
+    this.renderer.setAttribute(this.seedVarietyImage.nativeElement, 'src', src);
   }
 
   private closeAndResetAddSeedVarietyModal(): void {
