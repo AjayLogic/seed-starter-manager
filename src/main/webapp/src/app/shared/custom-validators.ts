@@ -7,7 +7,7 @@ export class CustomValidators {
   static uniqueName(entities: NamedEntity[]): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } => {
       // Checks if some entity has the property 'name' equals to the text in the control.
-      let isDuplicated = entities.some((entity: NamedEntity) => {
+      const isDuplicated: boolean = entities.some((entity: NamedEntity) => {
         return control.dirty && control.value === entity.name;
       });
 
