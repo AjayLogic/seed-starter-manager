@@ -109,6 +109,10 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
     }, 350);
   }
 
+  getVarietyImagePath(variety: SeedVariety): string {
+    return `/api/variety/image/${variety.imageName}`;
+  }
+
   get errorMessages(): any {
     return {
       required: 'The seed variety must have a name',

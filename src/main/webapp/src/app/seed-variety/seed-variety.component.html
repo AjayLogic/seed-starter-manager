@@ -3,7 +3,7 @@
   <masonry class="col s12" [options]="{itemSelector: '.card', gutter: 10}" *ngIf="varieties">
     <masonry-brick class="card z-depth-2" style="width: 250px; margin-bottom: 5px" *ngFor="let variety of varieties; index as i">
       <div class="card-image" *ngIf="variety.imageName">
-        <img src="/api/variety/image/{{variety.imageName}}">
+        <img [attr.src]="getVarietyImagePath(variety)">
       </div>
 
       <div class="card-content">
