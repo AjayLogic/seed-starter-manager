@@ -54,10 +54,9 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
 
   saveSeedVariety(): void {
     if (this.isVarietyNameValid(this.inputName)) {
-      const seedVarietyName = this.inputName.value;
       this.seedVarietyService.save({
         id: this.latestSeedVarietyClicked ? this.latestSeedVarietyClicked.id : null,
-        name: seedVarietyName,
+        name: this.inputName.value,
         imageName: this.latestSelectedSeedVarietyImage
       });
     } else {
@@ -67,7 +66,17 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
 
   showEditDialog(variety: SeedVariety): void {
     this.latestSeedVarietyClicked = variety;
+
+    // Sets the image inside the dialog when it is opened
+    if (variety.imageName) {
+      this.setDialogImageSrc(this.getVarietyImagePath(variety));
+    }
+
+    // Sets the input text as the variety name
     this.inputName.setValue(variety.name);
+
+    // Adds the 'active' class to the input label, to avoid that the
+    // text of the input be displayed behind the label, then opens the dialog.
     this.renderer.addClass(this.inputNameLabelRef.nativeElement, 'active');
     this.addSeedVarietyDialog.open();
   }
@@ -88,7 +97,7 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
     if (fileList.length > 0) {
       let fileReader: FileReader = new FileReader();
       fileReader.onload = () => {
-        this.renderer.setAttribute(this.seedVarietyImage.nativeElement, 'src', fileReader.result);
+        this.setDialogImageSrc(fileReader.result);
       };
 
       const selectedImageFile = fileList.item(0);
@@ -99,7 +108,7 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
 
   removeLastSelectedImage(): void {
     this.latestSelectedSeedVarietyImage = null;
-    this.renderer.setAttribute(this.seedVarietyImage.nativeElement, 'src', this.imagePlaceholder);
+    this.setDialogImageSrc(this.imagePlaceholder);
   }
 
   onAddSeedVarietyCancelled(): void {
@@ -107,6 +116,10 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.removeLastSelectedImage();
     }, 350);
+  }
+
+  getVarietyImagePath(variety: SeedVariety): string {
+    return `/api/variety/image/${variety.imageName}`;
   }
 
   get errorMessages(): any {
@@ -137,6 +150,10 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   private isVarietyNameValid(input: FormControl): boolean {
     const variety = input.value;
     return !(!variety || variety.trim().length == 0 || input.invalid);
+  }
+
+  private setDialogImageSrc(src: string): void {
+    this.renderer.setAttribute(this.seedVarietyImage.nativeElement, 'src', src);
   }
 
   private closeAndResetAddSeedVarietyModal(): void {
