@@ -1,3 +1,7 @@
+.input-error-label:after {
+  font-size: 12px;
+}
+
 /* Sets the position of the error label on the 'seeds per cell' input */
 input[type=number] + label.input-error-label:after {
   position: relative;
