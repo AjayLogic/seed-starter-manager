@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { MaterializeAction } from 'angular2-materialize';
 
 @Component({
@@ -8,6 +8,12 @@ import { MaterializeAction } from 'angular2-materialize';
 export class SimpleDialogComponent {
 
   @ViewChild('modal') modal: ElementRef;
+  @Output() onClose: EventEmitter<null> = new EventEmitter();
+
+  onModalClosed = () => {
+    this.onClose.emit();
+  };
+
   private modalAction: EventEmitter<MaterializeAction> = new EventEmitter();
 
   public open(): void {
