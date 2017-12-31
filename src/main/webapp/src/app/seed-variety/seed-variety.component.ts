@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { AbstractControl, FormControl, ValidationErrors, Validators } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { Subject } from 'rxjs/Subject';
 
 import { SeedVarietyService } from './seed-variety.service';
@@ -11,6 +11,7 @@ import { ServiceEvent } from '../model/service-event.enum';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
 import { ToastService } from '../shared/ui/toast-service/toast.service';
+import { CustomValidators } from '../shared/custom-validators';
 
 @Component({
   selector: 'app-seed-variety',
@@ -44,7 +45,6 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
     this.fetchAllSeedVarieties();
     this.registerForServiceEvents();
     this.registerForErrors();
-    this.initializeFormControls();
   }
 
   ngOnDestroy(): void {
@@ -134,17 +134,10 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
     this.imagePlaceholder = this.seedVarietyImage.nativeElement.src;
 
     this.inputName = new FormControl('', [
-      Validators.required, Validators.maxLength(this.maxSeedVarietyName), this.uniqueSeedVariety.bind(this)
+      Validators.required,
+      Validators.maxLength(this.maxSeedVarietyName),
+      CustomValidators.uniqueName(this.varieties)
     ]);
-  }
-
-  private uniqueSeedVariety(formControl: AbstractControl): ValidationErrors {
-    const currentVarietyName = formControl.value;
-    let isVarietyDuplicated = this.varieties.some((seedVariety: SeedVariety) => {
-      return formControl.dirty && seedVariety.name == currentVarietyName;
-    });
-
-    return isVarietyDuplicated ? { conflict: true } : null;
   }
 
   private isVarietyNameValid(input: FormControl): boolean {
@@ -173,7 +166,13 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   private fetchAllSeedVarieties(): void {
     this.seedVarietyService.varieties
       .takeUntil(this.subject)
-      .subscribe((varieties: SeedVariety[]) => this.varieties = varieties);
+      .subscribe((varieties: SeedVariety[]) => {
+        this.varieties = varieties;
+
+        // Initializes the controls of the form after receiving the varieties of the service,
+        // so that CustomValidators.uniqueName can verify that the name entered already exists.
+        this.initializeFormControls();
+      });
   }
 
   private registerForServiceEvents(): void {
