@@ -52,7 +52,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
   private fetchAllFeatures(): void {
     this.featureService.features
       .takeUntil(this.subject)
-      .subscribe((features: Feature[]) => this.onFeaturesUpdated(features));
+      .subscribe((features: Feature[]) => this.features = features);
   }
 
   private registerForServiceEvents(): void {
@@ -105,11 +105,6 @@ export class FeatureComponent implements OnInit, OnDestroy {
     });
 
     return isFeatureDuplicated ? { conflict: true } : null;
-  }
-
-  private onFeaturesUpdated(features: Feature[]): void {
-    this.features = features;
-    this.latestFeatureClicked = null;
   }
 
   addFeature(): void {
