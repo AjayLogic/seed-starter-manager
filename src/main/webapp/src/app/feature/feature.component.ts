@@ -49,6 +49,52 @@ export class FeatureComponent implements OnInit, OnDestroy {
     this.subject.complete();
   }
 
+  addFeature(): void {
+    if (this.isFeatureNameValid(this.inputName)) {
+      const featureName: string = this.inputName.value;
+      this.featureService.save({
+        id: this.latestFeatureClicked ? this.latestFeatureClicked.id : null,
+        name: featureName
+      });
+    } else {
+      this.renderer.addClass(this.inputNameRef.nativeElement, 'invalid');
+    }
+  }
+
+  deleteFeature(): void {
+    if (!this.latestFeatureClicked.uses) {
+      this.featureService.delete(this.latestFeatureClicked);
+    }
+  }
+
+  openAddDialog(): void {
+    this.isEditing = false;
+    this.featureDialog.open();
+  }
+
+  openEditDialog(feature: Feature): void {
+    this.isEditing = true;
+    this.latestFeatureClicked = feature;
+
+    // Avoids that the label appears behind of the input field text
+    this.renderer.addClass(this.inputNameLabelRef.nativeElement, 'active');
+    this.inputName.reset();
+    this.inputName.setValue(feature.name);
+    this.featureDialog.open();
+  }
+
+  get hasFeatures(): boolean {
+    return Array.isArray(this.features) && this.features.length > 0;
+  }
+
+  get errorMessages(): any {
+    return {
+      required: 'Feature must have a name',
+      maxlength: 'The feature name must have less than ' + this.maxFeatureName + ' characters',
+      conflict: 'This Feature already exists'
+    };
+  }
+
   private fetchAllFeatures(): void {
     this.featureService.features
       .takeUntil(this.subject)
@@ -107,24 +153,6 @@ export class FeatureComponent implements OnInit, OnDestroy {
     return isFeatureDuplicated ? { conflict: true } : null;
   }
 
-  addFeature(): void {
-    if (this.isFeatureNameValid(this.inputName)) {
-      const featureName: string = this.inputName.value;
-      this.featureService.save({
-        id: this.latestFeatureClicked ? this.latestFeatureClicked.id : null,
-        name: featureName
-      });
-    } else {
-      this.renderer.addClass(this.inputNameRef.nativeElement, 'invalid');
-    }
-  }
-
-  deleteFeature(): void {
-    if (!this.latestFeatureClicked.uses) {
-      this.featureService.delete(this.latestFeatureClicked);
-    }
-  }
-
   private isFeatureNameValid(input: FormControl): boolean {
     const feature = input.value;
     return !(!feature || feature.trim().length == 0 || input.invalid);
@@ -137,34 +165,6 @@ export class FeatureComponent implements OnInit, OnDestroy {
 
     // Avoids that the label appears on top of the input field
     this.renderer.removeClass(this.inputNameLabelRef.nativeElement, 'active');
-  }
-
-  openFeatureDialog(feature: Feature): void {
-    this.isEditing = true;
-    this.latestFeatureClicked = feature;
-
-    // Avoids that the label appears behind of the input field text
-    this.renderer.addClass(this.inputNameLabelRef.nativeElement, 'active');
-    this.inputName.reset();
-    this.inputName.setValue(feature.name);
-    this.featureDialog.open();
-  }
-
-  openAddDialog(): void {
-    this.isEditing = false;
-    this.featureDialog.open();
-  }
-
-  get hasFeatures(): boolean {
-    return Array.isArray(this.features) && this.features.length > 0;
-  }
-
-  get errorMessages(): any {
-    return {
-      required: 'Feature must have a name',
-      maxlength: 'The feature name must have less than ' + this.maxFeatureName + ' characters',
-      conflict: 'This Feature already exists'
-    };
   }
 
   private onFeatureCreated(): void {
