@@ -53,19 +53,6 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
     this.subject.complete();
   }
 
-  get hasMaterials(): boolean {
-    return this.materials && this.materials.length > 0;
-  }
-
-  get errorMessages(): any {
-    return {
-      required: 'The material must have a name',
-      conflict: 'This material already exists',
-      minLength: `The material name must have at least ${this.minMaterialName} characters`,
-      maxlength: `The material name must have less than ${this.maxMaterialName} characters`
-    };
-  }
-
   addMaterial(): void {
     if (this.inputName.valid) {
       this.materialTypeService.save({
@@ -98,6 +85,19 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
     this.isEditing = false;
     this.inputName.reset();
     this.materialDialog.open();
+  }
+
+  get hasMaterials(): boolean {
+    return this.materials && this.materials.length > 0;
+  }
+
+  get errorMessages(): any {
+    return {
+      required: 'The material must have a name',
+      conflict: 'This material already exists',
+      minLength: `The material name must have at least ${this.minMaterialName} characters`,
+      maxlength: `The material name must have less than ${this.maxMaterialName} characters`
+    };
   }
 
   private fetchAllMaterialTypes(): void {
