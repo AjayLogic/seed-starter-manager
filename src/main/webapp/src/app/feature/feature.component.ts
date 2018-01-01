@@ -21,18 +21,14 @@ export class FeatureComponent implements OnInit, OnDestroy {
   @ViewChild('inputNameRef') inputNameRef: ElementRef;
   @ViewChild('inputNameLabelRef') inputNameLabelRef: ElementRef;
 
-  @ViewChild('inputEditNameRef') inputEditNameRef: ElementRef;
-  @ViewChild('inputEditNameLabelRef') inputNameEditLabelRef: ElementRef;
-
-  @ViewChild('addFeatureDialog') addFeatureDialog: SimpleDialogComponent;
-  @ViewChild('editFeatureDialog') editFeatureDialog: SimpleDialogComponent;
+  @ViewChild('featureDialog') featureDialog: SimpleDialogComponent;
   @ViewChild('deleteFeatureDialog') deleteFeatureDialog: SimpleDialogComponent;
 
   features: Feature[];
   latestFeatureClicked: Feature;
 
   inputName: FormControl;
-  inputEditName: FormControl;
+  isEditing: boolean = false;
 
   private readonly maxFeatureName = 50; // TODO: fetch this information from database
   private subject: Subject<void> = new Subject();
@@ -80,10 +76,6 @@ export class FeatureComponent implements OnInit, OnDestroy {
     this.inputName = new FormControl('', [
       Validators.required, Validators.maxLength(this.maxFeatureName), this.uniqueFeature.bind(this)
     ]);
-
-    this.inputEditName = new FormControl('', [
-      Validators.required, Validators.maxLength(this.maxFeatureName), this.uniqueFeature.bind(this)
-    ]);
   }
 
   private uniqueFeature(formControl: AbstractControl): ValidationErrors {
@@ -97,31 +89,26 @@ export class FeatureComponent implements OnInit, OnDestroy {
 
   private onFeaturesUpdated(features: Feature[]): void {
     this.features = features;
+    this.latestFeatureClicked = null;
   }
 
   addFeature(): void {
     if (this.isFeatureNameValid(this.inputName)) {
       const featureName: string = this.inputName.value;
-      this.featureService.save({ id: null, name: featureName });
+      this.featureService.save({
+        id: this.latestFeatureClicked ? this.latestFeatureClicked.id : null,
+        name: featureName
+      });
       this.closeAndResetModal();
     } else {
       this.renderer.addClass(this.inputNameRef.nativeElement, 'invalid');
     }
   }
 
-  updateFeature(): void {
-    if (this.isFeatureNameValid(this.inputEditName)) {
-      this.featureService.save({ id: this.latestFeatureClicked.id, name: this.inputEditName.value });
-      this.editFeatureDialog.close();
-    } else {
-      this.renderer.addClass(this.inputEditNameRef.nativeElement, 'invalid');
-    }
-  }
-
   deleteFeature(): void {
     if (!this.latestFeatureClicked.uses) {
       this.featureService.delete(this.latestFeatureClicked);
-      this.editFeatureDialog.close();
+      this.featureDialog.close();
       this.deleteFeatureDialog.close();
     }
   }
@@ -132,21 +119,28 @@ export class FeatureComponent implements OnInit, OnDestroy {
   }
 
   private closeAndResetModal(): void {
-    this.addFeatureDialog.close();
+    this.latestFeatureClicked = null;
+    this.featureDialog.close();
     this.inputName.reset();
 
     // Avoids that the label appears on top of the input field
     this.renderer.removeClass(this.inputNameLabelRef.nativeElement, 'active');
   }
 
-  openEditDialog(feature: Feature): void {
+  openFeatureDialog(feature: Feature): void {
+    this.isEditing = true;
     this.latestFeatureClicked = feature;
 
     // Avoids that the label appears behind of the input field text
-    this.renderer.addClass(this.inputNameEditLabelRef.nativeElement, 'active');
-    this.inputEditName.reset();
-    this.inputEditName.setValue(feature.name);
-    this.editFeatureDialog.open();
+    this.renderer.addClass(this.inputNameLabelRef.nativeElement, 'active');
+    this.inputName.reset();
+    this.inputName.setValue(feature.name);
+    this.featureDialog.open();
+  }
+
+  openAddDialog(): void {
+    this.isEditing = false;
+    this.featureDialog.open();
   }
 
   get hasFeatures(): boolean {
