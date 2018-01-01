@@ -20,18 +20,15 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
   @ViewChild('inputNameRef') inputNameRef: ElementRef;
   @ViewChild('inputNameLabelRef') inputNameLabelRef: ElementRef;
 
-  @ViewChild('inputEditNameRef') inputEditNameRef: ElementRef;
-  @ViewChild('inputEditNameLabelRef') inputNameEditLabelRef: ElementRef;
-
-  @ViewChild('addMaterialDialog') addFeatureDialog: SimpleDialogComponent;
-  @ViewChild('editMaterialDialog') editMaterialDialog: SimpleDialogComponent;
+  @ViewChild('materialDialog') materialDialog: SimpleDialogComponent;
   @ViewChild('deleteMaterialDialog') deleteMaterialDialog: SimpleDialogComponent;
 
   inputName: FormControl;
-  inputEditName: FormControl;
 
   materials: MaterialType[];
   latestMaterialTypeClicked: MaterialType;
+
+  isEditing: boolean = false;
 
   private readonly maxMaterialName = 50; // TODO: fetch this information from database
   private subject: Subject<void> = new Subject();
@@ -64,40 +61,38 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
   addMaterial(): void {
     if (this.isMaterialNameValid(this.inputName)) {
       this.materialTypeService.save({
-        id: null,
+        id: this.latestMaterialTypeClicked ? this.latestMaterialTypeClicked.id : null,
         name: this.inputName.value
       });
-      this.closeAndResetAddMaterialTypeModal();
+      this.closeAndResetMaterialModal();
     } else {
       this.renderer.addClass(this.inputNameRef.nativeElement, 'invalid');
-    }
-  }
-
-  updateMaterial(): void {
-    if (this.isMaterialNameValid(this.inputEditName)) {
-      this.materialTypeService.save({ id: this.latestMaterialTypeClicked.id, name: this.inputEditName.value });
-      this.editMaterialDialog.close();
-    } else {
-      this.renderer.addClass(this.inputEditNameRef.nativeElement, 'invalid');
     }
   }
 
   deleteMaterial(): void {
     if (!this.latestMaterialTypeClicked.uses) {
       this.materialTypeService.delete(this.latestMaterialTypeClicked);
-      this.editMaterialDialog.close();
+      this.closeAndResetMaterialModal();
       this.deleteMaterialDialog.close();
     }
   }
 
   openEditDialog(materialType: MaterialType): void {
+    this.isEditing = true;
     this.latestMaterialTypeClicked = materialType;
 
     // Avoids that the label appears behind of the input field text
-    this.renderer.addClass(this.inputNameEditLabelRef.nativeElement, 'active');
-    this.inputEditName.reset();
-    this.inputEditName.setValue(materialType.name);
-    this.editMaterialDialog.open();
+    this.renderer.addClass(this.inputNameLabelRef.nativeElement, 'active');
+    this.inputName.reset();
+    this.inputName.setValue(materialType.name);
+    this.materialDialog.open();
+  }
+
+  openAddDialog(): void {
+    this.isEditing = false;
+    this.inputName.reset();
+    this.materialDialog.open();
   }
 
   private fetchAllMaterialTypes(): void {
@@ -129,10 +124,6 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
     this.inputName = new FormControl('', [
       Validators.required, Validators.maxLength(this.maxMaterialName), this.uniqueMaterialType.bind(this)
     ]);
-
-    this.inputEditName = new FormControl('', [
-      Validators.required, Validators.maxLength(this.maxMaterialName), this.uniqueMaterialType.bind(this)
-    ]);
   }
 
   private uniqueMaterialType(formControl: AbstractControl): ValidationErrors {
@@ -149,9 +140,10 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
     return !(!material || material.trim().length == 0 || input.invalid);
   }
 
-  private closeAndResetAddMaterialTypeModal(): void {
-    this.addFeatureDialog.close();
+  private closeAndResetMaterialModal(): void {
+    this.materialDialog.close();
     this.inputName.reset();
+    this.latestMaterialTypeClicked = null;
 
     // Avoids that the label appears on top of the input field
     this.renderer.removeClass(this.inputNameLabelRef.nativeElement, 'active');
