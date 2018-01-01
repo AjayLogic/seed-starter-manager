@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { AbstractControl, FormControl, ValidationErrors, Validators } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/takeUntil';
 
@@ -11,6 +11,7 @@ import { Feature } from '../model/feature';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
 import { ServiceEvent } from '../model/service-event.enum';
+import { CustomValidators } from '../shared/custom-validators';
 
 @Component({
   selector: 'app-feature',
@@ -32,6 +33,8 @@ export class FeatureComponent implements OnInit, OnDestroy {
   isEditing: boolean = false;
 
   private readonly maxFeatureName = 50; // TODO: fetch this information from database
+  private readonly minFeatureName = 5; // TODO: fetch this information from database
+
   private subject: Subject<void> = new Subject();
 
   constructor(private featureService: FeatureService,
@@ -41,7 +44,6 @@ export class FeatureComponent implements OnInit, OnDestroy {
     this.fetchAllFeatures();
     this.registerForServiceEvents();
     this.registerForErrors();
-    this.initializeFormControls();
   }
 
   ngOnDestroy(): void {
@@ -50,7 +52,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
   }
 
   addFeature(): void {
-    if (this.isFeatureNameValid(this.inputName)) {
+    if (this.inputName.valid) {
       const featureName: string = this.inputName.value;
       this.featureService.save({
         id: this.latestFeatureClicked ? this.latestFeatureClicked.id : null,
@@ -90,15 +92,22 @@ export class FeatureComponent implements OnInit, OnDestroy {
   get errorMessages(): any {
     return {
       required: 'Feature must have a name',
-      maxlength: 'The feature name must have less than ' + this.maxFeatureName + ' characters',
-      conflict: 'This Feature already exists'
+      conflict: 'This Feature already exists',
+      minLength: `The feature name must have at least ${this.minFeatureName} characters`,
+      maxlength: `The feature name must have less than ${this.maxFeatureName} characters`
     };
   }
 
   private fetchAllFeatures(): void {
     this.featureService.features
       .takeUntil(this.subject)
-      .subscribe((features: Feature[]) => this.features = features);
+      .subscribe((features: Feature[]) => {
+        this.features = features;
+
+        // Initializes the controls of the form after receiving all features from the service,
+        // so that CustomValidators.uniqueName can verify if the name entered already exists.
+        this.initializeFormControls();
+      });
   }
 
   private registerForServiceEvents(): void {
@@ -140,22 +149,11 @@ export class FeatureComponent implements OnInit, OnDestroy {
 
   private initializeFormControls(): void {
     this.inputName = new FormControl('', [
-      Validators.required, Validators.maxLength(this.maxFeatureName), this.uniqueFeature.bind(this)
+      Validators.required,
+      CustomValidators.uniqueName(this.features),
+      CustomValidators.minLength(this.minFeatureName),
+      Validators.maxLength(this.maxFeatureName)
     ]);
-  }
-
-  private uniqueFeature(formControl: AbstractControl): ValidationErrors {
-    const currentFeatureName = formControl.value;
-    let isFeatureDuplicated = this.features.some((feature: Feature) => {
-      return formControl.dirty && feature.name == currentFeatureName;
-    });
-
-    return isFeatureDuplicated ? { conflict: true } : null;
-  }
-
-  private isFeatureNameValid(input: FormControl): boolean {
-    const feature = input.value;
-    return !(!feature || feature.trim().length == 0 || input.invalid);
   }
 
   private closeAndResetModal(): void {
