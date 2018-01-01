@@ -63,8 +63,10 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
 
   addMaterial(): void {
     if (this.isMaterialNameValid(this.inputName)) {
-      const materialName: string = this.inputName.value;
-      this.materialTypeService.save({ id: null, name: materialName });
+      this.materialTypeService.save({
+        id: null,
+        name: this.inputName.value
+      });
       this.closeAndResetAddMaterialTypeModal();
     } else {
       this.renderer.addClass(this.inputNameRef.nativeElement, 'invalid');
