@@ -55,7 +55,7 @@ export class SeedStarterComponent implements OnInit, OnDestroy {
   getSeedStarterFeatures(seedStarter: SeedStarter): string {
     if (seedStarter && seedStarter.features && seedStarter.features.length > 0) {
       return seedStarter.features
-        .map((feature: Feature) => {return feature.name;})
+        .map((feature: Feature) => feature.name)
         .join(', ');
     }
 
