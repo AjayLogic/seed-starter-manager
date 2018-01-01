@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
-import { toast } from 'angular2-materialize';
 
 import { SeedStarterService } from './seed-starter.service';
 
@@ -11,6 +10,7 @@ import { Feature } from '../model/feature';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
 import { ServiceEvent } from '../model/service-event.enum';
+import { ToastService } from '../shared/ui/toast-service/toast.service';
 
 @Component({
   selector: 'app-seed-starter',
@@ -27,7 +27,8 @@ export class SeedStarterComponent implements OnInit, OnDestroy {
   private subject: Subject<void> = new Subject();
   private latestClickedSeedStarter: SeedStarter;
 
-  constructor(private seedStarterService: SeedStarterService) { }
+  constructor(private seedStarterService: SeedStarterService,
+              private toastService: ToastService) { }
 
   ngOnInit(): void {
     this.fetchAllSeedStarters();
@@ -109,7 +110,7 @@ export class SeedStarterComponent implements OnInit, OnDestroy {
       this.deleteDialog.close();
 
       // Displays a message indicating success
-      toast('Deleted!', 3000, 'toast-message');
+      this.toastService.showMessage('Deleted Successfully!');
 
       // Resets the isDeletingSeedStarter status to false, to stops the loading animation
       this.isDeletingSeedStarter = false;
