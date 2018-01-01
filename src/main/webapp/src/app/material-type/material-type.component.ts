@@ -50,7 +50,7 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
   }
 
   get hasMaterials(): boolean {
-    return Array.isArray(this.materials) && this.materials.length > 0;
+    return this.materials && this.materials.length > 0;
   }
 
   get errorMessages(): any {
