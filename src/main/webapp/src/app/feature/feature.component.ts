@@ -12,6 +12,7 @@ import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
 import { ServiceEvent } from '../model/service-event.enum';
 import { CustomValidators } from '../shared/custom-validators';
+import { ToastService } from '../shared/ui/toast-service/toast.service';
 
 @Component({
   selector: 'app-feature',
@@ -38,6 +39,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
   private subject: Subject<void> = new Subject();
 
   constructor(private featureService: FeatureService,
+              private toastService: ToastService,
               private renderer: Renderer2) {}
 
   ngOnInit(): void {
@@ -166,15 +168,18 @@ export class FeatureComponent implements OnInit, OnDestroy {
 
   private onFeatureCreated(): void {
     this.closeAndResetModal();
+    this.toastService.showMessage('Feature Added Successfully!');
   }
 
   private onFeatureUpdated(): void {
     this.closeAndResetModal();
+    this.toastService.showMessage('Updated Successfully!');
   }
 
   private onFeatureDeleted(): void {
     this.featureDialog.close();
     this.deleteFeatureDialog.close();
+    this.toastService.showMessage('Feature Deleted Successfully!');
   }
 
 }
