@@ -10,6 +10,7 @@ import { MaterialType } from '../model/material-type';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
 import { ServiceEvent } from '../model/service-event.enum';
+import { ToastService } from '../shared/ui/toast-service/toast.service';
 
 @Component({
   selector: 'app-material-type',
@@ -34,7 +35,9 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
   private readonly maxMaterialName = 50; // TODO: fetch this information from database
   private subject: Subject<void> = new Subject();
 
-  constructor(private materialTypeService: MaterialTypeService, private renderer: Renderer2) {}
+  constructor(private materialTypeService: MaterialTypeService,
+              private toastService: ToastService,
+              private renderer: Renderer2) {}
 
   ngOnInit(): void {
     this.fetchAllMaterialTypes();
@@ -172,15 +175,18 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
 
   private onMaterialCreated(): void {
     this.closeAndResetMaterialModal();
+    this.toastService.showMessage('Material Added Successfully!');
   }
 
   private onMaterialUpdated(): void {
     this.closeAndResetMaterialModal();
+    this.toastService.showMessage('Updated Successfully!');
   }
 
   private onMaterialDeleted(): void {
     this.closeAndResetMaterialModal();
     this.deleteMaterialDialog.close();
+    this.toastService.showMessage('Material Deleted Successfully!');
   }
 
 }
