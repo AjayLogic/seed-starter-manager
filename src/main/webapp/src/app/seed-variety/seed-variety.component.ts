@@ -33,6 +33,8 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   latestSeedVarietyClicked: SeedVariety;
 
   private readonly maxSeedVarietyName = 50; // TODO: fetch this information from database
+  private readonly minSeedVarietyName = 5; // TODO: fetch this information from database
+
   private latestSelectedSeedVarietyImage: File;
   private imagePlaceholder: string;
   private subject: Subject<void> = new Subject();
@@ -53,7 +55,7 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   }
 
   saveSeedVariety(): void {
-    if (this.isVarietyNameValid(this.inputName)) {
+    if (this.inputName.valid) {
       this.seedVarietyService.save({
         id: this.latestSeedVarietyClicked ? this.latestSeedVarietyClicked.id : null,
         name: this.inputName.value,
@@ -125,7 +127,8 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   get errorMessages(): any {
     return {
       required: 'The seed variety must have a name',
-      maxlength: 'The variety name must have less than ' + this.maxSeedVarietyName + ' characters',
+      maxlength: `The variety name must have less than ${this.maxSeedVarietyName} characters`,
+      minLength: `The variety name must have at least ${this.minSeedVarietyName} characters`,
       conflict: 'This seed variety already exists'
     };
   }
@@ -135,14 +138,10 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
 
     this.inputName = new FormControl('', [
       Validators.required,
+      CustomValidators.minLength(this.minSeedVarietyName),
       Validators.maxLength(this.maxSeedVarietyName),
       CustomValidators.uniqueName(this.varieties)
     ]);
-  }
-
-  private isVarietyNameValid(input: FormControl): boolean {
-    const variety = input.value;
-    return !(!variety || variety.trim().length == 0 || input.invalid);
   }
 
   private setDialogImageSrc(src: string): void {
