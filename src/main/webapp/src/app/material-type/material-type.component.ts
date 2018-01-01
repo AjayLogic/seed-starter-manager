@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { AbstractControl, FormControl, ValidationErrors, Validators } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { Subject } from 'rxjs/Subject';
 
 import { MaterialTypeService } from './material-type.service';
@@ -11,6 +11,7 @@ import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
 import { ServiceEvent } from '../model/service-event.enum';
 import { ToastService } from '../shared/ui/toast-service/toast.service';
+import { CustomValidators } from '../shared/custom-validators';
 
 @Component({
   selector: 'app-material-type',
@@ -33,6 +34,8 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
   isEditing: boolean = false;
 
   private readonly maxMaterialName = 50; // TODO: fetch this information from database
+  private readonly minMaterialName = 3; // TODO: fetch this information from database
+
   private subject: Subject<void> = new Subject();
 
   constructor(private materialTypeService: MaterialTypeService,
@@ -43,7 +46,6 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
     this.fetchAllMaterialTypes();
     this.registerForServiceEvents();
     this.registerForErrors();
-    this.initializeFormControls();
   }
 
   ngOnDestroy(): void {
@@ -58,13 +60,14 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
   get errorMessages(): any {
     return {
       required: 'The material must have a name',
-      maxlength: 'The material name must have less than ' + this.maxMaterialName + ' characters',
-      conflict: 'This material already exists'
+      conflict: 'This material already exists',
+      minLength: `The material name must have at least ${this.minMaterialName} characters`,
+      maxlength: `The material name must have less than ${this.maxMaterialName} characters`
     };
   }
 
   addMaterial(): void {
-    if (this.isMaterialNameValid(this.inputName)) {
+    if (this.inputName.valid) {
       this.materialTypeService.save({
         id: this.latestMaterialTypeClicked ? this.latestMaterialTypeClicked.id : null,
         name: this.inputName.value
@@ -100,7 +103,13 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
   private fetchAllMaterialTypes(): void {
     this.materialTypeService.materials
       .takeUntil(this.subject)
-      .subscribe((materials: MaterialType[]) => this.materials = materials);
+      .subscribe((materials: MaterialType[]) => {
+        this.materials = materials;
+
+        // Initializes the controls of the form after receiving the materials from the service,
+        // so that CustomValidators.uniqueName can verify if the name entered already exists.
+        this.initializeFormControls();
+      });
   }
 
   private registerForServiceEvents(): void {
@@ -142,22 +151,11 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
 
   private initializeFormControls(): void {
     this.inputName = new FormControl('', [
-      Validators.required, Validators.maxLength(this.maxMaterialName), this.uniqueMaterialType.bind(this)
+      Validators.required,
+      CustomValidators.uniqueName(this.materials),
+      CustomValidators.minLength(this.minMaterialName),
+      Validators.maxLength(this.maxMaterialName)
     ]);
-  }
-
-  private uniqueMaterialType(formControl: AbstractControl): ValidationErrors {
-    const currentMaterialName = formControl.value;
-    let isMaterialDuplicated = this.materials.some((material: MaterialType) => {
-      return formControl.dirty && material.name == currentMaterialName;
-    });
-
-    return isMaterialDuplicated ? { conflict: true } : null;
-  }
-
-  private isMaterialNameValid(input: FormControl): boolean {
-    const material = input.value;
-    return !(!material || material.trim().length == 0 || input.invalid);
   }
 
   private closeAndResetMaterialModal(): void {
