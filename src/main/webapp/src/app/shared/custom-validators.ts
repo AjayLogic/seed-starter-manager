@@ -15,4 +15,12 @@ export class CustomValidators {
     };
   }
 
+  static minLength(minLength: number): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } => {
+      const controlText = control.value;
+      const isValid: boolean = controlText && controlText.trim().length > minLength && control.valid;
+      return isValid ? null : { minLength: true };
+    };
+  }
+
 }
