@@ -10,6 +10,7 @@ import { SimpleDialogComponent } from '../shared/ui/simple-dialog/simple-dialog.
 import { Feature } from '../model/feature';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
+import { ServiceEvent } from '../model/service-event.enum';
 
 @Component({
   selector: 'app-feature',
@@ -38,6 +39,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.fetchAllFeatures();
+    this.registerForServiceEvents();
     this.registerForErrors();
     this.initializeFormControls();
   }
@@ -51,6 +53,24 @@ export class FeatureComponent implements OnInit, OnDestroy {
     this.featureService.features
       .takeUntil(this.subject)
       .subscribe((features: Feature[]) => this.onFeaturesUpdated(features));
+  }
+
+  private registerForServiceEvents(): void {
+    this.featureService.events
+      .takeUntil(this.subject)
+      .subscribe((event: ServiceEvent) => {
+        switch (event) {
+          case ServiceEvent.ENTITY_CREATED:
+            this.onFeatureCreated();
+            break;
+          case ServiceEvent.ENTITY_UPDATED:
+            this.onFeatureUpdated();
+            break;
+          case ServiceEvent.ENTITY_DELETED:
+            this.onFeatureDeleted();
+            break;
+        }
+      });
   }
 
   private registerForErrors(): void {
@@ -99,7 +119,6 @@ export class FeatureComponent implements OnInit, OnDestroy {
         id: this.latestFeatureClicked ? this.latestFeatureClicked.id : null,
         name: featureName
       });
-      this.closeAndResetModal();
     } else {
       this.renderer.addClass(this.inputNameRef.nativeElement, 'invalid');
     }
@@ -108,8 +127,6 @@ export class FeatureComponent implements OnInit, OnDestroy {
   deleteFeature(): void {
     if (!this.latestFeatureClicked.uses) {
       this.featureService.delete(this.latestFeatureClicked);
-      this.featureDialog.close();
-      this.deleteFeatureDialog.close();
     }
   }
 
@@ -153,6 +170,19 @@ export class FeatureComponent implements OnInit, OnDestroy {
       maxlength: 'The feature name must have less than ' + this.maxFeatureName + ' characters',
       conflict: 'This Feature already exists'
     };
+  }
+
+  private onFeatureCreated(): void {
+    this.closeAndResetModal();
+  }
+
+  private onFeatureUpdated(): void {
+    this.closeAndResetModal();
+  }
+
+  private onFeatureDeleted(): void {
+    this.featureDialog.close();
+    this.deleteFeatureDialog.close();
   }
 
 }
