@@ -86,7 +86,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
   }
 
   get hasFeatures(): boolean {
-    return Array.isArray(this.features) && this.features.length > 0;
+    return this.features && this.features.length > 0;
   }
 
   get errorMessages(): any {
