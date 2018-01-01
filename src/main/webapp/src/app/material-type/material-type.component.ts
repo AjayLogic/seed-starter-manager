@@ -9,6 +9,7 @@ import { SimpleDialogComponent } from '../shared/ui/simple-dialog/simple-dialog.
 import { MaterialType } from '../model/material-type';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
+import { ServiceEvent } from '../model/service-event.enum';
 
 @Component({
   selector: 'app-material-type',
@@ -37,6 +38,7 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.fetchAllMaterialTypes();
+    this.registerForServiceEvents();
     this.registerForErrors();
     this.initializeFormControls();
   }
@@ -64,7 +66,6 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
         id: this.latestMaterialTypeClicked ? this.latestMaterialTypeClicked.id : null,
         name: this.inputName.value
       });
-      this.closeAndResetMaterialModal();
     } else {
       this.renderer.addClass(this.inputNameRef.nativeElement, 'invalid');
     }
@@ -73,8 +74,6 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
   deleteMaterial(): void {
     if (!this.latestMaterialTypeClicked.uses) {
       this.materialTypeService.delete(this.latestMaterialTypeClicked);
-      this.closeAndResetMaterialModal();
-      this.deleteMaterialDialog.close();
     }
   }
 
@@ -99,6 +98,24 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
     this.materialTypeService.materials
       .takeUntil(this.subject)
       .subscribe((materials: MaterialType[]) => this.materials = materials);
+  }
+
+  private registerForServiceEvents(): void {
+    this.materialTypeService.events
+      .takeUntil(this.subject)
+      .subscribe((event: ServiceEvent) => {
+        switch (event) {
+          case ServiceEvent.ENTITY_CREATED:
+            this.onMaterialCreated();
+            break;
+          case ServiceEvent.ENTITY_UPDATED:
+            this.onMaterialUpdated();
+            break;
+          case ServiceEvent.ENTITY_DELETED:
+            this.onMaterialDeleted();
+            break;
+        }
+      });
   }
 
   private registerForErrors(): void {
@@ -141,12 +158,29 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
   }
 
   private closeAndResetMaterialModal(): void {
-    this.materialDialog.close();
-    this.inputName.reset();
     this.latestMaterialTypeClicked = null;
+
+    // Closes the modal
+    this.materialDialog.close();
+
+    // Clear and reset the name form control
+    this.inputName.reset();
 
     // Avoids that the label appears on top of the input field
     this.renderer.removeClass(this.inputNameLabelRef.nativeElement, 'active');
+  }
+
+  private onMaterialCreated(): void {
+    this.closeAndResetMaterialModal();
+  }
+
+  private onMaterialUpdated(): void {
+    this.closeAndResetMaterialModal();
+  }
+
+  private onMaterialDeleted(): void {
+    this.closeAndResetMaterialModal();
+    this.deleteMaterialDialog.close();
   }
 
 }
