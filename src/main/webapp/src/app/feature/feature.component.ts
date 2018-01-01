@@ -53,10 +53,9 @@ export class FeatureComponent implements OnInit, OnDestroy {
 
   addFeature(): void {
     if (this.inputName.valid) {
-      const featureName: string = this.inputName.value;
       this.featureService.save({
         id: this.latestFeatureClicked ? this.latestFeatureClicked.id : null,
-        name: featureName
+        name: this.inputName.value
       });
     } else {
       this.renderer.addClass(this.inputNameRef.nativeElement, 'invalid');
