@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.io.FileNotFoundException;
 
@@ -35,6 +36,11 @@ public class RestEndpointExceptionHandler {
     @ExceptionHandler(FileNotFoundException.class)
     public ResponseEntity<ApiError> handleFileNotFoundException() {
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiError> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException exception) {
+        return getResponseEntityOfApiError(HttpStatus.PAYLOAD_TOO_LARGE, exception);
     }
 
     private ResponseEntity<ApiError> getResponseEntityOfApiError(HttpStatus httpStatus, Throwable error) {
