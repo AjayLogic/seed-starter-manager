@@ -201,6 +201,9 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
             case ErrorType.GATEWAY_TIMEOUT:
               // TODO: Show the proper error dialog
               break;
+            case ErrorType.PAYLOAD_TOO_LARGE:
+              this.onPayloadToLargeError();
+              break;
             default:
               console.log('Cannot match any error type for the error: ', error);
           }
@@ -222,6 +225,12 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
     this.latestSeedVarietyClicked = null;
     this.deletionDialog.close();
     this.toastService.showMessage('Variety Deleted Successfully!');
+  }
+
+  private onPayloadToLargeError(): void {
+    // The chosen image is larger than the max allowed by the server
+    // TODO: fetch the maximum size from the server
+    this.toastService.showErrorMessage('Image is too large.<br/>The max size is 1MB');
   }
 
 }
