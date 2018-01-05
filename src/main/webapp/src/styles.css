@@ -40,3 +40,28 @@
 .dialog-message {
   font-size: 1.1rem;
 }
+
+/****************************************
+***** Empty seed starter or features *****
+ ****************************************/
+.empty-container {
+  margin: 0 auto;
+  width: 100%;
+}
+
+.empty-container blockquote {
+  display: table;
+  margin: 20px auto;
+}
+
+.empty-container .empty-image-container {
+  position: fixed;
+  left: 0;
+  height: 75%;
+  width: 100%;
+}
+
+.empty-container .empty-image {
+  height: 100%;
+  width: 100%;
+}
