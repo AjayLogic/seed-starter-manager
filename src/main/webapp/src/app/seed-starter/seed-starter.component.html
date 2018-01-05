@@ -63,6 +63,16 @@
   </app-simple-dialog>
 </div>
 
+<div class="empty-container" *ngIf="!hasSeedStarters">
+  <blockquote class="suggestion-text">
+    You don't have any seed starter. You can use the pulsing button to add a new one.
+  </blockquote>
+
+  <div class="empty-image-container">
+    <img [attr.src]="imagePath" class="empty-image"/>
+  </div>
+</div>
+
 <div class="fixed-action-btn">
   <a class="btn-floating btn-large teal waves-effect" [ngClass]="{'pulse': !hasSeedStarters}" routerLink="./new">
     <i class="large material-icons">add</i>

@@ -2,73 +2,30 @@
   <app-simple-list [listItems]="features"
                    (onListItemClicked)="openEditDialog($event)">
   </app-simple-list>
-
-  <!-- edit feature - modal structure -->
-  <app-simple-dialog #editFeatureDialog>
-    <ng-container modal-content>
-      <div class="row">
-        <div class="input-field col s12">
-          <input id="input-edit-name" type="text" [formControl]="inputEditName" #inputEditNameRef
-                 appInputWithValidation [control]="inputEditName" [errorMessages]="errorMessages">
-          <label for="input-edit-name" class="input-error-label" #inputEditNameLabelRef>Feature</label>
-        </div>
-      </div>
-    </ng-container>
-    <ng-container modal-footer>
-      <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
-      <a class="modal-action waves-effect waves-red btn-flat" (click)="deleteFeatureDialog.open()">Delete</a>
-      <a class="modal-action waves-effect waves-green btn-flat" (click)="updateFeature()">Done</a>
-    </ng-container>
-  </app-simple-dialog>
-
-  <app-simple-dialog #deleteFeatureDialog>
-    <ng-container modal-content>
-      <div class="row">
-        <div class="input-field col s12">
-          <ng-container *ngIf="latestFeatureClicked?.uses">
-            <p>
-              <b>"{{latestFeatureClicked?.name}}"</b> cannot be deleted because it's currently in
-              use by some seed starter, you should delete the seed starter(s) before delete it.
-            </p>
-          </ng-container>
-
-          <ng-container *ngIf="!latestFeatureClicked?.uses">
-            <h4>Delete "{{latestFeatureClicked?.name}}" ?</h4>
-            <p>
-              <b>"{{latestFeatureClicked?.name}}"</b> will be removed from the feature list and
-              <b>this operation cannot be undone</b>. You are really want delete this feature?
-            </p>
-          </ng-container>
-        </div>
-      </div>
-    </ng-container>
-    <ng-container modal-footer>
-      <ng-container *ngIf="latestFeatureClicked?.uses">
-        <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
-        <!-- TODO: find all seed starters that uses the clicked feature and show them when user clicks on "View Seed Starters" -->
-        <a class="modal-action waves-effect waves-light btn-flat">View Seed Starters</a>
-      </ng-container>
-
-      <ng-container *ngIf="!latestFeatureClicked?.uses">
-        <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
-        <a class="modal-action waves-effect waves-red btn-flat" (click)="deleteFeature()">Delete</a>
-      </ng-container>
-    </ng-container>
-  </app-simple-dialog>
 </ng-container>
+
+<div class="empty-container" *ngIf="!hasFeatures">
+  <blockquote class="suggestion-text">
+    You don't have any feature for the seed starter. You can use the pulsing button to add a new one.
+  </blockquote>
+
+  <div class="empty-image-container">
+    <img [attr.src]="imagePath" class="empty-image"/>
+  </div>
+</div>
 
 <!-- add feature - modal trigger -->
 <div class="fixed-action-btn">
   <a class="btn-floating btn-large teal waves-effect" [ngClass]="{'pulse': !hasFeatures}"
-     (click)="addFeatureDialog.open()">
+     (click)="openAddDialog()">
     <i class="large material-icons">add</i>
   </a>
 </div>
 
-<!-- add feature - modal structure -->
-<app-simple-dialog #addFeatureDialog>
+<!-- add/edit feature - modal structure -->
+<app-simple-dialog #featureDialog>
   <ng-container modal-content>
-    <h4>Add a new Feature</h4>
+    <h4>Feature</h4>
     <div class="row">
       <div class="input-field col s12">
         <input id="input-name" type="text" [formControl]="inputName" #inputNameRef
@@ -79,6 +36,43 @@
   </ng-container>
   <ng-container modal-footer>
     <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
-    <a class="modal-action waves-effect waves-green btn-flat" (click)="addFeature()">Add</a>
+    <a class="modal-action waves-effect waves-red btn-flat" *ngIf="isEditing"
+       (click)="deleteFeatureDialog.open()">Delete</a>
+    <a class="modal-action waves-effect waves-green btn-flat" (click)="addFeature()">Save</a>
+  </ng-container>
+</app-simple-dialog>
+
+<app-simple-dialog #deleteFeatureDialog *ngIf="hasFeatures">
+  <ng-container modal-content>
+    <div class="row">
+      <div class="input-field col s12">
+        <ng-container *ngIf="latestFeatureClicked?.uses">
+          <p>
+            <b>"{{latestFeatureClicked?.name}}"</b> cannot be deleted because it's currently in
+            use by some seed starter, you should delete the seed starter(s) before delete it.
+          </p>
+        </ng-container>
+
+        <ng-container *ngIf="!latestFeatureClicked?.uses">
+          <h4>Delete "{{latestFeatureClicked?.name}}" ?</h4>
+          <p>
+            <b>"{{latestFeatureClicked?.name}}"</b> will be removed from the feature list and
+            <b>this operation cannot be undone</b>. You are really want delete this feature?
+          </p>
+        </ng-container>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container modal-footer>
+    <ng-container *ngIf="latestFeatureClicked?.uses">
+      <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
+      <!-- TODO: find all seed starters that uses the clicked feature and show them when user clicks on "View Seed Starters" -->
+      <a class="modal-action waves-effect waves-light btn-flat">View Seed Starters</a>
+    </ng-container>
+
+    <ng-container *ngIf="!latestFeatureClicked?.uses">
+      <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
+      <a class="modal-action waves-effect waves-red btn-flat" (click)="deleteFeature()">Delete</a>
+    </ng-container>
   </ng-container>
 </app-simple-dialog>

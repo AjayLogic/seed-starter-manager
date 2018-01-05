@@ -1,4 +1,5 @@
-<div class="modal" materialize="modal" [materializeActions]="modalAction" #modal>
+<div class="modal" materialize="modal" #modal
+     [materializeActions]="modalAction" [materializeParams]="[{complete: onModalClosed}]">
   <div class="modal-content">
     <ng-content select="[modal-content]"></ng-content>
   </div>

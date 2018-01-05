@@ -2,74 +2,20 @@
   <app-simple-list [listItems]="materials"
                    (onListItemClicked)="openEditDialog($event)">
   </app-simple-list>
-
-  <!-- edit material - modal structure -->
-  <app-simple-dialog #editMaterialDialog>
-    <ng-container modal-content>
-      <div class="row">
-        <div class="input-field col s12">
-          <input id="input-edit-name" type="text" [formControl]="inputEditName" #inputEditNameRef
-                 appInputWithValidation [control]="inputEditName" [errorMessages]="errorMessages">
-          <label for="input-edit-name" class="input-error-label" #inputEditNameLabelRef>Material Type</label>
-        </div>
-      </div>
-    </ng-container>
-    <ng-container modal-footer>
-      <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
-      <a class="modal-action waves-effect waves-red btn-flat" (click)="deleteMaterialDialog.open()">Delete</a>
-      <a class="modal-action waves-effect waves-green btn-flat" (click)="updateMaterial()">Done</a>
-    </ng-container>
-  </app-simple-dialog>
-
-  <app-simple-dialog #deleteMaterialDialog>
-    <ng-container modal-content>
-      <div class="row">
-        <div class="input-field col s12">
-          <ng-container *ngIf="latestMaterialTypeClicked?.uses">
-            <p>
-              <b>"{{latestMaterialTypeClicked?.name}}"</b> cannot be deleted because it's currently
-              in use by some seed starter, you should delete the seed starter(s) before delete it.
-            </p>
-          </ng-container>
-
-          <ng-container *ngIf="!latestMaterialTypeClicked?.uses">
-            <h4>Delete "{{latestMaterialTypeClicked?.name}}" ?</h4>
-            <p>
-              <b>"{{latestMaterialTypeClicked?.name}}"</b> will be removed from the material list
-              and <b>this operation cannot be undone</b>. You are really want delete this material?
-            </p>
-          </ng-container>
-        </div>
-      </div>
-    </ng-container>
-    <ng-container modal-footer>
-      <ng-container *ngIf="latestMaterialTypeClicked?.uses">
-        <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
-        <!-- TODO: find all seed starters that uses the clicked material and show them when user clicks on "View Seed Starters" -->
-        <a class="modal-action waves-effect waves-light btn-flat">View Seed Starters</a>
-      </ng-container>
-
-      <ng-container *ngIf="!latestMaterialTypeClicked?.uses">
-        <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
-        <a class="modal-action waves-effect waves-red btn-flat"
-           (click)="deleteMaterial()">Delete</a>
-      </ng-container>
-    </ng-container>
-  </app-simple-dialog>
 </ng-container>
 
 <!-- add material type - modal trigger -->
 <div class="fixed-action-btn">
   <a class="btn-floating btn-large teal waves-effect" [ngClass]="{'pulse': !hasMaterials}"
-     (click)="addMaterialDialog.open()">
+     (click)="openAddDialog()">
     <i class="large material-icons">add</i>
   </a>
 </div>
 
-<!-- add material - modal structure -->
-<app-simple-dialog #addMaterialDialog>
+<!-- add/edit material - modal structure -->
+<app-simple-dialog #materialDialog>
   <ng-container modal-content>
-    <h4>Add a new Material Type</h4>
+    <h4>Material Type</h4>
     <div class="row">
       <div class="input-field col s12">
         <input id="input-name" type="text" [formControl]="inputName" #inputNameRef
@@ -80,6 +26,44 @@
   </ng-container>
   <ng-container modal-footer>
     <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
-    <a class="modal-action waves-effect waves-green btn-flat" (click)="addMaterial()">Add</a>
+    <a class="modal-action waves-effect waves-red btn-flat" *ngIf="isEditing"
+       (click)="deleteMaterialDialog.open()">Delete</a>
+    <a class="modal-action waves-effect waves-green btn-flat" (click)="addMaterial()">Save</a>
+  </ng-container>
+</app-simple-dialog>
+
+<app-simple-dialog #deleteMaterialDialog>
+  <ng-container modal-content>
+    <div class="row">
+      <div class="input-field col s12">
+        <ng-container *ngIf="latestMaterialTypeClicked?.uses">
+          <p>
+            <b>"{{latestMaterialTypeClicked?.name}}"</b> cannot be deleted because it's currently
+            in use by some seed starter, you should delete the seed starter(s) before delete it.
+          </p>
+        </ng-container>
+
+        <ng-container *ngIf="!latestMaterialTypeClicked?.uses">
+          <h4>Delete "{{latestMaterialTypeClicked?.name}}" ?</h4>
+          <p>
+            <b>"{{latestMaterialTypeClicked?.name}}"</b> will be removed from the material list
+            and <b>this operation cannot be undone</b>. You are really want delete this material?
+          </p>
+        </ng-container>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container modal-footer>
+    <ng-container *ngIf="latestMaterialTypeClicked?.uses">
+      <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
+      <!-- TODO: find all seed starters that uses the clicked material and show them when user clicks on "View Seed Starters" -->
+      <a class="modal-action waves-effect waves-light btn-flat">View Seed Starters</a>
+    </ng-container>
+
+    <ng-container *ngIf="!latestMaterialTypeClicked?.uses">
+      <a class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
+      <a class="modal-action waves-effect waves-red btn-flat"
+         (click)="deleteMaterial()">Delete</a>
+    </ng-container>
   </ng-container>
 </app-simple-dialog>

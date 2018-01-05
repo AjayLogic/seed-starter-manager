@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { AbstractControl, FormControl, ValidationErrors, Validators } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { Subject } from 'rxjs/Subject';
 
 import { SeedVarietyService } from './seed-variety.service';
@@ -11,6 +11,7 @@ import { ServiceEvent } from '../model/service-event.enum';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
 import { ToastService } from '../shared/ui/toast-service/toast.service';
+import { CustomValidators } from '../shared/custom-validators';
 
 @Component({
   selector: 'app-seed-variety',
@@ -32,6 +33,8 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   latestSeedVarietyClicked: SeedVariety;
 
   private readonly maxSeedVarietyName = 50; // TODO: fetch this information from database
+  private readonly minSeedVarietyName = 5; // TODO: fetch this information from database
+
   private latestSelectedSeedVarietyImage: File;
   private imagePlaceholder: string;
   private subject: Subject<void> = new Subject();
@@ -44,7 +47,6 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
     this.fetchAllSeedVarieties();
     this.registerForServiceEvents();
     this.registerForErrors();
-    this.initializeFormControls();
   }
 
   ngOnDestroy(): void {
@@ -53,7 +55,7 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   }
 
   saveSeedVariety(): void {
-    if (this.isVarietyNameValid(this.inputName)) {
+    if (this.inputName.valid) {
       this.seedVarietyService.save({
         id: this.latestSeedVarietyClicked ? this.latestSeedVarietyClicked.id : null,
         name: this.inputName.value,
@@ -125,7 +127,8 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   get errorMessages(): any {
     return {
       required: 'The seed variety must have a name',
-      maxlength: 'The variety name must have less than ' + this.maxSeedVarietyName + ' characters',
+      maxlength: `The variety name must have less than ${this.maxSeedVarietyName} characters`,
+      minLength: `The variety name must have at least ${this.minSeedVarietyName} characters`,
       conflict: 'This seed variety already exists'
     };
   }
@@ -134,22 +137,11 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
     this.imagePlaceholder = this.seedVarietyImage.nativeElement.src;
 
     this.inputName = new FormControl('', [
-      Validators.required, Validators.maxLength(this.maxSeedVarietyName), this.uniqueSeedVariety.bind(this)
+      Validators.required,
+      CustomValidators.minLength(this.minSeedVarietyName),
+      Validators.maxLength(this.maxSeedVarietyName),
+      CustomValidators.uniqueName(this.varieties)
     ]);
-  }
-
-  private uniqueSeedVariety(formControl: AbstractControl): ValidationErrors {
-    const currentVarietyName = formControl.value;
-    let isVarietyDuplicated = this.varieties.some((seedVariety: SeedVariety) => {
-      return formControl.dirty && seedVariety.name == currentVarietyName;
-    });
-
-    return isVarietyDuplicated ? { conflict: true } : null;
-  }
-
-  private isVarietyNameValid(input: FormControl): boolean {
-    const variety = input.value;
-    return !(!variety || variety.trim().length == 0 || input.invalid);
   }
 
   private setDialogImageSrc(src: string): void {
@@ -173,7 +165,13 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
   private fetchAllSeedVarieties(): void {
     this.seedVarietyService.varieties
       .takeUntil(this.subject)
-      .subscribe((varieties: SeedVariety[]) => this.varieties = varieties);
+      .subscribe((varieties: SeedVariety[]) => {
+        this.varieties = varieties;
+
+        // Initializes the controls of the form after receiving the varieties of the service,
+        // so that CustomValidators.uniqueName can verify that the name entered already exists.
+        this.initializeFormControls();
+      });
   }
 
   private registerForServiceEvents(): void {
@@ -203,6 +201,9 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
             case ErrorType.GATEWAY_TIMEOUT:
               // TODO: Show the proper error dialog
               break;
+            case ErrorType.PAYLOAD_TOO_LARGE:
+              this.onPayloadToLargeError();
+              break;
             default:
               console.log('Cannot match any error type for the error: ', error);
           }
@@ -224,6 +225,12 @@ export class SeedVarietyComponent implements OnInit, OnDestroy {
     this.latestSeedVarietyClicked = null;
     this.deletionDialog.close();
     this.toastService.showMessage('Variety Deleted Successfully!');
+  }
+
+  private onPayloadToLargeError(): void {
+    // The chosen image is larger than the max allowed by the server
+    // TODO: fetch the maximum size from the server
+    this.toastService.showErrorMessage('Image is too large.<br/>The max size is 1MB');
   }
 
 }

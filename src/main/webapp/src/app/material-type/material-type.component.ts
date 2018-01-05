@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { AbstractControl, FormControl, ValidationErrors, Validators } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { Subject } from 'rxjs/Subject';
 
 import { MaterialTypeService } from './material-type.service';
@@ -9,6 +9,9 @@ import { SimpleDialogComponent } from '../shared/ui/simple-dialog/simple-dialog.
 import { MaterialType } from '../model/material-type';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
+import { ServiceEvent } from '../model/service-event.enum';
+import { ToastService } from '../shared/ui/toast-service/toast.service';
+import { CustomValidators } from '../shared/custom-validators';
 
 @Component({
   selector: 'app-material-type',
@@ -20,28 +23,29 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
   @ViewChild('inputNameRef') inputNameRef: ElementRef;
   @ViewChild('inputNameLabelRef') inputNameLabelRef: ElementRef;
 
-  @ViewChild('inputEditNameRef') inputEditNameRef: ElementRef;
-  @ViewChild('inputEditNameLabelRef') inputNameEditLabelRef: ElementRef;
-
-  @ViewChild('addMaterialDialog') addFeatureDialog: SimpleDialogComponent;
-  @ViewChild('editMaterialDialog') editMaterialDialog: SimpleDialogComponent;
+  @ViewChild('materialDialog') materialDialog: SimpleDialogComponent;
   @ViewChild('deleteMaterialDialog') deleteMaterialDialog: SimpleDialogComponent;
 
   inputName: FormControl;
-  inputEditName: FormControl;
 
   materials: MaterialType[];
   latestMaterialTypeClicked: MaterialType;
 
+  isEditing: boolean = false;
+
   private readonly maxMaterialName = 50; // TODO: fetch this information from database
+  private readonly minMaterialName = 3; // TODO: fetch this information from database
+
   private subject: Subject<void> = new Subject();
 
-  constructor(private materialTypeService: MaterialTypeService, private renderer: Renderer2) {}
+  constructor(private materialTypeService: MaterialTypeService,
+              private toastService: ToastService,
+              private renderer: Renderer2) {}
 
   ngOnInit(): void {
     this.fetchAllMaterialTypes();
+    this.registerForServiceEvents();
     this.registerForErrors();
-    this.initializeFormControls();
   }
 
   ngOnDestroy(): void {
@@ -49,59 +53,81 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
     this.subject.complete();
   }
 
-  get hasMaterials(): boolean {
-    return Array.isArray(this.materials) && this.materials.length > 0;
-  }
-
-  get errorMessages(): any {
-    return {
-      required: 'The material must have a name',
-      maxlength: 'The material name must have less than ' + this.maxMaterialName + ' characters',
-      conflict: 'This material already exists'
-    };
-  }
-
   addMaterial(): void {
-    if (this.isMaterialNameValid(this.inputName)) {
-      const materialName: string = this.inputName.value;
-      this.materialTypeService.save({ id: null, name: materialName });
-      this.closeAndResetAddMaterialTypeModal();
+    if (this.inputName.valid) {
+      this.materialTypeService.save({
+        id: this.latestMaterialTypeClicked ? this.latestMaterialTypeClicked.id : null,
+        name: this.inputName.value
+      });
     } else {
       this.renderer.addClass(this.inputNameRef.nativeElement, 'invalid');
-    }
-  }
-
-  updateMaterial(): void {
-    if (this.isMaterialNameValid(this.inputEditName)) {
-      this.materialTypeService.save({ id: this.latestMaterialTypeClicked.id, name: this.inputEditName.value });
-      this.editMaterialDialog.close();
-    } else {
-      this.renderer.addClass(this.inputEditNameRef.nativeElement, 'invalid');
     }
   }
 
   deleteMaterial(): void {
     if (!this.latestMaterialTypeClicked.uses) {
       this.materialTypeService.delete(this.latestMaterialTypeClicked);
-      this.editMaterialDialog.close();
-      this.deleteMaterialDialog.close();
     }
   }
 
   openEditDialog(materialType: MaterialType): void {
+    this.isEditing = true;
     this.latestMaterialTypeClicked = materialType;
 
     // Avoids that the label appears behind of the input field text
-    this.renderer.addClass(this.inputNameEditLabelRef.nativeElement, 'active');
-    this.inputEditName.reset();
-    this.inputEditName.setValue(materialType.name);
-    this.editMaterialDialog.open();
+    this.renderer.addClass(this.inputNameLabelRef.nativeElement, 'active');
+    this.inputName.reset();
+    this.inputName.setValue(materialType.name);
+    this.materialDialog.open();
+  }
+
+  openAddDialog(): void {
+    this.isEditing = false;
+    this.inputName.reset();
+    this.materialDialog.open();
+  }
+
+  get hasMaterials(): boolean {
+    return this.materials && this.materials.length > 0;
+  }
+
+  get errorMessages(): any {
+    return {
+      required: 'The material must have a name',
+      conflict: 'This material already exists',
+      minLength: `The material name must have at least ${this.minMaterialName} characters`,
+      maxlength: `The material name must have less than ${this.maxMaterialName} characters`
+    };
   }
 
   private fetchAllMaterialTypes(): void {
     this.materialTypeService.materials
       .takeUntil(this.subject)
-      .subscribe((materials: MaterialType[]) => this.materials = materials);
+      .subscribe((materials: MaterialType[]) => {
+        this.materials = materials;
+
+        // Initializes the controls of the form after receiving the materials from the service,
+        // so that CustomValidators.uniqueName can verify if the name entered already exists.
+        this.initializeFormControls();
+      });
+  }
+
+  private registerForServiceEvents(): void {
+    this.materialTypeService.events
+      .takeUntil(this.subject)
+      .subscribe((event: ServiceEvent) => {
+        switch (event) {
+          case ServiceEvent.ENTITY_CREATED:
+            this.onMaterialCreated();
+            break;
+          case ServiceEvent.ENTITY_UPDATED:
+            this.onMaterialUpdated();
+            break;
+          case ServiceEvent.ENTITY_DELETED:
+            this.onMaterialDeleted();
+            break;
+        }
+      });
   }
 
   private registerForErrors(): void {
@@ -125,34 +151,40 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
 
   private initializeFormControls(): void {
     this.inputName = new FormControl('', [
-      Validators.required, Validators.maxLength(this.maxMaterialName), this.uniqueMaterialType.bind(this)
+      Validators.required,
+      CustomValidators.uniqueName(this.materials),
+      CustomValidators.minLength(this.minMaterialName),
+      Validators.maxLength(this.maxMaterialName)
     ]);
-
-    this.inputEditName = new FormControl('', [
-      Validators.required, Validators.maxLength(this.maxMaterialName), this.uniqueMaterialType.bind(this)
-    ]);
   }
 
-  private uniqueMaterialType(formControl: AbstractControl): ValidationErrors {
-    const currentMaterialName = formControl.value;
-    let isMaterialDuplicated = this.materials.some((material: MaterialType) => {
-      return formControl.dirty && material.name == currentMaterialName;
-    });
+  private closeAndResetMaterialModal(): void {
+    this.latestMaterialTypeClicked = null;
 
-    return isMaterialDuplicated ? { conflict: true } : null;
-  }
+    // Closes the modal
+    this.materialDialog.close();
 
-  private isMaterialNameValid(input: FormControl): boolean {
-    const material = input.value;
-    return !(!material || material.trim().length == 0 || input.invalid);
-  }
-
-  private closeAndResetAddMaterialTypeModal(): void {
-    this.addFeatureDialog.close();
+    // Clear and reset the name form control
     this.inputName.reset();
 
     // Avoids that the label appears on top of the input field
     this.renderer.removeClass(this.inputNameLabelRef.nativeElement, 'active');
+  }
+
+  private onMaterialCreated(): void {
+    this.closeAndResetMaterialModal();
+    this.toastService.showMessage('Material Added Successfully!');
+  }
+
+  private onMaterialUpdated(): void {
+    this.closeAndResetMaterialModal();
+    this.toastService.showMessage('Updated Successfully!');
+  }
+
+  private onMaterialDeleted(): void {
+    this.closeAndResetMaterialModal();
+    this.deleteMaterialDialog.close();
+    this.toastService.showMessage('Material Deleted Successfully!');
   }
 
 }

@@ -6,6 +6,7 @@ import { Theme } from './theme';
 export class ThemeManagerService {
 
   private readonly localStorageThemeKey = 'theme';
+  private _currentTheme: Theme;
 
   private themes: Theme[] = [
     { name: 'Dark', location: '/assets/css/dark-theme.css' },
@@ -22,6 +23,8 @@ export class ThemeManagerService {
 
   setTheme(themeName: string): void {
     const theme: Theme = this.themes.find((theme: Theme) => theme.name == themeName);
+    this._currentTheme = theme;
+
     if (theme) {
       let themeTag: HTMLElement = document.getElementById('theme');
       themeTag.setAttribute('href', theme.location);
@@ -33,6 +36,10 @@ export class ThemeManagerService {
       console.error(`Cannot find the theme '${themeName}'; setting the default theme...`);
       this.setDefaultTheme();
     }
+  }
+
+  get currentTheme(): Theme {
+    return this._currentTheme;
   }
 
   private setDefaultTheme(): void {

@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
-import { toast } from 'angular2-materialize';
 
 import { SeedStarterService } from './seed-starter.service';
 
@@ -11,6 +10,8 @@ import { Feature } from '../model/feature';
 import { ServiceError } from '../model/service-error';
 import { ErrorType } from '../model/error-type.enum';
 import { ServiceEvent } from '../model/service-event.enum';
+import { ThemeManagerService } from '../core/theme-manager/theme-manager.service';
+import { ToastService } from '../shared/ui/toast-service/toast.service';
 
 @Component({
   selector: 'app-seed-starter',
@@ -27,7 +28,9 @@ export class SeedStarterComponent implements OnInit, OnDestroy {
   private subject: Subject<void> = new Subject();
   private latestClickedSeedStarter: SeedStarter;
 
-  constructor(private seedStarterService: SeedStarterService) { }
+  constructor(private seedStarterService: SeedStarterService,
+              private themeManager: ThemeManagerService,
+              private toastService: ToastService) { }
 
   ngOnInit(): void {
     this.fetchAllSeedStarters();
@@ -55,7 +58,7 @@ export class SeedStarterComponent implements OnInit, OnDestroy {
   getSeedStarterFeatures(seedStarter: SeedStarter): string {
     if (seedStarter && seedStarter.features && seedStarter.features.length > 0) {
       return seedStarter.features
-        .map((feature: Feature) => {return feature.name;})
+        .map((feature: Feature) => feature.name)
         .join(', ');
     }
 
@@ -64,6 +67,15 @@ export class SeedStarterComponent implements OnInit, OnDestroy {
 
   get hasSeedStarters(): boolean {
     return this.seedStarters && this.seedStarters.length > 0;
+  }
+
+  get imagePath(): string {
+    const currentThemeName: string = this.themeManager.currentTheme.name.toLowerCase();
+
+    // Returns the path to image with white foreground if the current theme is the 'Dark' theme,
+    // otherwise returns the path to image with black foreground.
+    return currentThemeName === 'dark' ?
+      '../../assets/images/floral-light.svg' : '../../assets/images/floral-dark.svg';
   }
 
   private fetchAllSeedStarters(): void {
@@ -109,7 +121,7 @@ export class SeedStarterComponent implements OnInit, OnDestroy {
       this.deleteDialog.close();
 
       // Displays a message indicating success
-      toast('Deleted!', 3000, 'toast-message');
+      this.toastService.showMessage('Deleted Successfully!');
 
       // Resets the isDeletingSeedStarter status to false, to stops the loading animation
       this.isDeletingSeedStarter = false;
