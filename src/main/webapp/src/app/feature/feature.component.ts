@@ -13,6 +13,7 @@ import { ErrorType } from '../model/error-type.enum';
 import { ServiceEvent } from '../model/service-event.enum';
 import { CustomValidators } from '../shared/custom-validators';
 import { ToastService } from '../shared/ui/toast-service/toast.service';
+import { ThemeManagerService } from '../core/theme-manager/theme-manager.service';
 
 @Component({
   selector: 'app-feature',
@@ -40,6 +41,7 @@ export class FeatureComponent implements OnInit, OnDestroy {
 
   constructor(private featureService: FeatureService,
               private toastService: ToastService,
+              private themeManager: ThemeManagerService,
               private renderer: Renderer2) {}
 
   ngOnInit(): void {
@@ -88,6 +90,15 @@ export class FeatureComponent implements OnInit, OnDestroy {
 
   get hasFeatures(): boolean {
     return this.features && this.features.length > 0;
+  }
+
+  get imagePath(): string {
+    const currentThemeName: string = this.themeManager.currentTheme.name.toLowerCase();
+
+    // Returns the path to image with white foreground if the current theme is the 'Dark' theme,
+    // otherwise returns the path to image with black foreground.
+    return currentThemeName === 'dark' ?
+      '../../assets/images/floral-light.svg' : '../../assets/images/floral-dark.svg';
   }
 
   get errorMessages(): any {

@@ -4,6 +4,16 @@
   </app-simple-list>
 </ng-container>
 
+<div class="empty-container" *ngIf="!hasFeatures">
+  <blockquote class="suggestion-text">
+    You don't have any feature for the seed starter. You can use the pulsing button to add a new one.
+  </blockquote>
+
+  <div class="empty-image-container">
+    <img [attr.src]="imagePath" class="empty-image"/>
+  </div>
+</div>
+
 <!-- add feature - modal trigger -->
 <div class="fixed-action-btn">
   <a class="btn-floating btn-large teal waves-effect" [ngClass]="{'pulse': !hasFeatures}"
