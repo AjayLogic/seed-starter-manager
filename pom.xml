@@ -40,7 +40,7 @@
         <json.path.version>2.4.0</json.path.version>
         <jsonassert.version>1.5.0</jsonassert.version>
         <mockito.core.version>2.13.0</mockito.core.version>
-        <jmockit.version>1.37</jmockit.version>
+        <jmockit.version>1.38</jmockit.version>
         <javax.el.version>3.0.1-b09</javax.el.version>
     </properties>
 
