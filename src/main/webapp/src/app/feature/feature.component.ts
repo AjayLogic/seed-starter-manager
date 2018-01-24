@@ -88,6 +88,17 @@ export class FeatureComponent implements OnInit, OnDestroy {
     this.featureDialog.open();
   }
 
+  closeAndResetModal(): void {
+    this.latestFeatureClicked = null;
+    this.featureDialog.close();
+    this.inputName.reset();
+
+    // Restore the class state of the name input and your label
+    this.renderer.removeClass(this.inputNameRef.nativeElement, 'valid');
+    this.renderer.removeClass(this.inputNameRef.nativeElement, 'invalid');
+    this.renderer.removeClass(this.inputNameLabelRef.nativeElement, 'active');
+  }
+
   get hasFeatures(): boolean {
     return this.features && this.features.length > 0;
   }
@@ -166,15 +177,6 @@ export class FeatureComponent implements OnInit, OnDestroy {
       CustomValidators.minLength(this.minFeatureName),
       Validators.maxLength(this.maxFeatureName)
     ]);
-  }
-
-  private closeAndResetModal(): void {
-    this.latestFeatureClicked = null;
-    this.featureDialog.close();
-    this.inputName.reset();
-
-    // Avoids that the label appears on top of the input field
-    this.renderer.removeClass(this.inputNameLabelRef.nativeElement, 'active');
   }
 
   private onFeatureCreated(): void {
