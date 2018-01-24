@@ -1,5 +1,6 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/observable/empty';
 
@@ -13,7 +14,7 @@ export abstract class EntityService<T extends Entity> {
   protected readonly jsonHttpHeader: HttpHeaders;
 
   protected subject: BehaviorSubject<T[]> = new BehaviorSubject([]);
-  protected eventSubject: BehaviorSubject<ServiceEvent> = new BehaviorSubject(null);
+  protected eventSubject: Subject<ServiceEvent> = new Subject();
   protected errorSubject: BehaviorSubject<ServiceError> = new BehaviorSubject(null);
 
   constructor(endpointUrl: string) {
