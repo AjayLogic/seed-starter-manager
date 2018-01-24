@@ -87,6 +87,21 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
     this.materialDialog.open();
   }
 
+  closeAndResetMaterialModal(): void {
+    this.latestMaterialTypeClicked = null;
+
+    // Closes the modal
+    this.materialDialog.close();
+
+    // Clear and reset the name form control
+    this.inputName.reset();
+
+    // Restore the class state of the name input and your label
+    this.renderer.removeClass(this.inputNameRef.nativeElement, 'valid');
+    this.renderer.removeClass(this.inputNameRef.nativeElement, 'invalid');
+    this.renderer.removeClass(this.inputNameLabelRef.nativeElement, 'active');
+  }
+
   get hasMaterials(): boolean {
     return this.materials && this.materials.length > 0;
   }
@@ -156,19 +171,6 @@ export class MaterialTypeComponent implements OnInit, OnDestroy {
       CustomValidators.minLength(this.minMaterialName),
       Validators.maxLength(this.maxMaterialName)
     ]);
-  }
-
-  private closeAndResetMaterialModal(): void {
-    this.latestMaterialTypeClicked = null;
-
-    // Closes the modal
-    this.materialDialog.close();
-
-    // Clear and reset the name form control
-    this.inputName.reset();
-
-    // Avoids that the label appears on top of the input field
-    this.renderer.removeClass(this.inputNameLabelRef.nativeElement, 'active');
   }
 
   private onMaterialCreated(): void {
